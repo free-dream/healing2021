@@ -1,0 +1,12 @@
+/ventor
+/config
+/tmp
+pid
+main.exe
+main
+nohup.out
+healing.log
+gin-bin
+*_test.go
+*.test
+media
