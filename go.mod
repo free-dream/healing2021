@@ -1,4 +1,4 @@
-module healing2021
+module git.100steps.top/100steps/healing2021_be
 
 go 1.15
 

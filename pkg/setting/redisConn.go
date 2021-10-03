@@ -1,22 +1,22 @@
 package setting
 
 import (
+	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"github.com/go-redis/redis"
-	"healing2021/pkg/tools"
-    "strconv"
+	"strconv"
 )
 
 var RedisClient *redis.Client
 
 func init() {
 	addr := tools.GetConfig("redis", "addr")
-    dbStr := tools.GetConfig("redis", "db")
-    var db int
-    if dbStr == "" {
-        db = 0
-    } else {
-        db,_ = strconv.Atoi(dbStr)
-    }
+	dbStr := tools.GetConfig("redis", "db")
+	var db int
+	if dbStr == "" {
+		db = 0
+	} else {
+		db, _ = strconv.Atoi(dbStr)
+	}
 	RedisClient = redis.NewClient(&redis.Options{
 		Addr:         addr,
 		Password:     "",

@@ -1,9 +1,9 @@
 package setting
 
 import (
+	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"healing2021/pkg/tools"
 )
 
 var DB *gorm.DB
