@@ -1,23 +1,15 @@
-- [1. 微信授权](#head1)
-    - [1.1 授权](#head2)
-      [1.2 jssdk的接口](#head3)
-- [ -----下面的接口都要带上前缀"/api"-----](#head4)
-- [2. 用户模块](#head5)
-    - [2.1 用户注册](#head6)
-    - [2.2 个人信息更新](#head7)
-    - [2.3 获取自己信息(用户个人页信息拉取)](#head8)
-    - [2.4 更换个人背景](#head9)
-    - [2.5 治愈详情页](#head10)
-    - [2.6 获取他人信息](#head11)
-    - [2.7 获取二维码](#head12)
+[toc]
 
-# <span id="head1">1. 微信授权</span>
 
-## <span id="head2">1.1 授权</span>
+
+# 1. 微信授权
+
+## 1.1 授权
 
 GET /auth/jump2[?redirect={encoded_uri}] HTTP/1.1
 
-### 成功：
+成功：
+
 Content-Type application/json
 
 200 OK
@@ -28,9 +20,11 @@ Content-Type application/json
 ```
 
 需要先访问此接口接受redirect参数
-### 失败:
+
+失败:
+
 `可能遇到401,用户未登录强制重定向进行授权登录`
-## <span id="head3">1.2 jssdk的接口</span>
+## 1.2 jssdk的接口
 
 GET /api/wxconfig HTTP/1.1
 
@@ -57,14 +51,16 @@ Content-Type: application/json
 {"message" : "ip is not in whitelist"}
 ```
 
-# <span id="head4"> -----下面的接口都要带上前缀"/api"-----</span>
+#  -----下面的接口都要带上前缀"/api"-----
 
-# <span id="head5">2. 用户模块</span>
+# 2. 用户模块
 
-## <span id="head6">2.1 用户注册</span>
+## 2.1 用户注册
 
 POST /user HTTP/1.1
-### 成功：
+
+成功：
+
 Content-Type: application/json
 
 200 OK
@@ -78,7 +74,8 @@ Content-Type: application/json
 
 }
 ```
-### 失败：
+失败：
+
 Content-Type: application/json
 
 403 Forbidden
@@ -87,7 +84,7 @@ Content-Type: application/json
   "message": "昵称/手机号已存在,无法注册"
 }
 ```
-## <span id="head7">2.2 个人信息更新</span>
+## 2.2 个人信息更新
 
 PUT /user HTTP/1.1
 
@@ -119,11 +116,11 @@ Content-Type: application/json
 {"message" : "修改失败"}
 ```
 
-## <span id="head8">2.3 获取自己信息(用户个人页信息拉取)</span>
+## 2.3 获取自己信息(用户个人页信息拉取)
 
 GET /user HTTP1.1
 
-成功时：
+成功：
 
 200 OK
 
@@ -165,7 +162,7 @@ Content-Type: application/json
 }
 ```
 
-失败时：
+失败：
 
 403 Forbidden
 
@@ -175,9 +172,10 @@ Content-Type: application/json
 {"message" : "获取头像失败"}
 ```
 
-## <span id="head9">2.4 更新个人背景</span>
+## 2.4 更新个人背景
 POST /background HTTP/1.1
-### 成功：
+
+成功：
 
 200 OK
 
@@ -188,12 +186,13 @@ Content-Type: application/json
   "background": "string" //背景图片url
 }
 ```
-### 失败：
+失败：
+
 500 Internal Server Error
 ```json
 {"message" : "更新头像失败"}
 ```
-## <span id="head10">2.5 治愈系详情页</span>
+## 2.5 治愈系详情页
 GET /healingPage HTTP/1.1
 
 Query
@@ -202,7 +201,8 @@ Query
   "healingId": int
 }
 ```
-### 成功：
+成功：
+
 Content-Type: application/json
 
 ```json
@@ -223,7 +223,8 @@ Content-Type: application/json
   }
 }
 ```
-### 失败:
+失败:
+
 ```json
 {
   "statusCode": 401,
@@ -234,7 +235,7 @@ Content-Type: application/json
 
 
 
-## <span id="head11">2.6 获取他人信息</span>
+## 2.6 获取他人信息
 GET /callee HTTP/1.1
 
 Query
@@ -245,7 +246,8 @@ Query
 }
 ```
 
-### 成功：
+成功：
+
 200 OK
 
 Content-Type: application/json
@@ -286,8 +288,8 @@ Content-Type: application/json
 }
 ```
 
+失败:
 
-### 失败:
 ```json
 {
   "statusCode": 401,
@@ -295,7 +297,7 @@ Content-Type: application/json
 }
 ```
 
-## <span id="head12">2.7 获取二维码</span>
+## 2.7 获取二维码
 GET /QR_code HTTP/1.1
 
 Query
@@ -305,13 +307,15 @@ Query
   "songId": int,//对应歌曲id
 }
 ```
-### 成功：
+成功：
+
 ```json
 {
   "QR_code": "string",//二维码url
 }
 ```
-### 失败:
+失败:
+
 ```json
 {
   "statusCode": 401,
@@ -319,15 +323,15 @@ Query
 }
 ```
 
-# <span id="head13">3 经典治愈</span>
+# 3 经典治愈
 
 所有初始化调用的接口最好直接将部分数据缓存在redis里，若有必要的更新将数据写入mysql
 
 全部接口在有cookie的情况下进行
 
-## <span id="head14">3.1 治愈页面关联接口</span>
+## 3.1 治愈页面关联接口
 
-### <span id="head15">3.1.1 轮播图接口
+### 3.1.1 轮播图接口
 
 ***轮播图接口更新可能依赖于多于一张表***
 
@@ -359,7 +363,7 @@ Content-Type: application/json
 
 `{"message" : "请求列表失败"}`
 
-### <span id="head16">3.1.2 点歌(唱歌)请求获取
+### 3.1.2 点歌(唱歌)请求获取
 
 GET /healing/selections/list HTTP 1.1
 
@@ -393,7 +397,7 @@ Content-Type: application/json
 
 `{"message" : "请求列表失败"}`
 
-### <span id="head17>3.1.3 翻唱列表获取
+### 3.1.3 翻唱列表获取
 
 GET /healing/covers/list HTTP 1.1
 
@@ -429,7 +433,7 @@ Content-Type: application/json
 
 `{"message" : "请求列表失败"}`
 
-### <span id="head18">3.1.4 索引和不同的排序
+### 3.1.4 索引和不同的排序
 
 GET /healing/{a}/{model}/{rankby} HTTP 1.1
 
@@ -485,7 +489,7 @@ Content-Type: application/json
 
 
 
-### <span id="head19"> 3.1.5 听歌点赞
+### 3.1.5 听歌点赞
 
 POST /healing/covers/like HTTP 1.1
 
@@ -511,13 +515,13 @@ Content-Type: application/json
 
 `{"message" : "点赞失败惹~"}`
 
-## <span id="head20">3.2 功能性接口(包括抽奖、排行榜、热榜)
+## 3.2 功能性接口(包括抽奖、排行榜、热榜)
 
-### <span id="head21">3.2.1 抽奖
+### 3.2.1 抽奖
 
 //前提是持有包含用户信息的cookie
 
-#### <span id="head22">3.2.1.1 奖池信息获取
+#### 3.2.1.1 奖池信息获取
 
 GET /healing/lotterybox/lotteries HTTP 1.1
 
@@ -546,7 +550,7 @@ Content-Type: application/json
 
 `{"message" : "获取奖池信息错误"}`
 
-#### <span id="head23">3.2.1.2 抽奖
+#### 3.2.1.2 抽奖
 
 POST /healing/lotterybox/draw HTTP 1.1
 
@@ -572,7 +576,7 @@ Content-Type: application/json
 
 `{"message" : "抽奖失败"}`
 
-#### <span id="head24">3.2.1.3 拉取用户中奖记录
+#### 3.2.1.3 拉取用户中奖记录
 
 GET /healing/lotterybox/prizes
 
@@ -600,7 +604,7 @@ Content-Type: application/json
 
 `{"message" : "拉取中奖信息失败"}`
 
-#### <span id="head25">3.2.1.4 拉取对应用户的任务列表
+#### 3.2.1.4 拉取对应用户的任务列表
 
 GET /healing/lotterybox/tasktable
 
@@ -633,7 +637,7 @@ Content-Type: application/json
 
 `{"message" : "加载任务列表失败"}`
 
-### <span id="head26">3.2.2 排行榜
+### 3.2.2 排行榜
 
 GET /healing/rank/{school}
 
@@ -669,7 +673,7 @@ Content-Type: application/json
 
 
 
-### <span id="head27">3.2.3 每日热榜
+### 3.2.3 每日热榜
 
 POST /healing/dailyrank/{date}
 
@@ -704,13 +708,13 @@ Content-Type: application/json
 
 `{"message" : "加载排行榜失败"}`
 
-### <span id="head28">3.2.4 搜索页面的相关接口
+### 3.2.4 搜索页面的相关接口
 
 1. 搜索历史是否可以交付前端缓存？//后端先拉了一个表项
 2. 搜索要求不同关键字之间以空格分开
 3. 热榜建议缓存到redis里，调用的时候直接抓取若干项 //已经有了
 
-#### <span id="head29">3.2.4.1 搜索接口
+#### 3.2.4.1 搜索接口
 
 POST /healing/search
 
