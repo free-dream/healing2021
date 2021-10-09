@@ -1224,7 +1224,7 @@ Content-Type: application/json
 
 # <span id="">6. 广场主页</span>
 
-## <span id="">5.1 拉取广场动态列表</span>
+## <span id="">6.1 拉取广场动态列表</span>
 
 GET /dynamics/list/{method}  HTTP1.1
 
@@ -1269,7 +1269,7 @@ Content-Type: application/json
 
 `{"message" : "动态不存在!"}`
 
-## <span id="">5.2 发布动态</span>
+## <span id="">6.2 发布动态</span>
 
 POST  /dynamics/send  HTTP1.1
 
@@ -1296,7 +1296,7 @@ Content-Type: application/json
 
 `{"message" : "动态发布失败"}`
 
-## <span id="">5.3 查看动态的详情</span>
+## <span id="">6.3 查看动态的详情</span>
 
 GET /dynamics/detail/{id}  HTTP1.1
 
@@ -1335,7 +1335,7 @@ Content-Type: application/json
 
 `{"message" : "该动态不存在!"}`
 
-## <span id="">5.4 给动态添加评论</span>
+## <span id="">6.4 给动态添加评论</span>
 
 POST /dynamics/comment  HTTP1.1
 
@@ -1362,7 +1362,7 @@ Content-Type: application/json
 
 `{"message" : "该动态不存在!"}`
 
-## <span id="">5.5 拉取动态的评论列表</span>
+## <span id="">6.5 拉取动态的评论列表</span>
 
 GET /dynamics/comment/{id}  HTTP1.1
 
@@ -1401,7 +1401,7 @@ Content-Type: application/json
 
 `{"message" : "该动态不存在!"}`
 
-## <span id="">5.6 给动态或评论点赞</span>（取消点赞）
+## <span id="">6.6 给动态或评论点赞</span>（取消点赞）
 
 PUT  /laud/{type}/{id}  HTTP1.1
 
