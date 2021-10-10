@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 )
 
-func CFDDecrypter(keyStr string,ivStr string,data string) string{
+func CFDDecrypter(keyStr string, ivStr string, data string) string {
 	key := []byte(keyStr)
 	ciphertext, _ := hex.DecodeString(data)
 
@@ -23,12 +23,12 @@ func CFDDecrypter(keyStr string,ivStr string,data string) string{
 	//iv := ciphertext[:aes.BlockSize]
 	//ciphertext = ciphertext[aes.BlockSize:]
 
-    iv := []byte(ivStr)
+	iv := []byte(ivStr)
 
 	stream := cipher.NewCFBDecrypter(block, iv)
 
 	// XORKeyStream can work in-place if the two arguments are the same.
 	stream.XORKeyStream(ciphertext, ciphertext)
 
-    return string(ciphertext)
+	return string(ciphertext)
 }

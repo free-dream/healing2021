@@ -9,9 +9,10 @@ import (
 type Message struct {
 	*gorm.Model
 	SenderId int `gorm:"default:0"`
-	TakerId int `gorm:"default:0"`
-	Content int `gorm:"default:0"`
+	TakerId  int `gorm:"default:0"`
+	Content  int `gorm:"default:0"`
 }
+
 func MessageInit() {
 	db := setting.MysqlConn()
 	if !db.HasTable(&Message{}) {

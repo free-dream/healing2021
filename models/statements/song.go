@@ -8,10 +8,10 @@ import (
 
 type Song struct {
 	*gorm.Model
-	SelectionId int `gorm:"default:0"`
-	UserId      int `gorm:default:0`
-	Song string`gorm:default:''`
-	Name string `gorm:default:''`
+	SelectionId int    `gorm:"default:0"`
+	UserId      int    `gorm:default:0`
+	Song        string `gorm:default:''`
+	Name        string `gorm:default:''`
 }
 
 func SongInit() {

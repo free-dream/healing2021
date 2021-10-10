@@ -8,9 +8,10 @@ import (
 
 type Task struct {
 	*gorm.Model
-	Text string `gorm:"default:''"`
-	Target int `gorm:"default:0"`
+	Text   string `gorm:"default:''"`
+	Target int    `gorm:"default:0"`
 }
+
 func TaskInit() {
 	db := setting.MysqlConn()
 	if !db.HasTable(&Task{}) {

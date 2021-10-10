@@ -6,12 +6,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type CoverLike struct{
+type CoverLike struct {
 	*gorm.Model
-	CoverId int    `gorm:"default:0"`
-	UserId  int   `gorm:"default:0"`
-	IsLiked int   `gorm:"default:0"`
+	CoverId int `gorm:"default:0"`
+	UserId  int `gorm:"default:0"`
+	IsLiked int `gorm:"default:0"`
 }
+
 func CoverLikeInit() {
 	db := setting.MysqlConn()
 	if !db.HasTable(&CoverLike{}) {

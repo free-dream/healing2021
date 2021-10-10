@@ -20,7 +20,7 @@ import (
 
 func main() {
 	models.TableInit()
-	routers:=router.SetupRouter()
+	routers := router.SetupRouter()
 	auth.Login()
 	defer setting.DB.Close()
 	defer setting.RedisClient.Close()

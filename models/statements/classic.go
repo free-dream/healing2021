@@ -8,14 +8,15 @@ import (
 
 type Classic struct {
 	*gorm.Model
-	Remark      string `gorm:"default:''"`
-	SongName   string `gorm:"default:''"`
-	Icon        string `gorm:"default:''"`
-	Singer      string `gorm:"default:''"`
-	WorkName   string `gorm:"default:''"`
-	Click       int
-	Lyrics      string `gorm:"default:''"`
+	Remark   string `gorm:"default:''"`
+	SongName string `gorm:"default:''"`
+	Icon     string `gorm:"default:''"`
+	Singer   string `gorm:"default:''"`
+	WorkName string `gorm:"default:''"`
+	Click    int
+	Lyrics   string `gorm:"default:''"`
 }
+
 func ClassicInit() {
 	db := setting.MysqlConn()
 	if !db.HasTable(&Classic{}) {

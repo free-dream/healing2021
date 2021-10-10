@@ -9,11 +9,11 @@ import (
 
 type Prize struct {
 	*gorm.Model
-	UserId int `gorm:"default:0"`
-	Prize int `gorm:"default:0"`
-	Date time.Time `gorm:"default:null"`
-	
+	UserId int       `gorm:"default:0"`
+	Prize  int       `gorm:"default:0"`
+	Date   time.Time `gorm:"default:null"`
 }
+
 func PrizeInit() {
 	db := setting.MysqlConn()
 	if !db.HasTable(&Prize{}) {

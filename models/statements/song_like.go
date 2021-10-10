@@ -8,10 +8,11 @@ import (
 
 type SongLike struct {
 	*gorm.Model
-	UserId   int	`gorm:"default:0"`
-	SongId   int	`gorm:"default:0"`
-	IsLiked  int  	`gorm:"default:0"`
+	UserId  int `gorm:"default:0"`
+	SongId  int `gorm:"default:0"`
+	IsLiked int `gorm:"default:0"`
 }
+
 func SongLikeInit() {
 	db := setting.MysqlConn()
 	if !db.HasTable(&SongLike{}) {

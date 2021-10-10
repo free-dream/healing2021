@@ -8,17 +8,17 @@ import (
 
 type User struct {
 	gorm.Model
-	OpenId   string `gorm:"default: ''"`
-	NickName string `gorm:"default: ''"`
-	RealName string `gorm:"default: ''"`
-	Slogan    string `gorm:"default: ''"`
-	Avatar   string `gorm:"default: ''"`
-	PhoneNumber    string `gorm:"default: ''"`
-	Sex      int    `gorm:"default: 0"`
-	School    string `gorm:"default: ''"`
-	Points  int    `gorm:"default: 0"`
-	Record int    `gorm:"default: 0"`
-	BackGround string `gorm:"default: ''"`
+	OpenId      string `gorm:"default: ''"`
+	NickName    string `gorm:"default: ''"`
+	RealName    string `gorm:"default: ''"`
+	Slogan      string `gorm:"default: ''"`
+	Avatar      string `gorm:"default: ''"`
+	PhoneNumber string `gorm:"default: ''"`
+	Sex         int    `gorm:"default: 0"`
+	School      string `gorm:"default: ''"`
+	Points      int    `gorm:"default: 0"`
+	Record      int    `gorm:"default: 0"`
+	BackGround  string `gorm:"default: ''"`
 }
 
 func UserInit() {

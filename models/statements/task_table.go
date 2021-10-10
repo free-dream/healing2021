@@ -6,11 +6,12 @@ import (
 )
 
 type TaskTable struct {
-	TaskId int `gorm:"default:0"`
-	UserId int `gorm:"default:0"`
-	Check int `gorm:"default:0"`
+	TaskId  int `gorm:"default:0"`
+	UserId  int `gorm:"default:0"`
+	Check   int `gorm:"default:0"`
 	Counter int `gorm:"default:0"`
 }
+
 func TaskTableInit() {
 	db := setting.MysqlConn()
 	if !db.HasTable(&TaskTable{}) {

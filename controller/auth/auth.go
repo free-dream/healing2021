@@ -9,7 +9,7 @@ import (
 )
 
 // 微信登录
-func Login() *gin.Engine{
+func Login() *gin.Engine {
 	r := gin.Default()
 	file, _ := os.Create("log")
 	gin.DefaultWriter = io.MultiWriter(file)

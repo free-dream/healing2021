@@ -8,10 +8,11 @@ import (
 
 type Advertisement struct {
 	*gorm.Model
-	Url string `gorm:"default:''"`
+	Url     string `gorm:"default:''"`
 	Address string `gorm:"default:''"`
-	Weight int `gorm:"default:0"`
+	Weight  int    `gorm:"default:0"`
 }
+
 func AdvertisementInit() {
 	db := setting.MysqlConn()
 	if !db.HasTable(&Advertisement{}) {
