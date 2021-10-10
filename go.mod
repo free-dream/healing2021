@@ -5,7 +5,7 @@ go 1.15
 require (
 	git.100steps.top/100steps/ginwechat v0.0.0-20210528152916-b9a382e4f5a8
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
-	github.com/fvbock/endless v0.0.0-20170109170031-447134032cb6 // indirect
+	github.com/fvbock/endless v0.0.0-20170109170031-447134032cb6
 	github.com/gin-contrib/sessions v0.0.3
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-openapi/spec v0.20.2 // indirect

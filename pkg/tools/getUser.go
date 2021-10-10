@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"healing2021/pkg/e"
+	"git.100steps.top/100steps/healing2021_be/pkg/e"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
