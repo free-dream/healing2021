@@ -1,10 +1,19 @@
 package playground
 
-import "github.com/gin-gonic/gin"
+import (
+	"git.100steps.top/100steps/healing2021_be/dao"
+	"git.100steps.top/100steps/healing2021_be/pkg/e"
+	"github.com/gin-gonic/gin"
+)
 
 // 拉取广场动态列表
 func GetMomentList(ctx *gin.Context) {
-
+	AllComment, ok := dao.GetAllMoment()
+	if !ok {
+		ctx.JSON(403, e.ErrMsgResponse{Message: "动态不存在"})
+		return
+	}
+	ctx.JSON(200, AllComment)
 }
 
 // 发布动态

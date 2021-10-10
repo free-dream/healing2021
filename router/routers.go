@@ -72,6 +72,5 @@ func SetupRouter() *gin.Engine {
 	api.GET("/dynamics/comment/:id", playground.GetCommentList)
 	api.PUT("/laud/:type/:id", playground.PriseOrNot)
 
-
 	return r
 }
