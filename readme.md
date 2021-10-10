@@ -35,7 +35,7 @@ HTTP/1.1 200 OK
 ```json
 {
     "appId": "string",
-    "timestamp": timestamp(),
+    "timestamp": timestamp,
     "nonceStr": "string",
     "signature": "string"
 }
@@ -1017,9 +1017,9 @@ Content-Type: application/json
 
 ### 4.2.3 录音接口
 
-调用 POST /healing/record 接口，有一个属性用于确认归属
+调用 POST /healing/recording 接口，有一个属性用于确认归属
 
-这个接口应该做的事：
+这个接口会完成的事：
 
 1. 更新covers(翻唱表)
 2. 更新songs(歌曲表)

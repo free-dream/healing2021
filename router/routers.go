@@ -2,7 +2,9 @@ package router
 
 import (
 	"encoding/gob"
+	"git.100steps.top/100steps/healing2021_be/controller/childhood"
 	"git.100steps.top/100steps/healing2021_be/controller/middleware"
+	"git.100steps.top/100steps/healing2021_be/controller/playground"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"github.com/gin-contrib/sessions"
@@ -46,9 +48,30 @@ func SetupRouter() *gin.Engine {
 		r.Use(middleware.Cors())
 	}
 
+	// ping 测试
 	r.GET(test_prefix+"/ping", func(ctx *gin.Context) {
 		ctx.JSON(200, e.ErrMsgResponse{Message: "pong"})
 		return
 	})
+
+	// 业务路由
+	api := r.Group("/api")
+
+	// childhood 模块
+	api.GET("/childhood/rank", childhood.GetRank)
+	api.GET("/childhood/list", childhood.GetList)
+	api.GET("/childhood/original/:name/info", childhood.GetOriginalInfo)
+	api.GET("/childhood/original/:name/cover", childhood.GetOriginalSingerList)
+	api.POST("/healing/player", childhood.LoadSongs)
+
+	// 广场 模块
+	api.GET("/dynamics/list/:method", playground.GetMomentList)
+	api.GET("/dynamics/send", playground.PostMoment)
+	api.GET("/dynamics/detail/:id", playground.GetMomentDetail)
+	api.POST("/dynamics/comment", playground.PostComment)
+	api.GET("/dynamics/comment/:id", playground.GetCommentList)
+	api.PUT("/laud/:type/:id", playground.PriseOrNot)
+
+
 	return r
 }

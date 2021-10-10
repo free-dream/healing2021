@@ -157,8 +157,6 @@ thumbnail可以通过url的变换来获取，但暂时保留thumbnail字段
 | text   | varchar(255) | 任务描述                               |
 | target | int          | 非负，记录目标数，用于确认任务是否完成 |
 
-
-
 ### classic
 
 | 字段值      | 字段类型     | 说明                 |
