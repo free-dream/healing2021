@@ -418,7 +418,7 @@ Content-Type: application/json
     {
         "nickname":string,	//翻唱者，允许匿名
         "post_time":string(datetime),	//翻唱时间
-        "user_thumbnail":text(url),	//用于加载的用户小图url
+        "avatar":text(url),	//用于加载的用户头像url
         "selection_url":text(url)	//用于跳转的治愈详情页面url
     }
     ...
@@ -454,7 +454,7 @@ Content-Type: application/json
     {
         "nickname":string,	//翻唱者，允许匿名
         "post_time":string(datetime),	//翻唱时间
-        "user_thumbnail":text(url),	//用于加载的用户小图url
+        "avatar":text(url),	//用于加载的用户头像url
         "selection_url":text(url)	//用于跳转的用户个人页面url
     }
     ...
@@ -656,7 +656,7 @@ Content-Type: application/json
 ```json
 [//列表长度为10
     {
-        "thumbnail":string,	//用户头像url
+        "avatar":string,	//用户头像url
         "nickname":string,	//用户名
     }
     ...
@@ -690,7 +690,7 @@ Content-Type: application/json
 ```json
 [//列表长度为10
     {
-        "thumbnail":string,	//用户头像url
+        "avatar":string,	//用户头像url
         "nickname":string,	//用户名
         "post_time":string(datetime),	//时间
         "likes":int,	//点赞数
@@ -744,7 +744,7 @@ Content-Type: application/json
     [//用户表
         {
             "user_id":int,	//用于组合跳转个人页面，可改为个人页面的url
-            "thumbnail":string(url),	//用于索引头像
+            "avatar":string(url),	//用于索引头像
             "nickname":string,	//用户名
             "slogan":string	//个性签名
         }
@@ -756,7 +756,7 @@ Content-Type: application/json
             "nickname":string,	//点歌用户名
             "song_name":string,	//歌曲名
             "post_time":string(datetime),	//点歌时间
-            "thumbnail":string(url)	//用户头像索引
+            "avatar":string(url)	//用户头像索引
         }
         ...
     ],
@@ -766,7 +766,7 @@ Content-Type: application/json
             "nickname":string,
             "song_name":string,
             "post_time":string(datetime),
-            "thumbnail":string(url)	
+            "avatar":string(url)	
         }
     ]
 ]
@@ -938,7 +938,7 @@ Content-Type: application/json
 [//列表name字母序
     {
         "name":string,
-        "thumbnail":text(url), //小图标
+        "avatar":text(url), //小图标
         "discription":text,	//简单描述
         "work_name":string	//音乐出处
     }
@@ -1019,11 +1019,6 @@ Content-Type: application/json
 
 调用 POST /healing/recording 接口，有一个属性用于确认归属
 
-这个接口会完成的事：
-
-1. 更新covers(翻唱表)
-2. 更新songs(歌曲表)
-
 ## 4.3 歌曲页相关接口
 
 ### 4.3.1 点赞接口
@@ -1057,8 +1052,7 @@ Content-Type: application/json
     "song_name":string,	//歌曲名
     "file":string,	//翻唱文件url
     "lyrics":string,	//如果有的话，默认是null
-    "icon":string,	//大图标url
-    "thumbnail":string,	//小图标url
+    "icon":string,	//图标url
     "work_name":string,	//作品名
     "nickname":string	//翻唱者
 }
@@ -1071,7 +1065,6 @@ Content-Type: application/json
     "song_name":string,	//歌曲名
     "file":string,	//翻唱文件url
     "avatar":string,	//头像大图url
-    "User_thumbnail":string,	//头像小图url
     "nickname":string	//翻唱者
 }
 ```
