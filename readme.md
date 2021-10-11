@@ -637,6 +637,8 @@ Content-Type: application/json
 
 `{"message" : "加载任务列表失败"}`
 
+#### 3.2.1.5 任务更新/领取积分
+
 ### 3.2.2 排行榜
 
 GET /healing/rank/{school}

@@ -2,13 +2,14 @@ package statements
 
 import (
 	"fmt"
+
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"github.com/jinzhu/gorm"
 )
 
 type Lottery struct {
 	*gorm.Model
-	UserId      int     `gorm:"default:0"`
+	UserId      int     `gorm:"default:-1"`
 	Name        string  `gorm:"default:''"`
 	Picture     string  `gorm:"default:''"`
 	Possibility float64 `gorm:"default:0"`
