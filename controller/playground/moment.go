@@ -3,6 +3,7 @@ package playground
 import (
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
+	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"github.com/gin-gonic/gin"
 	"time"
 )
@@ -17,10 +18,10 @@ type User struct {
 
 // 拉取广场动态列表[三种模式:new/recommend/search]
 type MomentResp struct {
-	Dynamics_id int       `json:"dynamics_id"`
-	Content     string    `json:"content"`
-	Created_at  time.Time `json:"created_at"`
-	Img         []string  `json:"img"`
+	DynamicsId int    `json:"dynamics_id"`
+	Content    string `json:"content"`
+	CreatedAt time.Time `json:"created_at"`
+	Img       []string  `json:"img"`
 	Song        string    `json:"song"`
 	Lauds       int       `json:"lauds"`
 	Lauded      int       `json:"lauded"`
@@ -30,7 +31,7 @@ type MomentResp struct {
 }
 func GetMomentList(ctx *gin.Context) {
 	var MomentsResp []MomentResp
-	var Moment  MomentResp
+	var TmpMoment  MomentResp
 	// 获取 url 参数
 	method := ctx.Param("method")
 	keyword := ctx.Query("keyword")
@@ -40,14 +41,29 @@ func GetMomentList(ctx *gin.Context) {
 		ctx.JSON(403, e.ErrMsgResponse{Message: "模式选择出错"})
 		return
 	}
-	AllComment, ok := dao.GetAllMoment(method, keyword)
 
+	// 从数据库中得到经过筛选的 Momment 列表
+	AllMoment, ok := dao.GetAllMoment(method, keyword)
 	if !ok {
 		ctx.JSON(403, e.ErrMsgResponse{Message: "数据库查询失败"})
 		return
 	}
 
-	// 获取其他所需信息，装进 resp
+	// 获取和整理其他所需信息，装进 response
+	for _, OneMoment := range AllMoment{
+		TmpMoment.Content = OneMoment.Content
+		TmpMoment.DynamicsId = int(OneMoment.ID)
+		TmpMoment.CreatedAt = OneMoment.CreatedAt
+		TmpMoment.Img = tools.DecodeStrArr(OneMoment.Picture)
+		//TmpMoment.Song = dao.GetSongNameById(OneMoment.SongId)
+		TmpMoment.Lauds = dao.CountLaudsById(TmpMoment.DynamicsId)
+		TmpMoment.Lauded = dao.HaveLauded(TmpMoment.DynamicsId)
+		TmpMoment.Comments = dao.CountCommentsById(TmpMoment.DynamicsId)
+		TmpMoment.Status = tools.DecodeStrArr(OneMoment.States)
+		//TmpMoment.Creator
+
+		MomentsResp = append(MomentsResp, TmpMoment)
+	}
 
 	ctx.JSON(200, MomentsResp)
 }
@@ -139,6 +155,6 @@ func PriseOrNot(ctx *gin.Context) {
 	// 写入数据库
 	//ctx.JSON(403, e.ErrMsgResponse{Message: "点赞或取消点赞失败"})
 	//return
-	
+
 	ctx.JSON(200, "")
 }
