@@ -13,7 +13,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"time"
 )
 
 var store redis.Store
@@ -33,7 +32,7 @@ func SetupRouter() *gin.Engine {
 	gin.DefaultWriter = io.MultiWriter(f)
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
-	r.Use(middleware.Timeout(time.Minute))
+	//r.Use(middleware.Timeout(time.Minute))
 
 	// 注册sessions组件，使用redis作为驱动
 	gob.Register(tools.RedisUser{})
