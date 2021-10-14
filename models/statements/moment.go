@@ -16,6 +16,7 @@ type Moment struct {
 
 func MomentInit() {
 	db := setting.MysqlConn()
+	setting.TimeSetting("moment")
 	if !db.HasTable(&Moment{}) {
 		if err := db.CreateTable(&Moment{}).Error; err != nil {
 			panic(err)

@@ -15,6 +15,7 @@ type Message struct {
 
 func MessageInit() {
 	db := setting.MysqlConn()
+	setting.TimeSetting("message")
 	if !db.HasTable(&Message{}) {
 		if err := db.CreateTable(&Message{}).Error; err != nil {
 			panic(err)

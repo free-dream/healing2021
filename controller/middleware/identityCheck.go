@@ -12,13 +12,13 @@ func IdentityCheck() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		rUrl := c.Request.URL.Path
 		session := sessions.Default(c)
-		token := session.Get("user")
+		openid := session.Get("openid")
 
 		if startWith(rUrl, "/auth") || startWith(rUrl, "/wx") || startWith(rUrl, "/api/broadcast") {
 			c.Next()
 			return
 		}
-		if token == nil {
+		if openid == nil {
 			if startWith(rUrl, "/api") {
 				c.JSON(401, e.ErrMsgResponse{Message: "fail to authenticate"})
 				c.Abort()

@@ -16,6 +16,7 @@ type Prize struct {
 
 func PrizeInit() {
 	db := setting.MysqlConn()
+	setting.TimeSetting("prize")
 	if !db.HasTable(&Prize{}) {
 		if err := db.CreateTable(&Prize{}).Error; err != nil {
 			panic(err)

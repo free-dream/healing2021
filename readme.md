@@ -6,7 +6,7 @@
 
 ## 1.1 授权
 
-GET /auth/jump2[?redirect={encoded_uri}] HTTP/1.1
+GET /auth  HTTP/1.1
 
 成功：
 
@@ -63,9 +63,11 @@ POST /user HTTP/1.1
 
 Content-Type: application/json
 
-200 OK
+200 OK3
+
 ```json
 {
+ 
   "nickname": "string",  
   "real_name": "string", //选填
   "phone_number": "string", //选填
@@ -101,8 +103,8 @@ Content-Type: application/json
     "avatar": "string" //头像url,
     "nickname": "string",
     "avatar_visible": int,     	// 1：隐藏头像，0：不隐藏
-    "phone_search": int,     	// 1：允许通过手机号查找，0：不允许
-    "real_name_search": int,      	// 1：允许通过姓名查找，0：不允许
+    "phone_search": int,     	// 0：允许通过手机号查找，1：不允许
+    "real_name_search": int,      	// 0：允许通过姓名查找，1：不允许
     "signature": "string"  		//个性签名（可不填）
 }
 ```
@@ -135,24 +137,24 @@ Content-Type: application/json
   "mySelections": {
     "model": "string" //模块名 治愈或是投递箱
     "song_name": "string",
-    "post_time": "string", //"yyyy-mm-dd
+    "creat_at": "string", //"yyyy-mm-dd
     "anonymous": int, //1:匿名 2:不匿名
     "healingId": int, //所点歌对应的治愈模块id
   },
   "mySongs": {
     "model": "string" //模块名 治愈或是投递箱
-    "post_time": "string",
+    "creat_at": "string",
     "song_name": "string",
   },
   "myLikes": {
     "model": "string",
-    "post_time": "string",
+    "creat_at": "string",
     "song_name": "string",
     "likeId": int, //对应点赞的id
     "likeNum": int //对应点赞数
   },
   "moments": {
-    "post_time": "string",
+    "creat_at": "string",
     "state": "string", //状态:摸鱼
     "content": "string", //动态内容
     "momentId": int, //对应动态的id
@@ -228,7 +230,7 @@ Content-Type: application/json
 ```json
 {
   "statusCode": 401,
-  "message": "parameter error"
+  "message": "param error"
 }
 ```
 
@@ -293,33 +295,7 @@ Content-Type: application/json
 ```json
 {
   "statusCode": 401,
-  "message": "parameter error"
-}
-```
-
-## 2.7 获取二维码
-GET /QR_code HTTP/1.1
-
-Query
-```json
-{
-  "userId": int,//发起请求的用户id
-  "songId": int,//对应歌曲id
-}
-```
-成功：
-
-```json
-{
-  "QR_code": "string",//二维码url
-}
-```
-失败:
-
-```json
-{
-  "statusCode": 401,
-  "message": "parameter error"
+  "message": "param error"
 }
 ```
 

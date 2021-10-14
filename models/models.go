@@ -12,6 +12,8 @@ func TableInit() {
 	statements.LotteryInit()
 	statements.MessageInit()
 	statements.MomentInit()
+	statements.MomentCommentInit()
+	statements.MomentLikeInit()
 	statements.PrizeInit()
 	statements.SelectionInit()
 	statements.SongInit()

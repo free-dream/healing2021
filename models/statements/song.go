@@ -16,6 +16,7 @@ type Song struct {
 
 func SongInit() {
 	db := setting.MysqlConn()
+	setting.TimeSetting("song")
 	if !db.HasTable(&Song{}) {
 		if err := db.CreateTable(&Song{}).Error; err != nil {
 			panic(err)
