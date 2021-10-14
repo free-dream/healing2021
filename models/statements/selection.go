@@ -7,7 +7,7 @@ import (
 )
 
 type Selection struct {
-	gorm.Model
+	*gorm.Model
 	SongName string `gorm:"default:''"`
 	Remark   string
 	Language string `gorm:"default:''"`
@@ -19,6 +19,7 @@ type Selection struct {
 
 func SelectionInit() {
 	db := setting.MysqlConn()
+	setting.TimeSetting("selection")
 	if !db.HasTable(&Selection{}) {
 		if err := db.CreateTable(&Selection{}).Error; err != nil {
 			panic(err)

@@ -14,7 +14,6 @@ func init() {
 	password := tools.GetConfig("mysql", "password")
 	port := tools.GetConfig("mysql", "port")
 	dbInfo := user + ":" + password + "@tcp(" + port + ")/" + dbName + "?charset=utf8mb4&parseTime=True&loc=Local&timeout=10s"
-
 	//connect
 	var err error
 	DB, err = gorm.Open("mysql", dbInfo)
@@ -44,4 +43,13 @@ func MysqlConnTest() {
 
 func MysqlConn() *gorm.DB {
 	return DB
+}
+
+func TimeSetting(string) {
+	db := MysqlConn()
+	//插入时自动更新created_at字段
+	db.Exec("ALTER TABLE " + " MODIFY created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL")
+	//更新时自动更新updated_at字段
+	db.Exec("ALTER TABLE " + "MODIFY updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL;")
+
 }

@@ -19,6 +19,7 @@ type Cover struct {
 
 func CoverInit() {
 	db := setting.MysqlConn()
+	setting.TimeSetting("cover")
 	if !db.HasTable(&Cover{}) {
 		if err := db.CreateTable(&Cover{}).Error; err != nil {
 			panic(err)

@@ -19,6 +19,7 @@ type Classic struct {
 
 func ClassicInit() {
 	db := setting.MysqlConn()
+	setting.TimeSetting("classic")
 	if !db.HasTable(&Classic{}) {
 		if err := db.CreateTable(&Classic{}).Error; err != nil {
 			panic(err)

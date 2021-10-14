@@ -15,6 +15,7 @@ type CoverLike struct {
 
 func CoverLikeInit() {
 	db := setting.MysqlConn()
+	setting.TimeSetting("cover_like")
 	if !db.HasTable(&CoverLike{}) {
 		if err := db.CreateTable(&CoverLike{}).Error; err != nil {
 			panic(err)
