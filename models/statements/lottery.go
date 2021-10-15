@@ -8,7 +8,7 @@ import (
 )
 
 type Lottery struct {
-	*gorm.Model
+	gorm.Model
 	UserId      int     `gorm:"default:-1"`
 	Name        string  `gorm:"default:''"`
 	Picture     string  `gorm:"default:''"`
@@ -17,6 +17,7 @@ type Lottery struct {
 
 func LotteryInit() {
 	db := setting.MysqlConn()
+
 	if !db.HasTable(&Lottery{}) {
 		if err := db.CreateTable(&Lottery{}).Error; err != nil {
 			panic(err)
@@ -26,4 +27,5 @@ func LotteryInit() {
 		db.AutoMigrate(&Lottery{})
 		fmt.Println("Table Lottery has existed")
 	}
+	setting.TimeSetting("lottery")
 }

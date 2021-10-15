@@ -2,6 +2,13 @@ package router
 
 import (
 	"encoding/gob"
+	"io"
+	"log"
+	"os"
+	"time"
+
+	"git.100steps.top/100steps/healing2021_be/controller"
+	"git.100steps.top/100steps/healing2021_be/controller/auth"
 	"git.100steps.top/100steps/healing2021_be/controller/childhood"
 	"git.100steps.top/100steps/healing2021_be/controller/middleware"
 	"git.100steps.top/100steps/healing2021_be/controller/playground"
@@ -10,9 +17,6 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
-	"io"
-	"log"
-	"os"
 )
 
 var store redis.Store
@@ -32,8 +36,8 @@ func SetupRouter() *gin.Engine {
 	gin.DefaultWriter = io.MultiWriter(f)
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
-	//r.Use(middleware.Timeout(time.Minute))
-
+	r.Use(middleware.Timeout(time.Minute))
+	r.Use(middleware.Cors())
 	// 注册sessions组件，使用redis作为驱动
 	gob.Register(tools.RedisUser{})
 	var err error
@@ -43,8 +47,8 @@ func SetupRouter() *gin.Engine {
 	}
 	r.Use(sessions.Sessions("healing2021_session", store))
 
-	if tools.IsDebug() {
-		r.Use(middleware.Cors())
+	if !tools.IsDebug() {
+		r.Use(middleware.IdentityCheck())
 	}
 
 	// ping 测试
@@ -52,10 +56,23 @@ func SetupRouter() *gin.Engine {
 		ctx.JSON(200, e.ErrMsgResponse{Message: "pong"})
 		return
 	})
+	//授权路由
+	if tools.IsDebug() {
+		r.GET(test_prefix+"/auth", auth.FakeLogin)
+	} else {
+		r.GET(test_prefix+"/auth", auth.WechatUser)
+	}
 
 	// 业务路由
-	api := r.Group("/api")
+	api := r.Group(test_prefix + "/api")
+	//中间件验证
 
+	//user 模块
+	api.POST("/user", controller.Register)
+	api.PUT("/user", controller.Updater)
+	api.GET("/user", controller.Fetcher)
+	api.POST("/background", controller.Refresher)
+	api.GET("/callee", controller.GetOther)
 	// childhood 模块
 	api.GET("/childhood/rank", childhood.GetRank)
 	api.GET("/childhood/list", childhood.GetList)

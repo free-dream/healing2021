@@ -8,7 +8,7 @@ import (
 )
 
 type Prize struct {
-	*gorm.Model
+	gorm.Model
 	UserId int       `gorm:"default:0"`
 	Prize  int       `gorm:"default:0"`
 	Date   time.Time `gorm:"default:null"`
@@ -16,6 +16,7 @@ type Prize struct {
 
 func PrizeInit() {
 	db := setting.MysqlConn()
+
 	if !db.HasTable(&Prize{}) {
 		if err := db.CreateTable(&Prize{}).Error; err != nil {
 			panic(err)
@@ -25,4 +26,5 @@ func PrizeInit() {
 		db.AutoMigrate(&Prize{})
 		fmt.Println("Table prize has existed")
 	}
+	setting.TimeSetting("prize")
 }

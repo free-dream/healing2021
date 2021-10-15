@@ -7,7 +7,7 @@ import (
 )
 
 type Classic struct {
-	*gorm.Model
+	gorm.Model
 	Remark   string `gorm:"default:''"`
 	SongName string `gorm:"default:''"`
 	Icon     string `gorm:"default:''"`
@@ -19,6 +19,7 @@ type Classic struct {
 
 func ClassicInit() {
 	db := setting.MysqlConn()
+
 	if !db.HasTable(&Classic{}) {
 		if err := db.CreateTable(&Classic{}).Error; err != nil {
 			panic(err)
@@ -28,4 +29,5 @@ func ClassicInit() {
 		db.AutoMigrate(&Classic{})
 		fmt.Println("Table Classic existed")
 	}
+	setting.TimeSetting("classic")
 }
