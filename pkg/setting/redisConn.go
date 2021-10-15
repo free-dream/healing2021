@@ -1,10 +1,15 @@
 package setting
 
 import (
+	"strconv"
+
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"github.com/go-redis/redis"
-	"strconv"
 )
+
+type RedisCli struct {
+	redis *redis.Client
+}
 
 var RedisClient *redis.Client
 

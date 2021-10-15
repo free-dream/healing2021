@@ -1,4 +1,14 @@
-package middle
+package sandwich
+
+import (
+	"git.100steps.top/100steps/healing2021_be/pkg/setting"
+)
+
+//init初始化
+func init() {
+	mysql := setting.MysqlConn()
+	redis := setting.RedisConn()
+}
 
 //redis mail
 type mail struct {
@@ -14,6 +24,7 @@ type middle struct {
 	counter int
 }
 
+//类型断言，用于对储存数据塑形
 func valueCheckInt(value interface{}) (int, bool) {
 	if data, ok := value.(int); ok {
 		return data, ok
@@ -21,7 +32,6 @@ func valueCheckInt(value interface{}) (int, bool) {
 		return 0, false
 	}
 }
-
 func valueCheckString(value interface{}) (string, bool) {
 	if data, ok := value.(string); ok {
 		return data, ok
