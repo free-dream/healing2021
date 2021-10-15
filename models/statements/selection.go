@@ -7,7 +7,7 @@ import (
 )
 
 type Selection struct {
-	*gorm.Model
+	gorm.Model
 	SongName string `gorm:"default:''"`
 	Remark   string
 	Language string `gorm:"default:''"`

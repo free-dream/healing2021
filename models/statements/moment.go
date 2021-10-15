@@ -7,7 +7,7 @@ import (
 )
 
 type Moment struct {
-	*gorm.Model
+	gorm.Model
 	Content string `gorm:"default:''"`
 	SongId  int    `gorm:"default:0"`
 	States  string `gorm:"default:''"`

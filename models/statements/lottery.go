@@ -8,7 +8,7 @@ import (
 )
 
 type Lottery struct {
-	*gorm.Model
+	gorm.Model
 	UserId      int     `gorm:"default:-1"`
 	Name        string  `gorm:"default:''"`
 	Picture     string  `gorm:"default:''"`

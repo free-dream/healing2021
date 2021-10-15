@@ -7,7 +7,7 @@ import (
 )
 
 type MomentComment struct {
-	*gorm.Model
+	gorm.Model
 	UserId   int `gorm:"default:0"`
 	MomentId int `gorm:"default:0"`
 	Comment  int `gorm:"default:0"`

@@ -7,7 +7,7 @@ import (
 )
 
 type Message struct {
-	*gorm.Model
+	gorm.Model
 	SenderId int `gorm:"default:0"`
 	TakerId  int `gorm:"default:0"`
 	Content  int `gorm:"default:0"`

@@ -7,7 +7,7 @@ import (
 )
 
 type Task struct {
-	*gorm.Model
+	gorm.Model
 	Text   string `gorm:"default:''"`
 	Target int    `gorm:"default:0"`
 }

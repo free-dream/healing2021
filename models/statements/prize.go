@@ -8,7 +8,7 @@ import (
 )
 
 type Prize struct {
-	*gorm.Model
+	gorm.Model
 	UserId int       `gorm:"default:0"`
 	Prize  int       `gorm:"default:0"`
 	Date   time.Time `gorm:"default:null"`

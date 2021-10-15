@@ -7,7 +7,7 @@ import (
 )
 
 type Classic struct {
-	*gorm.Model
+	gorm.Model
 	Remark   string `gorm:"default:''"`
 	SongName string `gorm:"default:''"`
 	Icon     string `gorm:"default:''"`

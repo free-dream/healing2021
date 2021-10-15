@@ -7,7 +7,7 @@ import (
 )
 
 type Praise struct {
-	*gorm.Model
+	gorm.Model
 	CoverId         int `gorm:"default:0"`
 	UserId          int `gorm:"default:0"`
 	IsLiked         int `gorm:"default:0"`

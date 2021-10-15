@@ -7,7 +7,7 @@ import (
 )
 
 type Cover struct {
-	*gorm.Model
+	gorm.Model
 	UserId      int    `gorm:"default:0"`
 	Avatar      string `gorm:"default:''"`
 	SelectionId string `gorm:"default:''"`

@@ -7,7 +7,7 @@ import (
 )
 
 type Advertisement struct {
-	*gorm.Model
+	gorm.Model
 	Url     string `gorm:"default:''"`
 	Address string `gorm:"default:''"`
 	Weight  int    `gorm:"default:0"`

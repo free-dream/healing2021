@@ -7,7 +7,7 @@ import (
 )
 
 type TaskTable struct {
-	*gorm.Model
+	gorm.Model
 	TaskId  int `gorm:"default:0"`
 	UserId  int `gorm:"default:0"`
 	Check   int `gorm:"default:0"`

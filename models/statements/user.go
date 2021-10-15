@@ -7,7 +7,7 @@ import (
 )
 
 type User struct {
-	*gorm.Model
+	gorm.Model
 	Openid         string `gorm:"default: ''"`
 	Nickname       string `gorm:"default: ''"`
 	RealName       string `gorm:"default: ''"`
