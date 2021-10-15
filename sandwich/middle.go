@@ -10,7 +10,6 @@ type mail struct {
 	key      string
 	value    interface{}
 	mailtype string
-	next     *mail
 }
 
 //sqlHandler主体
@@ -19,9 +18,10 @@ type Middle struct {
 }
 
 //default下默认mailbox长度为10
-func Default() {
+func Default() *Middle {
 	middle := new(Middle)
 	middle.mailbox = make(chan *mail, 10)
+	return middle
 }
 
 func NewMiddle(mailboxlen int, tableboxlen int) *Middle {
@@ -58,7 +58,7 @@ func (middle *Middle) Update() {
 				//
 			}
 		default:
-			time.Sleep(1)
+			time.Sleep(time.Second * 1)
 		}
 	}
 }
