@@ -1,14 +1,9 @@
 package sandwich
 
 import (
-	"git.100steps.top/100steps/healing2021_be/pkg/setting"
+	"fmt"
+	"time"
 )
-
-//init初始化
-func init() {
-	mysql := setting.MysqlConn()
-	redis := setting.RedisConn()
-}
 
 //redis mail
 type mail struct {
@@ -18,33 +13,36 @@ type mail struct {
 	next     *mail
 }
 
+type table struct{}
+
 //sqlHandler主体
-type middle struct {
-	mailbox *mail
-	counter int
+type Middle struct {
+	mailbox  chan *mail
+	tablebox chan *table
 }
 
-//类型断言，用于对储存数据塑形
-func valueCheckInt(value interface{}) (int, bool) {
-	if data, ok := value.(int); ok {
-		return data, ok
-	} else {
-		return 0, false
-	}
-}
-func valueCheckString(value interface{}) (string, bool) {
-	if data, ok := value.(string); ok {
-		return data, ok
-	} else {
-		return "", false
-	}
-}
+//将redis拆包成对应的mysql表数据
+func (mail *mail) toSql() {}
 
 //sql缓存到redis
-func (middle *middle) cache() {}
+func (middle *Middle) cache() {}
 
-//redis持久化到sql
-func (middle *middle) update() {
-	//读取msg列表,提取对应的model
-	//上传model
+//redis持久化到sql,休眠1s后
+func (middle *Middle) Update() {
+	for {
+		select {
+		case mail := <-middle.mailbox:
+			if value, ok := mail.value.(int); ok {
+				mail.toSql()
+				fmt.Println(value)
+			} else if value, ok := mail.value.(string); ok {
+				mail.toSql()
+				fmt.Println(value)
+			}
+		case table := <-middle.mailbox:
+			fmt.Println(table)
+		default:
+			time.Sleep(1)
+		}
+	}
 }
