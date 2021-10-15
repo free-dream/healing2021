@@ -7,10 +7,6 @@ import (
 	"github.com/go-redis/redis"
 )
 
-type RedisCli struct {
-	redis *redis.Client
-}
-
 var RedisClient *redis.Client
 
 func init() {
