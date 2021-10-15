@@ -14,7 +14,7 @@ type Task struct {
 
 func TaskInit() {
 	db := setting.MysqlConn()
-	setting.TimeSetting("task")
+
 	if !db.HasTable(&Task{}) {
 		if err := db.CreateTable(&Task{}).Error; err != nil {
 			panic(err)
@@ -24,4 +24,5 @@ func TaskInit() {
 		db.AutoMigrate(&Task{})
 		fmt.Println("Table Task has existed")
 	}
+	setting.TimeSetting("task")
 }

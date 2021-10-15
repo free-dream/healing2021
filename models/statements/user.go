@@ -26,7 +26,7 @@ type User struct {
 
 func UserInit() {
 	db := setting.MysqlConn()
-	setting.TimeSetting("user")
+
 	if !db.HasTable(&User{}) {
 		if err := db.CreateTable(&User{}).Error; err != nil {
 			panic(err)
@@ -36,4 +36,5 @@ func UserInit() {
 		db.AutoMigrate(&User{})
 		fmt.Println("Table User has existed")
 	}
+	setting.TimeSetting("user")
 }

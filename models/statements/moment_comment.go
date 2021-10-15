@@ -15,7 +15,7 @@ type MomentComment struct {
 
 func MomentCommentInit() {
 	db := setting.MysqlConn()
-	setting.TimeSetting("moment_comment")
+
 	if !db.HasTable(&MomentComment{}) {
 		if err := db.CreateTable(&MomentComment{}).Error; err != nil {
 			panic(err)
@@ -25,4 +25,5 @@ func MomentCommentInit() {
 		db.AutoMigrate(&MomentComment{})
 		fmt.Println("Table MomentComment has existed")
 	}
+	setting.TimeSetting("moment_comment")
 }

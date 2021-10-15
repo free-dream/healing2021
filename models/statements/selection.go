@@ -19,7 +19,7 @@ type Selection struct {
 
 func SelectionInit() {
 	db := setting.MysqlConn()
-	setting.TimeSetting("selection")
+
 	if !db.HasTable(&Selection{}) {
 		if err := db.CreateTable(&Selection{}).Error; err != nil {
 			panic(err)
@@ -29,4 +29,5 @@ func SelectionInit() {
 		db.AutoMigrate(&Selection{})
 		fmt.Println("Table Selection has existed")
 	}
+	setting.TimeSetting("selection")
 }
