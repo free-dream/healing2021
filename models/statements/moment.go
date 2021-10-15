@@ -8,10 +8,13 @@ import (
 
 type Moment struct {
 	gorm.Model
-	Content string `gorm:"default:''"`
-	SongId  int    `gorm:"default:0"`
-	States  string `gorm:"default:''"`
-	Picture string `gorm:"default:''"`
+	UserId   int    `gorm:"default:0"`
+	Content  string `gorm:"default:''"`
+	SongName string `gorm:"default:''"`
+	SongId   int    `gorm:"default:0"`
+	State    string `gorm:"default:''"`
+	Picture  string `gorm:"default:''"`
+	LikeNum  int    `gorm:"default:0"`
 }
 
 func MomentInit() {

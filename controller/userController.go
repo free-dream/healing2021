@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"git.100steps.top/100steps/healing2021_be/models"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -20,8 +19,8 @@ func Register(ctx *gin.Context) {
 		})
 		return
 	}
-	err1, err2 := models.CreateUser(&user)
-	if err1 != nil {
+	err, err2 := models.CreateUser(&user)
+	if err != nil {
 		ctx.JSON(403, gin.H{
 			"message": "昵称已存在，无法注册",
 		})
@@ -39,19 +38,21 @@ func Updater(ctx *gin.Context) {
 	openid := session.Get("openid").(string)
 	user := models.User{}
 	err := ctx.ShouldBind(&user)
-	fmt.Println(openid)
-
 	if err != nil {
-		panic(err)
-		ctx.JSON(403, gin.H{
+		ctx.JSON(401, gin.H{
 			"message": "修改失败",
+			"error":   err,
 		})
 		return
 	}
-	err1 := models.UpdateUser(&user, openid)
-	if err1 != nil {
-		panic(err1)
-		ctx.JSON(200, "OK")
+	err = models.UpdateUser(&user, openid)
+	if err != nil {
+		ctx.JSON(403, gin.H{
+			"message": "修改失败",
+			"error":   err,
+		})
+		return
+
 	}
 
 }

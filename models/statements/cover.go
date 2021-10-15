@@ -11,7 +11,7 @@ type Cover struct {
 	UserId      int    `gorm:"default:0"`
 	Avatar      string `gorm:"default:''"`
 	SelectionId string `gorm:"default:''"`
-	NickName    string `gorm:"default:''"`
+	SongName    string `gorm:"default:''"`
 	ClassicId   int    `gorm:"default:0"`
 	Likes       int    `gorm:"default:0"`
 	File        string `gorm:"default:''"`
