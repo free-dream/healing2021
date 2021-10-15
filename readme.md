@@ -1227,6 +1227,8 @@ GET /dynamics/list/{method}  HTTP1.1
 
 当选用的 method 为 "search" 时,在 url 后加上 ?keyword=xxx 即可拉取含有关键字的 状态、歌曲名 的动态列表
 
+为实现分页功能（10条动态为一页），url 后**必须**加上 ?page=xx 即可取得第 xx 页的动态列表（page=0为第一页）
+
 成功时：
 
 HTTP/1.1 200 OK
@@ -1239,7 +1241,6 @@ Content-Type: application/json
         "dynamics_id": integer,
         "content": string,								// 动态的内容
         "created_at": timestamp,
-        "img" : [string(url)...],						// 多张图片的 url 地址，这里在展示时应该只用得上一张
         "song" : string,								// 要分享的歌名
         "lauds" : integer,								// 动态的点赞数
         "lauded": integer(0/1),							// 当前用户是否点赞该动态
@@ -1273,7 +1274,6 @@ Content-Type: application/json
 ```js
 {
     "content": string,								// 动态的内容
-    "img" : [string(url)...],						// 上传的多张图片的url
     "song" : string,								// 要分享的歌名
     "status" : ["status1", "status2" ...]			// 状态列表 元素都是string
 }
@@ -1306,7 +1306,6 @@ Content-Type: application/json
     "dynamics_id": integer,
     "content": string,								// 动态的内容
     "created_at": timestamp,
-    "img" : [string(url)...],						// 多张图片的 url 地址
     "song" : string,								// 要分享的歌名
     "lauds" : integer,								// 动态的点赞数
     "lauded": integer(0/1),							// 当前用户是否点赞该动态

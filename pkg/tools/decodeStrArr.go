@@ -4,7 +4,7 @@ import "strings"
 
 const gap = "#$%%$#"
 
-func EncodeStrArr(input []string)  string{
+func EncodeStrArr(input []string) string {
 	var ret string
 
 	for _, strTmp := range input {
@@ -14,7 +14,7 @@ func EncodeStrArr(input []string)  string{
 	return ret
 }
 
-func DecodeStrArr(input string)  []string{
+func DecodeStrArr(input string) []string {
 	ret := strings.Split(input, gap)
 	return ret
 }

@@ -73,7 +73,8 @@ thumbnail可以通过url的变换来获取，但暂时保留thumbnail字段
 | id        | int          | 自增主键 |
 | post_time | timestamp()  |          |
 | content   | varchar(255) |          |
-| song_id   | int          |          |
+| user_id   | int      |    发布动态的用户id          |
+| song_name | varchar(255) |          |
 | states    | varchar(255) | 状态     |
 | picture   | varchar(255) | 图片url  |
 

@@ -8,9 +8,9 @@ import (
 
 type MomentLike struct {
 	*gorm.Model
-	UserId  int    `gorm:"default:0"`
-	MomentId  int    `gorm:"default:0"`
-	IsLike  int    `gorm:"default:0"`
+	UserId   int `gorm:"default:0"`
+	MomentId int `gorm:"default:0"`
+	IsLike   int `gorm:"default:0"`
 }
 
 func MomentLikeInit() {

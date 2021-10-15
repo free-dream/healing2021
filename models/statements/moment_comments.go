@@ -8,9 +8,9 @@ import (
 
 type MomentComment struct {
 	*gorm.Model
-	UserId  int    `gorm:"default:0"`
-	MomentId  int    `gorm:"default:0"`
-	Comment  string    `gorm:"default:''"`
+	UserId   int    `gorm:"default:0"`
+	MomentId int    `gorm:"default:0"`
+	Comment  string `gorm:"default:''"`
 }
 
 func MomentCommentInit() {
