@@ -50,7 +50,7 @@ func GetMomentList(ctx *gin.Context) {
 		UserId := tools.GetUser(ctx).ID // 获取当前用户 id
 		TmpMoment.Lauded = dao.HaveMLauded(int(UserId), TmpMoment.DynamicsId)
 		TmpMoment.Comments = dao.CountCommentsById(TmpMoment.DynamicsId)
-		TmpMoment.Status = tools.DecodeStrArr(OneMoment.States)
+		TmpMoment.Status = tools.DecodeStrArr(OneMoment.State)
 
 		User, ok := dao.GetUserById(OneMoment.UserId)
 		if !ok {
@@ -82,7 +82,7 @@ func PostMoment(ctx *gin.Context) {
 	Moment.SongName = NewMoment.Song
 	UserId := tools.GetUser(ctx).ID // 获取当前用户 id
 	Moment.UserId = int(UserId)
-	Moment.States = tools.EncodeStrArr(NewMoment.Status)
+	Moment.State = tools.EncodeStrArr(NewMoment.Status)
 
 	// 存入数据库
 	if ok := dao.CreateMoment(Moment); !ok {
@@ -124,7 +124,7 @@ func GetMomentDetail(ctx *gin.Context) {
 	UserId := tools.GetUser(ctx).ID // 获取当前用户 id
 	MomentDetail.Lauded = dao.HaveMLauded(int(UserId), MomentDetail.DynamicsId)
 	MomentDetail.Comments = dao.CountCommentsById(MomentDetail.DynamicsId)
-	MomentDetail.Status = tools.DecodeStrArr(Moment.States)
+	MomentDetail.Status = tools.DecodeStrArr(Moment.State)
 	User, ok_ := dao.GetUserById(Moment.UserId)
 	if !ok_ {
 		ctx.JSON(403, e.ErrMsgResponse{Message: "数据库查询失败"})
