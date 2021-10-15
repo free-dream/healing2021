@@ -18,7 +18,7 @@ thumbnail可以通过url的变换来获取，但暂时保留thumbnail字段
 | ------------ | ------------ | ----------------------------- |
 | id           | int          | 自增主键                      |
 | avatar       | varchar(255) | 头像url                       |
-| slogan       | varchar(255) | 个签，可选                    |
+| signature    | varchar(255) | 个签，可选                    |
 | nickname     | varchar(255) |                               |
 | real_name    | varchar(255) | 选填项                        |
 | phone_number | char(11)     | 选填项                        |

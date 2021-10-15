@@ -58,7 +58,8 @@ func Updater(ctx *gin.Context) {
 func Fetcher(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	openid := session.Get("openid").(string)
-	models.GetUser(openid)
+	user := models.GetUser(openid)
+	ctx.JSON(200, user)
 
 }
 func Refresher(ctx *gin.Context) {

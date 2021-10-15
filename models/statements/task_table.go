@@ -24,6 +24,6 @@ func TaskTableInit() {
 		fmt.Println("Table TaskTable has been created")
 	} else {
 		db.AutoMigrate(&TaskTable{})
-		fmt.Println("TaskTable User has existed")
+		fmt.Println("Table TaskTable has existed")
 	}
 }
