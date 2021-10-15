@@ -35,5 +35,6 @@ func (middle *middle) cache() {}
 
 //redis持久化到sql
 func (middle *middle) update() {
-
+	//读取msg列表,提取对应的model
+	//上传model
 }
