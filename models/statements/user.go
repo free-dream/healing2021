@@ -18,7 +18,7 @@ type User struct {
 	School         string `gorm:"default: ''"`
 	Points         int    `gorm:"default: 0"`
 	Record         int    `gorm:"default: 0"`
-	BackGround     string `gorm:"default: ''"`
+	Background     string `gorm:"default: ''"`
 	AvatarVisible  int    `gorm:"default:0"`
 	PhoneSearch    int    `gorm:"default:0"`
 	RealNameSearch int    `gorm:"default:0"`

@@ -75,11 +75,28 @@ func GetUser(openid string) interface{} {
 	return resp
 }
 
-func UpdateBackground() {
-
+func UpdateBackground(openid string, background string) error {
+	err := setting.DB.Table("user").Where("openid=?", openid).Update("background", background).Error
+	return err
 }
 
-func GetCallee() {
+func GetCallee(id int) interface{} {
+	user := statements.User{}
+	resp := make(map[string]interface{})
+	setting.DB.Table("user").Where("id=?", id).Scan(&user)
+	selection := statements.Selection{}
+	cover := statements.Cover{}
+	moment := statements.Moment{}
+
+	praise := statements.Praise{}
+
+	resp["message"] = user
+	resp["mySelections"] = get(user.ID, "selection", "user_id=?", selection)
+	resp["mySongs"] = get(user.ID, "cover", "user_id=?", cover)
+	resp["moments"] = get(user.ID, "moment", "user_id=?", moment)
+	resp["myLikes"] = getPraise(praise, user.ID)
+
+	return resp
 
 }
 
