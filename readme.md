@@ -118,7 +118,7 @@ Content-Type: application/json
 {"message" : "修改失败"}
 ```
 
-## 2.3 获取自己信息(用户个人页信息拉取)
+## 2.3 获取自己信息(我的点歌与个人信息)
 
 GET /user HTTP1.1
 
@@ -128,38 +128,50 @@ GET /user HTTP1.1
 
 Content-Type: application/json
 
+//index项不止一条，index从0开始
+
 ```json
 {
+   "message":{
   "avatar": "string",
   "nickname": "string",
   "school": "string",
   "signature": "string",
+},
   "mySelections": {
-    "model": "string" //模块名 治愈或是投递箱
+      index:{
+    "model": "string" ,//模块名 治愈或是投递箱
     "song_name": "string",
-    "creat_at": "string", //"yyyy-mm-dd
+    "created_at": "string", //"yyyy-mm-dd
     "anonymous": int, //1:匿名 2:不匿名
     "healingId": int, //所点歌对应的治愈模块id
+      }
   },
   "mySongs": {
-    "model": "string" //模块名 治愈或是投递箱
-    "creat_at": "string",
+      index:{
+    "model": "string" ,//模块名 治愈或是投递箱
+    "created_at": "string",
     "song_name": "string",
+      }
   },
   "myLikes": {
+      index:{
     "model": "string",
-    "creat_at": "string",
+    "created_at": "string",
     "song_name": "string",
-    "likeId": int, //对应点赞的id
+    "id": int, //对应点赞的id
     "likeNum": int //对应点赞数
+      }
   },
   "moments": {
-    "creat_at": "string",
+      index:{
+    "created_at": "string",
     "state": "string", //状态:摸鱼
     "content": "string", //动态内容
-    "momentId": int, //对应动态的id
+    "id": int, //对应动态的id
     "song_name": string, //分享的歌曲名
     "likeNum": int 
+      }
   }
 }
 ```
@@ -175,6 +187,7 @@ Content-Type: application/json
 ```
 
 ## 2.4 更新个人背景
+
 POST /background HTTP/1.1
 
 成功：

@@ -9,7 +9,7 @@ import (
 
 type Prize struct {
 	gorm.Model
-	UserId int       `gorm:"default:0"`
+	UserId int       `gorm:"default:0 index"`
 	Prize  int       `gorm:"default:0"`
 	Date   time.Time `gorm:"default:null"`
 }

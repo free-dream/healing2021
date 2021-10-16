@@ -12,7 +12,7 @@ type Selection struct {
 	Remark   string
 	Language string `gorm:"default:''"`
 	Style    string `gorm:"default:''"`
-	UserId   int    `gorm:"default:0"`
+	UserId   int    `gorm:"default:0 index"`
 	Avatar   string `gorm:"default:''"`
 	Module   string `gorm:"default:''"`
 }

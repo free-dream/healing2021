@@ -8,11 +8,11 @@ import (
 
 type Praise struct {
 	gorm.Model
-	CoverId         int `gorm:"default:0"`
-	UserId          int `gorm:"default:0"`
-	IsLiked         int `gorm:"default:0"`
-	MomentId        int `gorm:"default:0"`
-	MomentCommentId int `gorm:"default:0"`
+	CoverId         int `gorm:"default:0 index"`
+	UserId          int `gorm:"default:0 index"`
+	IsLiked         int `gorm:"default:0 index"`
+	MomentId        int `gorm:"default:0 index"`
+	MomentCommentId int `gorm:"default:0 index"`
 }
 
 func PraiseInit() {

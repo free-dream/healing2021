@@ -8,8 +8,8 @@ import (
 
 type Message struct {
 	gorm.Model
-	SenderId int `gorm:"default:0"`
-	TakerId  int `gorm:"default:0"`
+	SenderId int `gorm:"default:0 index"`
+	TakerId  int `gorm:"default:0 index"`
 	Content  int `gorm:"default:0"`
 }
 

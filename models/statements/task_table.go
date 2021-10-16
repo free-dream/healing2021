@@ -8,8 +8,8 @@ import (
 
 type TaskTable struct {
 	gorm.Model
-	TaskId  int `gorm:"default:0"`
-	UserId  int `gorm:"default:0"`
+	TaskId  int `gorm:"default:0 index"`
+	UserId  int `gorm:"default:0 index"`
 	Check   int `gorm:"default:0"`
 	Counter int `gorm:"default:0"`
 }
