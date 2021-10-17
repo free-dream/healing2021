@@ -100,7 +100,7 @@ func GetCallee(id int) interface{} {
 
 }
 
-//返回所有信息
+//返回所有信息采用扫描行的方式
 func get(value interface{}, tableName string, condition string, obj interface{}) interface{} {
 	index := 0
 	content := make(map[int]interface{})
