@@ -22,12 +22,22 @@ func HealingPageFetcher(ctx *gin.Context) {
 		return
 	}
 	resp, err := dao.GetHealingPage(selectionId)
-	/*if err != nil {
+	if err != nil {
 		panic(err)
 		return
-	}*/
+	}
 
 	ctx.JSON(200, gin.H{
 		"resp": resp,
 	})
+}
+
+func AdsPlayer(ctx *gin.Context) {
+	resp, err := dao.GetAds()
+	if err != nil {
+		panic(err)
+		return
+	}
+	ctx.JSON(200, resp)
+
 }

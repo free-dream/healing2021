@@ -26,7 +26,6 @@ func GetHealingPage(selectionId int) (interface{}, error) {
 	}*/
 	rows, err := setting.DB.Table("cover").Select("cover.user_id,cover.likes,user.nickname").Joins("left join user on user.id=cover.user_id").Where("cover.selection_id=?", selectionId).Rows()
 	if err != nil {
-		panic(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -35,7 +34,6 @@ func GetHealingPage(selectionId int) (interface{}, error) {
 	for rows.Next() {
 		err := setting.DB.ScanRows(rows, &content)
 		if err != nil {
-			panic(err)
 			return nil, err
 		}
 		content[index] = content
@@ -45,4 +43,24 @@ func GetHealingPage(selectionId int) (interface{}, error) {
 	resp["singer"] = content
 
 	return resp, err
+}
+
+//获取广告url
+func GetAds() (interface{}, error) {
+	rows, err := setting.DB.Table("advertisement").Rows()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	index := 0
+	var obj interface{}
+	content := make(map[int]interface{})
+	for rows.Next() {
+		setting.DB.ScanRows(rows, &obj)
+		content[index] = obj
+		index++
+	}
+
+	return content, err
+
 }

@@ -76,6 +76,7 @@ func SetupRouter() *gin.Engine {
 	api.GET("/callee", controller.GetOther)
 	//经典治愈 模块
 	api.GET("/healingPage", tradition.HealingPageFetcher)
+	api.GET("/healing/bulletin", tradition.AdsPlayer)
 	// childhood 模块
 	api.GET("/childhood/rank", childhood.GetRank)
 	api.GET("/childhood/list", childhood.GetList)
