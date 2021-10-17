@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"time"
 
-	uuid "github.com/satori/go.uuid"
-
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
+	"github.com/jinzhu/gorm"
+	uuid "github.com/satori/go.uuid"
 )
 
 var (
@@ -21,17 +21,26 @@ type mail struct {
 	mailtype string //点赞类型
 }
 
-//中间层主体
-type Middle struct {
-	mailbox chan *mail
+//table指向对应表
+type table struct {
+	tabletype *gorm.Model
+	request   string
 }
 
+//中间层主体
+type Middle struct {
+	mailbox  chan *mail
+	tablebox chan *table
+}
+
+//错误处理函数
 func errHandler(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
 
+//全局初始化
 func init() {
 	Sandwich = Default()
 }
@@ -55,11 +64,13 @@ func NewMiddle(mailboxlen int) *Middle {
 	return middle
 }
 
-func GenerateMail() *mail {
+//点赞的话生成一个mail传入channel
+func GenerateMail(mailtype string) *mail {
 	uuid := uuid.NewV4()
 	real := uuid.String()
 	return &mail{
-		key: real,
+		key:      real,
+		mailtype: mailtype,
 	}
 }
 
@@ -72,17 +83,14 @@ func GenerateMailTest() *mail {
 //将redis拆包成对应的mysql表数据并更新
 //redis:
 //key:uuid,value:[user_id,target_id] --->redis中的mail数据
-//key:user_id,value:target_id --->点赞查重，24h
+//key:user_id,value:target_id --->点赞查重，expile:24h
 func (mail *mail) ToSql() {
 	redisDb := setting.RedisClient
-
 	//提取数据
 	user_id, _ := strconv.Atoi(redisDb.LPop(mail.key).Val())
 	target_id, _ := strconv.Atoi(redisDb.LPop(mail.key).Val())
-
 	//判断写入
 	dao.UpdateLikesByID(user_id, target_id, mail.mailtype)
-
 }
 
 func (mail *mail) ToSqlTest() {
@@ -93,13 +101,12 @@ func (mail *mail) ToSqlTest() {
 	fmt.Println(data, data2)
 }
 
-//sql缓存到redis
-func (middle *Middle) cache() {}
-
 //优先对table更新
 func (middle *Middle) Update() {
 	for {
 		select {
+		// case table := <-middle.tablebox:
+		// 	 middle.Cache(table)
 		case mail := <-middle.mailbox:
 			mail.ToSqlTest()
 		default:
