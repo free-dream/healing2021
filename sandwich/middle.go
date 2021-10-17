@@ -3,24 +3,46 @@ package sandwich
 import (
 	"fmt"
 	"time"
+
+	uuid "github.com/satori/go.uuid"
+
+	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
 
-//redis mail
+var (
+	Sandwich *Middle
+)
+
+//redis mail,类型分为cover,momment,mommetn-comment
 type mail struct {
-	key      string
-	value    interface{}
-	mailtype string
+	key string //mailid
+	mailtype string //点赞类型
 }
 
-//sqlHandler主体
+//中间层主体
 type Middle struct {
 	mailbox chan *mail
 }
 
-//default下默认mailbox长度为100
+func errHandler(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+func init() {
+	Sandwich = Default()
+}
+
+func DummyRedisFile() {
+	Conn := setting.RedisConn()
+	Conn.RPush("test", "this is a dummy data")
+}
+
+//default下默认mailbox长度为200
 func Default() *Middle {
 	middle := new(Middle)
-	middle.mailbox = make(chan *mail, 10)
+	middle.mailbox = make(chan *mail, 200)
 	return middle
 }
 
@@ -31,8 +53,36 @@ func NewMiddle(mailboxlen int) *Middle {
 	return middle
 }
 
-//将redis拆包成对应的mysql表数据
-func (mail *mail) toSql() {}
+func GenerateMail() *mail {
+	uuid := uuid.NewV4()
+	real := uuid.String()
+	return &mail{
+		key: real,
+	}
+}
+
+func GenerateMailTest() *mail {
+	return &mail{
+		key: "test",
+	}
+}
+
+//将redis拆包成对应的mysql表数据并更新
+//redis:
+//key:uuid,value:[user_id,target_id] --->redis中的mail数据
+//key:user_id,value:target_id --->点赞查重，24h
+func (mail *mail) ToSqlTest() {
+	redisDb := setting.RedisClient
+	data := redisDb.LPop(mail.key).Val()
+	data2 := redisDb.LPop(mail.key).Val()
+	fmt.Println(1)
+	fmt.Println(data, data2)
+}
+
+func (mail *mail) ToSql(){
+	redisDb := setting.RedisClient
+	if mail.
+}
 
 //sql缓存到redis
 func (middle *Middle) cache() {}
@@ -42,17 +92,7 @@ func (middle *Middle) Update() {
 	for {
 		select {
 		case mail := <-middle.mailbox:
-			if value, ok := mail.value.(int); ok {
-				mail.toSql()
-				//
-				fmt.Println(value)
-				//
-			} else if value, ok := mail.value.(string); ok {
-				mail.toSql()
-				//
-				fmt.Println(value)
-				//
-			}
+			mail.ToSqlTest()
 		default:
 			time.Sleep(time.Second * 1)
 		}
