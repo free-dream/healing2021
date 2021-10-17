@@ -40,11 +40,6 @@ func (middle *Middle) cache() {}
 func (middle *Middle) Update() {
 	for {
 		select {
-		case table := <-middle.mailbox:
-			//
-			fmt.Println(table)
-			//
-			continue
 		case mail := <-middle.mailbox:
 			if value, ok := mail.value.(int); ok {
 				mail.toSql()
