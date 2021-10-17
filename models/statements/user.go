@@ -2,13 +2,14 @@ package statements
 
 import (
 	"fmt"
+
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"github.com/jinzhu/gorm"
 )
 
 type User struct {
 	gorm.Model
-	Openid         string `gorm:"default: '' index"`
+	Openid         string `gorm:"default: '';index"`
 	Nickname       string `gorm:"default: ''"`
 	RealName       string `gorm:"default: ''"`
 	Signature      string `gorm:"default: ''"`

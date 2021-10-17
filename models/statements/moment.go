@@ -9,10 +9,10 @@ import (
 
 type Moment struct {
 	gorm.Model
-	UserId      int    `gorm:"default:0 index"`
+	UserId      int    `gorm:"default:0;index"`
 	Content     string `gorm:"default:''"`
 	SongName    string `gorm:"default:''"`
-	SelectionId int    `gorm:"default:0 index"`
+	SelectionId int    `gorm:"default:0;index"`
 	State       string `gorm:"default:''"`
 	LikeNum     int    `gorm:"default:0"`
 }
