@@ -2,6 +2,11 @@ package router
 
 import (
 	"encoding/gob"
+	"io"
+	"log"
+	"os"
+	"time"
+
 	"git.100steps.top/100steps/healing2021_be/controller"
 	"git.100steps.top/100steps/healing2021_be/controller/auth"
 	"git.100steps.top/100steps/healing2021_be/controller/childhood"
@@ -12,10 +17,6 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
-	"io"
-	"log"
-	"os"
-	"time"
 )
 
 var store redis.Store

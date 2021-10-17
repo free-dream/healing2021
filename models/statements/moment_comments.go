@@ -8,21 +8,20 @@ import (
 
 type MomentComment struct {
 	*gorm.Model
-	UserId   int `gorm:"default:0"`
-	MomentId int `gorm:"default:0"`
-	Comment  int `gorm:"default:0"`
+	UserId   int    `gorm:"default:0 index"`
+	MomentId int    `gorm:"default:0 index"`
+	Comment  string `gorm:"default:''"`
 }
 
 func MomentCommentInit() {
 	db := setting.MysqlConn()
-	setting.TimeSetting("moment_comment")
-	if !db.HasTable(&MomentComment{}) {
-		if err := db.CreateTable(&MomentComment{}).Error; err != nil {
+	if !db.HasTable(&Moment{}) {
+		if err := db.CreateTable(&Moment{}).Error; err != nil {
 			panic(err)
 		}
 		fmt.Println("Table MomentComment has been created")
 	} else {
-		db.AutoMigrate(&MomentComment{})
+		db.AutoMigrate(&Moment{})
 		fmt.Println("Table MomentComment has existed")
 	}
 }

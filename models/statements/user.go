@@ -7,8 +7,8 @@ import (
 )
 
 type User struct {
-	*gorm.Model
-	Openid         string `gorm:"default: ''"`
+	gorm.Model
+	Openid         string `gorm:"default: '' index"`
 	Nickname       string `gorm:"default: ''"`
 	RealName       string `gorm:"default: ''"`
 	Signature      string `gorm:"default: ''"`
@@ -18,7 +18,7 @@ type User struct {
 	School         string `gorm:"default: ''"`
 	Points         int    `gorm:"default: 0"`
 	Record         int    `gorm:"default: 0"`
-	BackGround     string `gorm:"default: ''"`
+	Background     string `gorm:"default: ''"`
 	AvatarVisible  int    `gorm:"default:0"`
 	PhoneSearch    int    `gorm:"default:0"`
 	RealNameSearch int    `gorm:"default:0"`
@@ -26,7 +26,7 @@ type User struct {
 
 func UserInit() {
 	db := setting.MysqlConn()
-	setting.TimeSetting("user")
+
 	if !db.HasTable(&User{}) {
 		if err := db.CreateTable(&User{}).Error; err != nil {
 			panic(err)
@@ -36,4 +36,5 @@ func UserInit() {
 		db.AutoMigrate(&User{})
 		fmt.Println("Table User has existed")
 	}
+	setting.TimeSetting("user")
 }

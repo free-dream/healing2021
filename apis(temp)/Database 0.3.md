@@ -18,7 +18,7 @@ thumbnail可以通过url的变换来获取，但暂时保留thumbnail字段
 | ------------ | ------------ | ----------------------------- |
 | id           | int          | 自增主键                      |
 | avatar       | varchar(255) | 头像url                       |
-| slogan       | varchar(255) | 个签，可选                    |
+| signature    | varchar(255) | 个签，可选                    |
 | nickname     | varchar(255) |                               |
 | real_name    | varchar(255) | 选填项                        |
 | phone_number | char(11)     | 选填项                        |
@@ -41,47 +41,17 @@ thumbnail可以通过url的变换来获取，但暂时保留thumbnail字段
 | user_id        | int          | 点歌用户的id       |
 | module         | varchar(255) | 模块名             |
 
-### song(暂时保留)
-
-`若点歌项被删除但歌曲应属于唱歌用户所以不应被一起删除故不设置外键`	
-
-| 字段值       | 字段类型     | 说明           |
-| ------------ | ------------ | -------------- |
-| id           | int          | 自增主键       |
-| selection_id | int          | 所点歌曲对应id |
-| user_id      | int          | 唱歌用户id     |
-| song         | varchar(255) | 歌曲url        |
-| name         | varchar(255) | 歌曲名         |
-| likes        | int          |                |
-
-### song_like(暂时保留)
-
-| 字段值   | 字段类型 | 说明             |
-| -------- | -------- | ---------------- |
-| id       | int      | 自增主键         |
-| user_id  | int      | 点赞用户id       |
-| song_id  | int      | 外键             |
-| is_liked | int      | 0未赞,1赞(默认0) |
-
 ### moment
 
-| 字段值  | 字段类型     | 说明     |
-| ------- | ------------ | -------- |
-| id      | int          | 自增主键 |
-| likes   | int          |          |
-| content | varchar(255) |          |
-| song_id | int          |          |
-| states  | varchar(255) | 状态     |
-| picture | varchar(255) | 图片url  |
+| 字段值       | 字段类型     | 说明     |
+| ------------ | ------------ | -------- |
+| id           | int          | 自增主键 |
+| likes        | int          |          |
+| content      | varchar(255) |          |
+| selection_id | int          |          |
+| states       | varchar(255) | 状态     |
+| picture      | varchar(255) | 图片url  |
 
-### moment_like
-
-| 字段值    | 字段类型 | 说明         |
-| --------- | -------- | ------------ |
-| id        | int      | 自增主键     |
-| moment_id | int      | 动态id(外键) |
-| user_id   | int      |              |
-| is_liked  | int      |              |
 
 ### moment_comment
 
@@ -182,15 +152,18 @@ thumbnail可以通过url的变换来获取，但暂时保留thumbnail字段
 | classic_id | int          | 童年/原唱界面视图索引              |
 | likes      | int          | 点赞数，从redis持久化，初始为0     |
 | file       | varchar(255) | 录音文件存储url                    |
+| module     | int          | 1治愈系2童年                       |
 
-### cover_like
+### praise
 
-| 字段值   | 字段类型 | 说明                      |
-| -------- | -------- | ------------------------- |
-| id       | int      | 自增主键                  |
-| cover_id | int      | 动态id(外键)              |
-| user_id  | int      | 点赞用户的id              |
-| is_liked | int      | 点赞1/取消点赞0(保留功能) |
+| 字段值            | 字段类型 | 说明                      |
+| ----------------- | -------- | ------------------------- |
+| id                | int      | 自增主键                  |
+| cover_id          | int      | 动态id(外键)              |
+| user_id           | int      | 点赞用户的id              |
+| is_liked          | int      | 点赞1/取消点赞0(保留功能) |
+| moment_id         | int      |                           |
+| moment_comment_id | int      |                           |
 
 ### message
 

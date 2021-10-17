@@ -7,19 +7,20 @@ import (
 )
 
 type Cover struct {
-	*gorm.Model
-	UserId      int    `gorm:"default:0"`
+	gorm.Model
+	UserId      int    `gorm:"default:0 index"`
 	Avatar      string `gorm:"default:''"`
-	SelectionId string `gorm:"default:''"`
-	NickName    string `gorm:"default:''"`
-	ClassicId   int    `gorm:"default:0"`
+	SelectionId string `gorm:"default:''index"`
+	SongName    string `gorm:"default:''"`
+	ClassicId   int    `gorm:"default:0 index"`
 	Likes       int    `gorm:"default:0"`
 	File        string `gorm:"default:''"`
+	Module      int    `gorm:"default:0"`
 }
 
 func CoverInit() {
 	db := setting.MysqlConn()
-	setting.TimeSetting("cover")
+
 	if !db.HasTable(&Cover{}) {
 		if err := db.CreateTable(&Cover{}).Error; err != nil {
 			panic(err)
@@ -27,6 +28,7 @@ func CoverInit() {
 		fmt.Println("Table Cover has been created")
 	} else {
 		db.AutoMigrate(&Cover{})
-		fmt.Println("Table Cover existed")
+		fmt.Println("Table Cover has existed")
 	}
+	setting.TimeSetting("cover")
 }

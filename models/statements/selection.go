@@ -7,19 +7,19 @@ import (
 )
 
 type Selection struct {
-	*gorm.Model
+	gorm.Model
 	SongName string `gorm:"default:''"`
 	Remark   string
 	Language string `gorm:"default:''"`
 	Style    string `gorm:"default:''"`
-	UserId   int    `gorm:"default:0"`
+	UserId   int    `gorm:"default:0 index"`
 	Avatar   string `gorm:"default:''"`
 	Module   string `gorm:"default:''"`
 }
 
 func SelectionInit() {
 	db := setting.MysqlConn()
-	setting.TimeSetting("selection")
+
 	if !db.HasTable(&Selection{}) {
 		if err := db.CreateTable(&Selection{}).Error; err != nil {
 			panic(err)
@@ -29,4 +29,5 @@ func SelectionInit() {
 		db.AutoMigrate(&Selection{})
 		fmt.Println("Table Selection has existed")
 	}
+	setting.TimeSetting("selection")
 }

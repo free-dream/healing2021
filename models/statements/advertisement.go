@@ -7,7 +7,7 @@ import (
 )
 
 type Advertisement struct {
-	*gorm.Model
+	gorm.Model
 	Url     string `gorm:"default:''"`
 	Address string `gorm:"default:''"`
 	Weight  int    `gorm:"default:0"`
@@ -15,7 +15,7 @@ type Advertisement struct {
 
 func AdvertisementInit() {
 	db := setting.MysqlConn()
-	setting.TimeSetting("advertisement")
+
 	if !db.HasTable(&Advertisement{}) {
 		if err := db.CreateTable(&Advertisement{}).Error; err != nil {
 			panic(err)
@@ -25,4 +25,5 @@ func AdvertisementInit() {
 		db.AutoMigrate(&Advertisement{})
 		fmt.Println("Table Advertisement has existed")
 	}
+	setting.TimeSetting("advertisement")
 }

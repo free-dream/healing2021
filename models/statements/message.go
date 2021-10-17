@@ -7,15 +7,15 @@ import (
 )
 
 type Message struct {
-	*gorm.Model
-	SenderId int `gorm:"default:0"`
-	TakerId  int `gorm:"default:0"`
+	gorm.Model
+	SenderId int `gorm:"default:0 index"`
+	TakerId  int `gorm:"default:0 index"`
 	Content  int `gorm:"default:0"`
 }
 
 func MessageInit() {
 	db := setting.MysqlConn()
-	setting.TimeSetting("message")
+
 	if !db.HasTable(&Message{}) {
 		if err := db.CreateTable(&Message{}).Error; err != nil {
 			panic(err)
@@ -25,4 +25,5 @@ func MessageInit() {
 		db.AutoMigrate(&Message{})
 		fmt.Println("Table Message has existed")
 	}
+	setting.TimeSetting("message")
 }

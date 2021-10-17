@@ -118,7 +118,7 @@ Content-Type: application/json
 {"message" : "修改失败"}
 ```
 
-## 2.3 获取自己信息(用户个人页信息拉取)
+## 2.3 获取自己信息(我的点歌与个人信息)
 
 GET /user HTTP1.1
 
@@ -128,38 +128,50 @@ GET /user HTTP1.1
 
 Content-Type: application/json
 
+//index项不止一条，index从0开始
+
 ```json
 {
+   "message":{
   "avatar": "string",
   "nickname": "string",
   "school": "string",
   "signature": "string",
+},
   "mySelections": {
-    "model": "string" //模块名 治愈或是投递箱
+      index:{
+    "model": "string" ,//模块名 治愈或是投递箱
     "song_name": "string",
-    "creat_at": "string", //"yyyy-mm-dd
+    "created_at": "string", //"yyyy-mm-dd
     "anonymous": int, //1:匿名 2:不匿名
     "healingId": int, //所点歌对应的治愈模块id
+      }
   },
   "mySongs": {
-    "model": "string" //模块名 治愈或是投递箱
-    "creat_at": "string",
+      index:{
+    "model": "string" ,//模块名 治愈或是投递箱
+    "created_at": "string",
     "song_name": "string",
+      }
   },
   "myLikes": {
+      index:{
     "model": "string",
-    "creat_at": "string",
+    "created_at": "string",
     "song_name": "string",
-    "likeId": int, //对应点赞的id
+    "id": int, //对应点赞的id
     "likeNum": int //对应点赞数
+      }
   },
   "moments": {
-    "creat_at": "string",
+      index:{
+    "created_at": "string",
     "state": "string", //状态:摸鱼
     "content": "string", //动态内容
-    "momentId": int, //对应动态的id
+    "id": int, //对应动态的id
     "song_name": string, //分享的歌曲名
     "likeNum": int 
+      }
   }
 }
 ```
@@ -175,6 +187,7 @@ Content-Type: application/json
 ```
 
 ## 2.4 更新个人背景
+
 POST /background HTTP/1.1
 
 成功：
@@ -1203,6 +1216,8 @@ GET /dynamics/list/{method}  HTTP1.1
 
 当选用的 method 为 "search" 时,在 url 后加上 ?keyword=xxx 即可拉取含有关键字的 状态、歌曲名 的动态列表
 
+为实现分页功能（10条动态为一页），url 后**必须**加上 ?page=xx 即可取得第 xx 页的动态列表（page=0为第一页）
+
 成功时：
 
 HTTP/1.1 200 OK
@@ -1215,7 +1230,6 @@ Content-Type: application/json
         "dynamics_id": integer,
         "content": string,								// 动态的内容
         "created_at": timestamp,
-        "img" : [string(url)...],						// 多张图片的 url 地址，这里在展示时应该只用得上一张
         "song" : string,								// 要分享的歌名
         "lauds" : integer,								// 动态的点赞数
         "lauded": integer(0/1),							// 当前用户是否点赞该动态
@@ -1249,7 +1263,6 @@ Content-Type: application/json
 ```js
 {
     "content": string,								// 动态的内容
-    "img" : [string(url)...],						// 上传的多张图片的url
     "song" : string,								// 要分享的歌名
     "status" : ["status1", "status2" ...]			// 状态列表 元素都是string
 }
@@ -1282,7 +1295,6 @@ Content-Type: application/json
     "dynamics_id": integer,
     "content": string,								// 动态的内容
     "created_at": timestamp,
-    "img" : [string(url)...],						// 多张图片的 url 地址
     "song" : string,								// 要分享的歌名
     "lauds" : integer,								// 动态的点赞数
     "lauded": integer(0/1),							// 当前用户是否点赞该动态
