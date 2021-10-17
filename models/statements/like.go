@@ -2,13 +2,14 @@ package statements
 
 import (
 	"fmt"
+
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"github.com/jinzhu/gorm"
 )
 
 type Praise struct {
 	gorm.Model
-	CoverId         int `gorm:"default:0 index"`
+	CoverId         int `gorm:"default:-1 index"`
 	UserId          int `gorm:"default:0 index"`
 	IsLiked         int `gorm:"default:0 index"`
 	MomentId        int `gorm:"default:0 index"`

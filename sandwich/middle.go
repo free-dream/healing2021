@@ -17,14 +17,15 @@ type Middle struct {
 	mailbox chan *mail
 }
 
-//default下默认mailbox长度为10
+//default下默认mailbox长度为100
 func Default() *Middle {
 	middle := new(Middle)
 	middle.mailbox = make(chan *mail, 10)
 	return middle
 }
 
-func NewMiddle(mailboxlen int, tableboxlen int) *Middle {
+//自定义mailbox长度
+func NewMiddle(mailboxlen int) *Middle {
 	middle := new(Middle)
 	middle.mailbox = make(chan *mail, mailboxlen)
 	return middle
