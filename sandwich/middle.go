@@ -2,10 +2,12 @@ package sandwich
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	uuid "github.com/satori/go.uuid"
 
+	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
 
@@ -13,9 +15,9 @@ var (
 	Sandwich *Middle
 )
 
-//redis mail,类型分为cover,momment,mommetn-comment
+//redis mail,类型分为cover,moment,moment-comment
 type mail struct {
-	key string //mailid
+	key      string //mailid
 	mailtype string //点赞类型
 }
 
@@ -71,17 +73,24 @@ func GenerateMailTest() *mail {
 //redis:
 //key:uuid,value:[user_id,target_id] --->redis中的mail数据
 //key:user_id,value:target_id --->点赞查重，24h
+func (mail *mail) ToSql() {
+	redisDb := setting.RedisClient
+
+	//提取数据
+	user_id, _ := strconv.Atoi(redisDb.LPop(mail.key).Val())
+	target_id, _ := strconv.Atoi(redisDb.LPop(mail.key).Val())
+
+	//判断写入
+	dao.UpdateLikesByID(user_id, target_id, mail.mailtype)
+
+}
+
 func (mail *mail) ToSqlTest() {
 	redisDb := setting.RedisClient
 	data := redisDb.LPop(mail.key).Val()
 	data2 := redisDb.LPop(mail.key).Val()
 	fmt.Println(1)
 	fmt.Println(data, data2)
-}
-
-func (mail *mail) ToSql(){
-	redisDb := setting.RedisClient
-	if mail.
 }
 
 //sql缓存到redis
