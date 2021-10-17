@@ -2,6 +2,7 @@ package statements
 
 import (
 	"fmt"
+
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"github.com/jinzhu/gorm"
 )
@@ -12,7 +13,7 @@ type Selection struct {
 	Remark   string
 	Language string `gorm:"default:''"`
 	Style    string `gorm:"default:''"`
-	UserId   int    `gorm:"default:0 index"`
+	UserId   int    `gorm:"default:0;index"`
 	Avatar   string `gorm:"default:''"`
 	Module   string `gorm:"default:''"`
 }
