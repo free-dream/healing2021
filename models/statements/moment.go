@@ -12,7 +12,7 @@ type Moment struct {
 	UserId   int    `gorm:"default:0"`
 	Content  string `gorm:"default:''"`
 	SongName string `gorm:"default:''"`
-	SongId   int    `gorm:"default:0"`
+	SelectionId   int    `gorm:"default:0"`
 	State    string `gorm:"default:''"`
 	LikeNum  int    `gorm:"default:0"`
 }
