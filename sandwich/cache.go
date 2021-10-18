@@ -16,7 +16,7 @@ import (
 func CacheCovers(models []*statements.Cover, request string) {
 	redisDB := setting.RedisConn()
 	temp := make(map[string]interface{})
-	for _, data := range models {
+	for i, data := range models {
 		st := reflect.TypeOf(data)
 		sv := reflect.ValueOf(data)
 		for i := 0; i < st.NumField(); i++ {
