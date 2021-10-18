@@ -2,13 +2,14 @@ package statements
 
 import (
 	"fmt"
+
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"github.com/jinzhu/gorm"
 )
 
 type User struct {
 	gorm.Model
-	Openid         string `gorm:"default: ''"`
+	Openid         string `gorm:"default: '';index"`
 	Nickname       string `gorm:"default: ''"`
 	RealName       string `gorm:"default: ''"`
 	Signature      string `gorm:"default: ''"`
@@ -18,7 +19,7 @@ type User struct {
 	School         string `gorm:"default: ''"`
 	Points         int    `gorm:"default: 0"`
 	Record         int    `gorm:"default: 0"`
-	BackGround     string `gorm:"default: ''"`
+	Background     string `gorm:"default: ''"`
 	AvatarVisible  int    `gorm:"default:0"`
 	PhoneSearch    int    `gorm:"default:0"`
 	RealNameSearch int    `gorm:"default:0"`

@@ -9,7 +9,7 @@ import (
 
 type Lottery struct {
 	gorm.Model
-	UserId      int     `gorm:"default:-1"`
+	UserId      int     `gorm:"default:-1;index"`
 	Name        string  `gorm:"default:''"`
 	Picture     string  `gorm:"default:''"`
 	Possibility float64 `gorm:"default:0"`

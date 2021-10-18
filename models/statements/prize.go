@@ -2,14 +2,15 @@ package statements
 
 import (
 	"fmt"
+	"time"
+
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"github.com/jinzhu/gorm"
-	"time"
 )
 
 type Prize struct {
 	gorm.Model
-	UserId int       `gorm:"default:0"`
+	UserId int       `gorm:"default:0;index"`
 	Prize  int       `gorm:"default:0"`
 	Date   time.Time `gorm:"default:null"`
 }

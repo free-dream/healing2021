@@ -2,14 +2,15 @@ package statements
 
 import (
 	"fmt"
+
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"github.com/jinzhu/gorm"
 )
 
 type MomentComment struct {
 	*gorm.Model
-	UserId   int    `gorm:"default:0"`
-	MomentId int    `gorm:"default:0"`
+	UserId   int    `gorm:"default:0;index"`
+	MomentId int    `gorm:"default:0;index"`
 	Comment  string `gorm:"default:''"`
 }
 

@@ -2,17 +2,18 @@ package statements
 
 import (
 	"fmt"
+
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"github.com/jinzhu/gorm"
 )
 
 type Cover struct {
 	gorm.Model
-	UserId      int    `gorm:"default:0"`
+	UserId      int    `gorm:"default:0;index"`
 	Avatar      string `gorm:"default:''"`
-	SelectionId string `gorm:"default:''"`
+	SelectionId string `gorm:"default:'';index"`
 	SongName    string `gorm:"default:''"`
-	ClassicId   int    `gorm:"default:0"`
+	ClassicId   int    `gorm:"default:0;index"`
 	Likes       int    `gorm:"default:0"`
 	File        string `gorm:"default:''"`
 	Module      int    `gorm:"default:0"`
