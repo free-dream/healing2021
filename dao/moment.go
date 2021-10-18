@@ -103,7 +103,7 @@ func CountCommentsById(MomentId int) int {
 	MysqlDB := setting.MysqlConn()
 	// 用聚类函数
 	var Tot int
-	err := MysqlDB.Where("moment_id", MomentId).Count(&Tot).Error
+	err := MysqlDB.Model(statements.MomentComment{}).Where("moment_id", MomentId).Count(&Tot).Error
 	if err != nil {
 		return  -1
 	}

@@ -1218,7 +1218,7 @@ Content-Type: application/json
         "content": string,								// 动态的内容
         "created_at": timestamp,
         "song" : string,								// 要点歌的歌名
-        "SelectionId" : int                             // 点歌id
+        "SelectionId" : int,                             // 点歌id
         "lauds" : integer,								// 动态的点赞数
         "lauded": integer(0/1),							// 当前用户是否点赞该动态
         "comments" : integer,							// 动态的评论数

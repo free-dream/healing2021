@@ -1,6 +1,7 @@
 package playground
 
 import (
+	"fmt"
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
@@ -39,6 +40,8 @@ func GetMomentList(ctx *gin.Context) {
 		return
 	}
 
+	fmt.Println("11111111111111")
+
 	// 获取和整理其他所需信息，装进 response
 	for _, OneMoment := range AllMoment {
 		// 错误判断还没做
@@ -48,16 +51,20 @@ func GetMomentList(ctx *gin.Context) {
 		TmpMoment.Song = OneMoment.SongName
 		TmpMoment.SelectionId = OneMoment.SelectionId
 		TmpMoment.Lauds = dao.CountMLaudsById(TmpMoment.DynamicsId)
-		UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
-		TmpMoment.Lauded = dao.HaveMLauded(int(UserId), TmpMoment.DynamicsId)
+
+		//把缓存加进来之前注释的部分都用不了
+		//UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
+		//TmpMoment.Lauded = dao.HaveMLauded(int(UserId), TmpMoment.DynamicsId)
+
 		TmpMoment.Comments = dao.CountCommentsById(TmpMoment.DynamicsId)
 		TmpMoment.Status = tools.DecodeStrArr(OneMoment.State)
-
-		User, ok := dao.GetUserById(OneMoment.UserId)
-		if !ok {
-			ctx.JSON(403, e.ErrMsgResponse{Message: "数据库查询失败"})
-			return
-		}
+		
+		User := statements.User{}
+		//User, ok := dao.GetUserById(OneMoment.UserId)
+		//if !ok {
+		//	ctx.JSON(403, e.ErrMsgResponse{Message: "数据库查询失败"})
+		//	return
+		//}
 		TmpMoment.Creator = respModel.TransformUserInfo(User)
 		MomentsResp = append(MomentsResp, TmpMoment)
 	}
