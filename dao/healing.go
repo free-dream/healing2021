@@ -8,9 +8,9 @@ type UsrMsg struct {
 	ID        int    `json:"selectionId"`
 	Style     string `json:"style"`
 	CreatedAt string `json:"created_at"`
-	SongName  string `json:"song_name":""`
-	Remark    string `json:"remark":""`
-	Nickname  string `json:"nickname":""`
+	SongName  string `json:"song_name"`
+	Remark    string `json:"remark"`
+	Nickname  string `json:"nickname"`
 }
 
 //处理治愈详情页
