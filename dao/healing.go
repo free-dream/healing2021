@@ -136,23 +136,23 @@ func GetCovers(tag Tags) (interface{}, error) {
 	case 2:
 		switch tag.RankWay {
 		case 1:
-			rows, err = setting.DB.Table("user").Select("cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("TIMESTAMPDIFF(second,user.login_time,now())<2880").Joins("left join cover on user.id=cover.user_id").Order("rand()").Rows()
+			rows, err = setting.DB.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("TIMESTAMPDIFF(second,user.login_time,now())<2880").Joins("left join cover on user.id=cover.user_id").Order("rand()").Rows()
 		case 2:
-			rows, err = setting.DB.Table("user").Select("cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Joins("left join  on user.cover_id=cover.id").Order("created_at DESC").Rows()
+			rows, err = setting.DB.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Joins("left join  on user.cover_id=cover.id").Order("created_at DESC").Rows()
 		}
 	case 3:
 		switch tag.RankWay {
 		case 1:
-			rows, err = setting.DB.Table("user").Select("cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("TIMESTAMPDIFF(second,user.login_time,now())<2880 and cover.style=?", tag.Style).Joins("left join cover on user.id=cover.user_id").Order("rand()").Rows()
+			rows, err = setting.DB.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("TIMESTAMPDIFF(second,user.login_time,now())<2880 and cover.style=?", tag.Style).Joins("left join cover on user.id=cover.user_id").Order("rand()").Rows()
 		case 2:
-			rows, err = setting.DB.Table("user").Select("cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.style=?", tag.Style).Joins("left join cover on user.id=cover.user_id").Order("created_at DESC").Rows()
+			rows, err = setting.DB.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.style=?", tag.Style).Joins("left join cover on user.id=cover.user_id").Order("created_at DESC").Rows()
 		}
 	case 4:
 		switch tag.RankWay {
 		case 1:
-			rows, err = setting.DB.Table("user").Select("cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("TIMESTAMPDIFF(second,user.login_time,now())<2880 and cover.language=?", tag.Language).Joins("left join cover on user.id=cover.user_id").Order("rand()").Rows()
+			rows, err = setting.DB.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("TIMESTAMPDIFF(second,user.login_time,now())<2880 and cover.language=?", tag.Language).Joins("left join cover on user.id=cover.user_id").Order("rand()").Rows()
 		case 2:
-			rows, err = setting.DB.Table("user").Select("cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.language=?", tag.Language).Joins("left join cover on user.id=cover.user_id").Order("created_at DESC").Rows()
+			rows, err = setting.DB.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.language=?", tag.Language).Joins("left join cover on user.id=cover.user_id").Order("created_at DESC").Rows()
 		}
 	}
 	defer rows.Close()
