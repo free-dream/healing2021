@@ -3,6 +3,7 @@ package router
 import (
 	"encoding/gob"
 	"git.100steps.top/100steps/healing2021_be/controller/tradition"
+	"git.100steps.top/100steps/healing2021_be/models"
 	"io"
 	"log"
 	"os"
