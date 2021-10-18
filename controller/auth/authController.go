@@ -2,7 +2,7 @@ package auth
 
 import (
 	"git.100steps.top/100steps/ginwechat"
-	"git.100steps.top/100steps/healing2021_be/models"
+	"git.100steps.top/100steps/healing2021_be/dao"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"io"
@@ -19,11 +19,31 @@ func Login() {
 		Appid:     "wx293bc6f4ee88d87d",
 		Appsecret: "",
 		BaseUrl:   "http://healing2021.100steps.top",
-		StoreSession: func(ctx *gin.Context, user *ginwechat.WechatUser) error {
+		StoreSession: func(ctx *gin.Context, wechatUser *ginwechat.WechatUser) error {
 			session := sessions.Default(ctx)
-			session.Set("openid", user.OpenID)
-			session.Set("nickname", user.Nickname)
-			session.Set("headImgUrl", user.HeadImgUrl)
+			//等任务出来具体修改
+			/*session.Clear()
+			session.Save()
+			option := sessions.Options{
+				MaxAge: 3600,
+			}
+
+			session.Options(option)
+			var redisUser tools.RedisUser
+			var user statements.User
+			redisUser=wechatUser
+			session.Set("user", redisUser)
+			session.Save()
+			redis_cli := setting.RedisClient
+
+			// 加积分并且记录该用户本日登陆
+			t := time.Now()
+			t_zero := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location()).Unix()
+			t_to_tomorrow := 24*60*60 - (t.Unix() - t_zero)
+			logined := !redis_cli.SetNX(fmt.Sprintf("healing2021:logined_user:%d", user.ID), 0, time.Duration(t_to_tomorrow)*time.Second).Val()
+			if !logined {
+				models.FinishTask("1", user.ID)
+			}*/
 			return session.Save()
 		},
 	})
@@ -41,7 +61,7 @@ func WechatUser(ctx *gin.Context) {
 	})
 }
 func FakeLogin(ctx *gin.Context) {
-	user := models.User{}
+	user := dao.User{}
 	err := ctx.ShouldBindJSON(&user)
 
 	if err != nil {
@@ -51,7 +71,7 @@ func FakeLogin(ctx *gin.Context) {
 		})
 		return
 	}
-	openid, err1 := models.FakeCreateUser(&user)
+	openid, err1 := dao.FakeCreateUser(&user)
 	if err1 != nil {
 		ctx.JSON(403, gin.H{
 			"message": "昵称已存在，无法注册",

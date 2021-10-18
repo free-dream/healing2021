@@ -228,14 +228,14 @@ Content-Type: application/json
   "style": "string",//风格
   "created_at": "string", //"yyyy-mm-dd"
   "remark": "string" //30字以内
-  "singers": {
-      index{
-    "singer": "string",
+    singer:{
+   		index:{
+    "nickname": "string",
     "songId": int,
-    "likeId":int,
-    "song": "string" //歌曲url
-  }
-  }
+    "likes":int,
+    "file": "string" //歌曲url
+}
+}
 }
 ```
 失败:
@@ -346,10 +346,13 @@ Content-Type: application/json
 
 ```json
 [
+    index:{
     {
         "picture":text(url),	//广告或曲目对应的图片
-        "address":text(url)		//对应的链接，广告外链或者翻唱界面
+        "address":text(url),		//对应的链接，广告外链或者翻唱界面
+        "weight":int轮播权重
     }
+}
 	...
 ]
 ```
@@ -366,6 +369,17 @@ Content-Type: application/json
 
 GET /healing/selections/list HTTP 1.1
 
+Content-Type: application/json
+
+```json
+{
+    "sort":int,//推荐(1)，全部(2)，风格（3），语言（4）
+    "style":string,//风格和语言发送对应单词无则返回空
+    "language":string,
+    "rankWay":int//综合排序(1)，最新发布(2)
+}
+```
+
 成功:
 
 HTTP/1.1 200 OK
@@ -376,13 +390,13 @@ Content-Type: application/json
 [
 	{
 		"nickname":string,	//可匿名
-        "remark":text,	//备注
+        "remark":string,	//备注
         "song_name":string,	
         "language":string,	//以下两项为有限选项
         "style":string,
-        "user_id":integer,	//点歌用户的id
-        "post_time":string(datetime),	//时间，排序用
+        "user_id":integer,	//点歌用户的i
         "model":string,	//所属模块名，有限选项，索引用
+        "created_at":string,
 	}
     ...
 ]
