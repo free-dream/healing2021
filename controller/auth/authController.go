@@ -23,6 +23,7 @@ func Login() {
 			session := sessions.Default(ctx)
 			session.Set("openid", user.OpenID)
 			session.Set("nickname", user.Nickname)
+			session.Set("headImgUrl", user.HeadImgUrl)
 			return session.Save()
 		},
 	})

@@ -4,5 +4,28 @@
 
 1. 点赞操作和数值缓存
 2. 预缓存热榜/更新热榜
+3. 此处的接口都要求前端
 
-* 使用前进入sandwich目录下 ```go test``` 确保正常工作
+### 点赞表
+
+**expire 24h**
+
+| key  | field1 | field2    |
+| ---- | ------ | --------- |
+| uuid | userid | coverid   |
+| uuid | userid | momentid  |
+| uuid | userid | commentid |
+
+## 记录表
+
+即时更新
+
+| key      | value        |
+| -------- | ------------ |
+| coverid  | likes(int)   |
+| momentid | likes(int)\| |
+
+| key        | field1    | field2 |
+| ---------- | --------- | ------ |
+| comment_id | moment_id | likes  |
+

@@ -10,9 +10,9 @@ import (
 type Lottery struct {
 	gorm.Model
 	UserId      int     `gorm:"default:-1;index"`
-	Name        string  `gorm:"default:''" json:"Name"`
-	Picture     string  `gorm:"default:''" json:"Picture"`
-	Possibility float64 `gorm:"default:0" json:"Possiblity"`
+	Name        string  `gorm:"default:''"`
+	Picture     string  `gorm:"default:''"`
+	Possibility float64 `gorm:"default:0"`
 }
 
 func LotteryInit() {

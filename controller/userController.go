@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"strconv"
 
 	"git.100steps.top/100steps/healing2021_be/models"
@@ -14,10 +13,12 @@ func Register(ctx *gin.Context) {
 	//登录奖励机制尚未完成
 	session := sessions.Default(ctx)
 	openid := session.Get("openid").(string)
+	headImgUrl := session.Get("headImgUrl").(string)
 
 	user := models.User{}
 	err := ctx.ShouldBindJSON(&user)
 	user.Openid = openid
+	user.Avatar = headImgUrl
 	if err != nil {
 		ctx.JSON(401, gin.H{
 			"message": "error param",
@@ -81,7 +82,6 @@ func Refresher(ctx *gin.Context) {
 	openid := session.Get("openid").(string)
 	obj := obj{}
 	err := ctx.ShouldBindJSON(&obj)
-	fmt.Println(obj.Background)
 
 	if err != nil {
 		panic(err)
@@ -98,7 +98,7 @@ func Refresher(ctx *gin.Context) {
 
 }
 func GetOther(ctx *gin.Context) {
-	calleeId, bool := ctx.GetQuery("calleeId")
+	param, bool := ctx.GetQuery("calleeId")
 
 	if !bool {
 		ctx.JSON(401, gin.H{
@@ -106,14 +106,14 @@ func GetOther(ctx *gin.Context) {
 		})
 		return
 	}
-	id, err := strconv.Atoi(calleeId)
+	calleeId, err := strconv.Atoi(param)
 	if err != nil {
 		ctx.JSON(401, gin.H{
 			"message": "error param",
 		})
 		panic(err)
 	}
-	resp := models.GetCallee(id)
+	resp := models.GetCallee(calleeId)
 	ctx.JSON(200, resp)
 
 }

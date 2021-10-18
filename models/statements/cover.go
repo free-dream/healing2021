@@ -9,14 +9,14 @@ import (
 
 type Cover struct {
 	gorm.Model
-	UserId      int    `gorm:"default:0;index"`
-	Avatar      string `gorm:"default:''"`
-	SelectionId string `gorm:"default:'';index"`
-	SongName    string `gorm:"default:''"`
-	ClassicId   int    `gorm:"default:0;index"`
-	Likes       int    `gorm:"default:0"`
-	File        string `gorm:"default:''"`
-	Module      int    `gorm:"default:0"`
+	UserId      int    `gorm:"default:0;index" json:"userid"`
+	Avatar      string `gorm:"default:''" json:"avatar"`
+	SelectionId string `gorm:"default:'';index" json:"selectionid"`
+	SongName    string `gorm:"default:''" json:"songname"`
+	ClassicId   int    `gorm:"default:0;index" json:"classicid"`
+	Likes       int    `gorm:"default:0" json:"likes"`
+	File        string `gorm:"default:''" json:"file"`
+	Module      int    `gorm:"default:0" json:"module"`
 }
 
 func CoverInit() {

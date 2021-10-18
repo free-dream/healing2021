@@ -10,7 +10,7 @@ import (
 type Selection struct {
 	gorm.Model
 	SongName string `gorm:"default:''"`
-	Remark   string
+	Remark   string `gorm:"default:''"`
 	Language string `gorm:"default:''"`
 	Style    string `gorm:"default:''"`
 	UserId   int    `gorm:"default:0;index"`
