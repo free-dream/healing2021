@@ -46,8 +46,9 @@ func GetMomentList(ctx *gin.Context) {
 		TmpMoment.DynamicsId = int(OneMoment.ID)
 		TmpMoment.CreatedAt = OneMoment.CreatedAt
 		TmpMoment.Song = OneMoment.SongName
+		TmpMoment.SelectionId = OneMoment.SelectionId
 		TmpMoment.Lauds = dao.CountMLaudsById(TmpMoment.DynamicsId)
-		UserId := tools.GetUser(ctx).ID // 获取当前用户 id
+		UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
 		TmpMoment.Lauded = dao.HaveMLauded(int(UserId), TmpMoment.DynamicsId)
 		TmpMoment.Comments = dao.CountCommentsById(TmpMoment.DynamicsId)
 		TmpMoment.Status = tools.DecodeStrArr(OneMoment.State)
@@ -69,6 +70,7 @@ type MomentBase struct {
 	Content string
 	Song    string
 	Status  []string
+	SelectionId int
 }
 
 func PostMoment(ctx *gin.Context) {
@@ -80,17 +82,16 @@ func PostMoment(ctx *gin.Context) {
 	var Moment statements.Moment
 	Moment.Content = NewMoment.Content
 	Moment.SongName = NewMoment.Song
-	UserId := tools.GetUser(ctx).ID // 获取当前用户 id
+	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
 	Moment.UserId = int(UserId)
 	Moment.State = tools.EncodeStrArr(NewMoment.Status)
+	Moment.SelectionId = NewMoment.SelectionId
 
 	// 存入数据库
 	if ok := dao.CreateMoment(Moment); !ok {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入失败"})
 		return
 	}
-
-	// 点歌相关
 
 	ctx.JSON(200, "")
 }
@@ -123,7 +124,7 @@ func GetMomentDetail(ctx *gin.Context) {
 	MomentDetail.CreatedAt = Moment.CreatedAt
 	MomentDetail.Song = Moment.SongName
 	MomentDetail.Lauds = dao.CountMLaudsById(MomentDetail.DynamicsId)
-	UserId := tools.GetUser(ctx).ID // 获取当前用户 id
+	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
 	MomentDetail.Lauded = dao.HaveMLauded(int(UserId), MomentDetail.DynamicsId)
 	MomentDetail.Comments = dao.CountCommentsById(MomentDetail.DynamicsId)
 	MomentDetail.Status = tools.DecodeStrArr(Moment.State)
@@ -154,7 +155,7 @@ func PostComment(ctx *gin.Context) {
 	var Comment statements.MomentComment
 	Comment.Comment = NewComment.Content
 	Comment.MomentId = NewComment.DynamicsId
-	UserId := tools.GetUser(ctx).ID // 获取当前用户 id
+	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
 	Comment.UserId = int(UserId)
 
 	// 存入数据库
@@ -194,7 +195,7 @@ func GetCommentList(ctx *gin.Context) {
 	for _, comment := range CommentsList {
 		Comment.CommentId = int(comment.ID)
 		Comment.Content = comment.Comment
-		UserId := tools.GetUser(ctx).ID // 获取当前用户 id
+		UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
 		Comment.Lauded = dao.HaveCLauded(int(UserId), Comment.CommentId)
 		Comment.Lauds = dao.CountCLaudsById(Comment.CommentId)
 
@@ -223,7 +224,7 @@ func PriseOrNot(ctx *gin.Context) {
 		return
 	}
 
-	UserId := tools.GetUser(ctx).ID // 获取当前用户 id
+	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
 
 	// 分模式进行点赞处理
 	if Types == "comment" {
