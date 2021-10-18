@@ -28,6 +28,7 @@ func SetupRouter() *gin.Engine {
 
 	if tools.IsDebug() {
 		test_prefix = "/test"
+		models.FakeData()
 	} else {
 		test_prefix = ""
 	}
