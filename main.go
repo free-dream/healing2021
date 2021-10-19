@@ -21,7 +21,7 @@ import (
 // @Description 2021治愈系
 
 func main() {
-	if !tools.IsDebug() {
+	if tools.IsDebug() {
 		statements.TableClean()
 		time.Sleep(time.Second * 2)
 	}

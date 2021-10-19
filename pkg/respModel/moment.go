@@ -13,10 +13,16 @@ type UserInfo struct {
 	AvatarVisible int    `json:"avatar_visible"`
 }
 
-// 将数据库中的用户信息 User 进行提取转换为 UserInfo【未完工】
+// 将数据库中的用户信息 User 进行提取转换为 UserInfo
 func TransformUserInfo(OneUser statements.User) UserInfo {
-	var userInfo UserInfo
-	return userInfo
+	UserInfos := UserInfo{
+		Id: int(OneUser.ID),
+		Nackname: OneUser.Nickname,
+		Avatar: OneUser.Avatar,
+		AvatarVisible: OneUser.AvatarVisible,
+	}
+
+	return UserInfos
 }
 
 // 动态响应

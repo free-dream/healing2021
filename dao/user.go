@@ -2,6 +2,7 @@ package dao
 
 import (
 	"errors"
+	"fmt"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
@@ -13,10 +14,12 @@ import (
  **/
 func GetUserById(Id int) (statements.User, bool) {
 	MysqlDB := setting.MysqlConn()
-	var OneUser statements.User
-	if err := MysqlDB.Where("id=?", Id).First(&OneUser); err != nil {
+	OneUser := statements.User{}
+	fmt.Println("reach")
+	if err := MysqlDB.Where("id=?", Id).First(&OneUser).Error; err != nil {
 		return OneUser, false
 	}
+	fmt.Println("reach")
 	return OneUser, true
 }
 

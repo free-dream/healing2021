@@ -40,8 +40,6 @@ func GetMomentList(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println("11111111111111")
-
 	// 获取和整理其他所需信息，装进 response
 	for _, OneMoment := range AllMoment {
 		// 错误判断还没做
@@ -51,20 +49,20 @@ func GetMomentList(ctx *gin.Context) {
 		TmpMoment.Song = OneMoment.SongName
 		TmpMoment.SelectionId = OneMoment.SelectionId
 		TmpMoment.Lauds = dao.CountMLaudsById(TmpMoment.DynamicsId)
-
 		//把缓存加进来之前注释的部分都用不了
-		//UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
-		//TmpMoment.Lauded = dao.HaveMLauded(int(UserId), TmpMoment.DynamicsId)
+		UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
+		TmpMoment.Lauded = dao.HaveMLauded(int(UserId), TmpMoment.DynamicsId)
 
 		TmpMoment.Comments = dao.CountCommentsById(TmpMoment.DynamicsId)
 		TmpMoment.Status = tools.DecodeStrArr(OneMoment.State)
-		
 		User := statements.User{}
-		//User, ok := dao.GetUserById(OneMoment.UserId)
-		//if !ok {
-		//	ctx.JSON(403, e.ErrMsgResponse{Message: "数据库查询失败"})
-		//	return
-		//}
+		User, ok := dao.GetUserById(OneMoment.UserId)
+		fmt.Println(User)
+		fmt.Println(OneMoment.UserId)
+		if !ok {
+			ctx.JSON(403, e.ErrMsgResponse{Message: "数据库查询失败"})
+			return
+		}
 		TmpMoment.Creator = respModel.TransformUserInfo(User)
 		MomentsResp = append(MomentsResp, TmpMoment)
 	}
@@ -74,10 +72,10 @@ func GetMomentList(ctx *gin.Context) {
 
 // 发布动态
 type MomentBase struct {
-	Content string
-	Song    string
-	Status  []string
-	SelectionId int
+	Content     string   `json:"content"`
+	Song        string   `json:"song"`
+	Status      []string `json:"status"`
+	SelectionId int      `json:"selection_id"`
 }
 
 func PostMoment(ctx *gin.Context) {
@@ -100,7 +98,7 @@ func PostMoment(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, "")
+	ctx.JSON(200, e.ErrMsgResponse{Message: "动态发布成功"})
 }
 
 // 查看动态的详情
@@ -171,7 +169,7 @@ func PostComment(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, "")
+	ctx.JSON(200, e.ErrMsgResponse{Message: "评论发布成功"})
 }
 
 // 拉取动态的评论列表
@@ -194,7 +192,7 @@ func GetCommentList(ctx *gin.Context) {
 	// 数据库筛选
 	CommentsList, ok := dao.GetCommentsByMomentId(CommentId)
 	if !ok {
-		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败"})
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败或评论为空"})
 		return
 	}
 
@@ -232,15 +230,14 @@ func PriseOrNot(ctx *gin.Context) {
 	}
 
 	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
-
 	// 分模式进行点赞处理
 	if Types == "comment" {
-		if ok := dao.CLaudedById(Id, int(UserId)); !ok {
+		if err := dao.CLaudedById(Id, int(UserId)); err != nil {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入失败"})
 			return
 		}
 	} else if Types == "moment" {
-		if ok := dao.MLaudedById(Id, int(UserId)); !ok {
+		if err := dao.MLaudedById(Id, int(UserId)); err != nil {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入失败"})
 			return
 		}
@@ -249,5 +246,5 @@ func PriseOrNot(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, "")
+	ctx.JSON(200, e.ErrMsgResponse{Message: "点赞或取消点赞成功"})
 }

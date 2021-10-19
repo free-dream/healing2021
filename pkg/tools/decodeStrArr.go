@@ -5,12 +5,15 @@ import "strings"
 const gap = "#$%%$#"
 
 func EncodeStrArr(input []string) string {
-	var ret string
+	ret := ""
+	max := len(input)
 
-	for _, strTmp := range input {
-		ret += strTmp
+	ret += input[0]
+	for i := 1; i < max; i++ {
 		ret += gap
+		ret += input[i]
 	}
+
 	return ret
 }
 

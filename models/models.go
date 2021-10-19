@@ -25,11 +25,20 @@ func TableInit() {
 }
 
 // 假用户
-func CreateFakeUser() {
+func CreateFakeUser(nickname string, openid string) {
+	User := statements.User{
+		Openid: openid,
+		Nickname: nickname,
+	}
 
+	db := setting.MysqlConn()
+	db.Create(&User)
 }
 func AddFakeUsers() {
-
+	CreateFakeUser("heng1","123456")
+	CreateFakeUser("heng2","123456321")
+	CreateFakeUser("heng3","1231")
+	CreateFakeUser("heng4","99999")
 }
 
 // 假动态

@@ -92,7 +92,7 @@ func SetupRouter() *gin.Engine {
 
 	// 广场 模块
 	api.GET("/dynamics/list/:method", playground.GetMomentList)
-	api.GET("/dynamics/send", playground.PostMoment)
+	api.POST("/dynamics/send", playground.PostMoment)
 	api.GET("/dynamics/detail/:id", playground.GetMomentDetail)
 	api.POST("/dynamics/comment", playground.PostComment)
 	api.GET("/dynamics/comment/:id", playground.GetCommentList)
