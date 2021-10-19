@@ -2,6 +2,7 @@ package dao
 
 import (
 	"database/sql"
+
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
 
@@ -118,7 +119,6 @@ func GetSelections(tag Tags) (interface{}, error) {
 		err = setting.DB.ScanRows(rows, &content)
 		if err != nil {
 			break
-			return nil, err
 		}
 		content[index] = content
 		index++
@@ -165,7 +165,6 @@ func GetCovers(tag Tags) (interface{}, error) {
 		err = setting.DB.ScanRows(rows, &content)
 		if err != nil {
 			break
-			return nil, err
 		}
 		content[index] = content
 		index++
