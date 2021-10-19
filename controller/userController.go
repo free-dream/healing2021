@@ -3,7 +3,7 @@ package controller
 import (
 	"strconv"
 
-	"git.100steps.top/100steps/healing2021_be/models"
+	"git.100steps.top/100steps/healing2021_be/dao"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +15,7 @@ func Register(ctx *gin.Context) {
 	openid := session.Get("openid").(string)
 	headImgUrl := session.Get("headImgUrl").(string)
 
-	user := models.User{}
+	user := dao.User{}
 	err := ctx.ShouldBindJSON(&user)
 	user.Openid = openid
 	user.Avatar = headImgUrl
@@ -25,7 +25,7 @@ func Register(ctx *gin.Context) {
 		})
 		return
 	}
-	err, err2 := models.CreateUser(&user)
+	err, err2 := dao.CreateUser(&user)
 	if err != nil {
 		ctx.JSON(403, gin.H{
 			"message": "昵称已存在，无法注册",
@@ -42,7 +42,7 @@ func Updater(ctx *gin.Context) {
 	//用户更新
 	session := sessions.Default(ctx)
 	openid := session.Get("openid").(string)
-	user := models.User{}
+	user := dao.User{}
 	err := ctx.ShouldBind(&user)
 	if err != nil {
 		ctx.JSON(401, gin.H{
@@ -51,7 +51,7 @@ func Updater(ctx *gin.Context) {
 		})
 		return
 	}
-	err = models.UpdateUser(&user, openid)
+	err = dao.UpdateUser(&user, openid)
 	if err != nil {
 		ctx.JSON(403, gin.H{
 			"message": "修改失败",
@@ -67,7 +67,7 @@ func Updater(ctx *gin.Context) {
 func Fetcher(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	openid := session.Get("openid").(string)
-	user := models.GetUser(openid)
+	user := dao.GetUser(openid)
 	ctx.JSON(200, user)
 
 }
@@ -86,7 +86,7 @@ func Refresher(ctx *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-	err = models.UpdateBackground(openid, obj.Background)
+	err = dao.UpdateBackground(openid, obj.Background)
 	if err != nil {
 		ctx.JSON(500, gin.H{
 			"message": "更新失败",
@@ -113,7 +113,7 @@ func GetOther(ctx *gin.Context) {
 		})
 		panic(err)
 	}
-	resp := models.GetCallee(calleeId)
+	resp := dao.GetCallee(calleeId)
 	ctx.JSON(200, resp)
 
 }

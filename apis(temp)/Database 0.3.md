@@ -46,9 +46,11 @@ thumbnail可以通过url的变换来获取，但暂时保留thumbnail字段
 | 字段值       | 字段类型     | 说明     |
 | ------------ | ------------ | -------- |
 | id           | int          | 自增主键 |
+| user_id           | int          |         |
 | likes        | int          |          |
 | content      | varchar(255) |          |
 | selection_id | int          |          |
+| song_name    | varchar(255) |          |
 | states       | varchar(255) | 状态     |
 | picture      | varchar(255) | 图片url  |
 

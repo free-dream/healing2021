@@ -3,6 +3,7 @@ package router
 import (
 	"encoding/gob"
 	"git.100steps.top/100steps/healing2021_be/controller/tradition"
+	"git.100steps.top/100steps/healing2021_be/models"
 	"io"
 	"log"
 	"os"
@@ -28,6 +29,7 @@ func SetupRouter() *gin.Engine {
 
 	if tools.IsDebug() {
 		test_prefix = "/test"
+		models.FakeData()
 	} else {
 		test_prefix = ""
 	}
@@ -77,6 +79,10 @@ func SetupRouter() *gin.Engine {
 	//经典治愈 模块
 	api.GET("/healingPage", tradition.HealingPageFetcher)
 	api.GET("/healing/bulletin", tradition.AdsPlayer)
+	api.GET("/healing/selections/list", tradition.SelectionFetcher)
+	api.GET("/healing/covers/list", tradition.CoverFetcher)
+	api.POST("/healing/cover", tradition.Recorder)
+	api.POST("healing/cover/likes", tradition.LikePoster)
 	// childhood 模块
 	api.GET("/childhood/rank", childhood.GetRank)
 	api.GET("/childhood/list", childhood.GetList)

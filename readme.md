@@ -222,12 +222,14 @@ Content-Type: application/json
 
 ```json
 {
+    user：{
   "songName": "string",
   "selectionId": int,
   "name": "string",//点歌用户名
   "style": "string",//风格
   "created_at": "string", //"yyyy-mm-dd"
   "remark": "string" //30字以内
+}
   "singers": {
       index{
     "singer": "string",
@@ -348,7 +350,8 @@ Content-Type: application/json
 [
     {
         "picture":text(url),	//广告或曲目对应的图片
-        "address":text(url)		//对应的链接，广告外链或者翻唱界面
+        "address":text(url),	//对应的链接，广告外链或者翻唱界面
+        "weight":int,//权重
     }
 	...
 ]
@@ -366,9 +369,18 @@ Content-Type: application/json
 
 GET /healing/selections/list HTTP 1.1
 
+```
+{
+"sort":int, //1推荐，2全部，3风格，4语言 binding:"required"`
+"style":string //
+"language":string
+"rankWay":int //1综合排序，2最新binding:"required"`
+}
+```
+
 成功:
 
-HTTP/1.1 200 OK
+
 
 Content-Type: application/json
 
@@ -376,13 +388,11 @@ Content-Type: application/json
 [
 	{
 		"nickname":string,	//可匿名
-        "remark":text,	//备注
-        "song_name":string,	
-        "language":string,	//以下两项为有限选项
-        "style":string,
+        "id":int,//对应点歌id
+        "song_name":string,
         "user_id":integer,	//点歌用户的id
-        "post_time":string(datetime),	//时间，排序用
-        "model":string,	//所属模块名，有限选项，索引用
+        "created_at":string(datetime),	//时间，排序用
+        "avatar":string
 	}
     ...
 ]
@@ -406,6 +416,17 @@ GET /healing/covers/list HTTP 1.1
 
 ***设置一个更新器，若表格发生了更新，先写入redis,每隔一段时间将数据录入mysql一次***
 
+GET /healing/selections/list HTTP 1.1
+
+```
+{
+"sort":int, //1推荐，2全部，3风格，4语言 binding:"required"`
+"style":string //
+"language":string
+"rankWay":int //1综合排序，2最新binding:"required"`
+}
+```
+
 成功:
 
 HTTP/1.1 200 OK
@@ -415,65 +436,14 @@ Content-Type: application/json
 ```json
 [
     {
-        "nickname":string,	//翻唱者，允许匿名
-        "post_time":string(datetime),	//翻唱时间
-        "avatar":text(url),	//用于加载的用户头像url
-        "selection_url":text(url)	//用于跳转的治愈详情页面url
-    }
-    ...
-]
-```
-
-失败(例)：
-
-HTTP/1.1 403 Forbidden
-
-Content-Type: application/json
-
-`{"message" : "请求列表失败"}`
-
-### 3.1.4 索引和不同的排序
-
-GET /healing/{a}/{model}/{rankby} HTTP 1.1
-
-***a指selections和covers其中之一***
-
-***label指所有给定的model,all也是model之一***
-
-***rankby指所有给定的排序方法,default即默认检索序也是rankby之一***
-
-成功:
-
-HTTP/1.1 200 OK
-
-Content-Type: application/json
-
-```json
-[//if a==covers
-    {
-        "nickname":string,	//翻唱者，允许匿名
-        "post_time":string(datetime),	//翻唱时间
-        "avatar":text(url),	//用于加载的用户头像url
-        "selection_url":text(url)	//用于跳转的用户个人页面url
-    }
-    ...
-]
-```
-
-
-
-```json
-[//if a==selections
-	{
-		"nickname":string,	//可匿名
-        "remark":text,	//备注
-        "song_name":string,	
-        "language":string,	//以下两项为有限选项
-        "style":string,
+       "nickname":string,	//可匿名
+        "id":int,//对应翻唱歌id
+        "song_name":string,
         "user_id":integer,	//点歌用户的id
-        "post_time":string(datetime),	//时间，排序用
-        "model":string,	//所属模块名，有限选项，索引用
-	}
+        "created_at":string(datetime),	//时间，排序用
+        "avatar":string,
+        "file":string//歌曲url
+    }
     ...
 ]
 ```
@@ -485,6 +455,30 @@ HTTP/1.1 403 Forbidden
 Content-Type: application/json
 
 `{"message" : "请求列表失败"}`
+
+### 3.1.4 治愈系翻唱接口
+
+GET /healing/cover
+
+```json
+{
+    "selection_id":int,//点歌id
+    "record":string,//录音url
+   
+}
+```
+
+成功：
+
+200 "OK"
+
+失败：
+
+HTTP/1.1 401 Forbidden
+
+Content-Type: application/json
+
+`{"message" : "error param"}`
 
 
 

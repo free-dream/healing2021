@@ -17,6 +17,8 @@ type Cover struct {
 	Likes       int    `gorm:"default:0" json:"likes"`
 	File        string `gorm:"default:''" json:"file"`
 	Module      int    `gorm:"default:0" json:"module"`
+	Style       string `gorm:"default:''" json:"style"`
+	Language    string `gorm:"default:''" json:"language"`
 }
 
 func CoverInit() {

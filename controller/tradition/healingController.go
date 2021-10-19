@@ -8,9 +8,9 @@ import (
 
 //治愈详情页，返回相关歌曲信息
 func HealingPageFetcher(ctx *gin.Context) {
-	param, bool := ctx.GetQuery("selectionId")
+	param, verify := ctx.GetQuery("selectionId")
 	//resp:=make(map[string]interface{})
-	if !bool {
+	if !verify {
 		ctx.JSON(401, gin.H{
 			"message": "error param",
 		})
@@ -32,6 +32,7 @@ func HealingPageFetcher(ctx *gin.Context) {
 	})
 }
 
+//获取广告
 func AdsPlayer(ctx *gin.Context) {
 	resp, err := dao.GetAds()
 	if err != nil {
@@ -39,5 +40,59 @@ func AdsPlayer(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, resp)
+
+}
+
+//点歌控制
+func SelectionFetcher(ctx *gin.Context) {
+	tag := dao.Tags{}
+	err := ctx.ShouldBindJSON(&tag)
+	if err != nil {
+		ctx.JSON(401, gin.H{
+			"message": "error param",
+		})
+		return
+	}
+	resp, err := dao.GetSelections(tag)
+	if err != nil {
+		panic(err)
+		return
+	}
+	ctx.JSON(200, resp)
+
+}
+func CoverFetcher(ctx *gin.Context) {
+	tag := dao.Tags{}
+	err := ctx.ShouldBindJSON(&tag)
+	if err != nil {
+		ctx.JSON(401, gin.H{
+			"message": "error param",
+		})
+		return
+	}
+	resp, err := dao.GetCovers(tag)
+	if err != nil {
+		panic(err)
+		return
+	}
+	ctx.JSON(200, resp)
+
+}
+
+//唱歌接口
+//录音操作还在写
+func Recorder(ctx *gin.Context) {
+	/*selection_id,verify:=ctx.GetQuery("selection_id")
+	if !verify{
+		ctx.JSON(401,gin.H{
+			"message":"error param",
+		})
+
+	}*/
+
+}
+
+//对经典治愈系的录音点赞
+func LikePoster(ctx *gin.Context) {
 
 }

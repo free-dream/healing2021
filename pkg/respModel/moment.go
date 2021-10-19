@@ -21,15 +21,16 @@ func TransformUserInfo(OneUser statements.User) UserInfo {
 
 // 动态响应
 type MomentResp struct {
-	DynamicsId int       `json:"dynamics_id"`
-	Content    string    `json:"content"`
-	CreatedAt  time.Time `json:"created_at"`
-	Song       string    `json:"song"`
-	Lauds      int       `json:"lauds"`
-	Lauded     int       `json:"lauded"`
-	Comments   int       `json:"comments"`
-	Status     []string  `json:"status"`
-	Creator    UserInfo  `json:"creator"`
+	DynamicsId  int       `json:"dynamics_id"`
+	Content     string    `json:"content"`
+	CreatedAt   time.Time `json:"created_at"`
+	Song        string    `json:"song"`
+	SelectionId int       `json:"selection_id"`
+	Lauds       int       `json:"lauds"`
+	Lauded      int       `json:"lauded"`
+	Comments    int       `json:"comments"`
+	Status      []string  `json:"status"`
+	Creator     UserInfo  `json:"creator"`
 }
 
 // 评论响应
