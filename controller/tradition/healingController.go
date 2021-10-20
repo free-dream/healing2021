@@ -2,6 +2,9 @@ package tradition
 
 import (
 	"git.100steps.top/100steps/healing2021_be/dao"
+	"git.100steps.top/100steps/healing2021_be/pkg/e"
+	"git.100steps.top/100steps/healing2021_be/pkg/tools"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -79,20 +82,53 @@ func CoverFetcher(ctx *gin.Context) {
 
 }
 
+type RecordParams struct {
+	Id       string   `json:"id" binding:"required"`
+	Name     string   `json:"name"`
+	ServerID []string `json:"server_id" binding:"required"`
+}
+
 //唱歌接口
 //录音操作还在写
-func Recorder(ctx *gin.Context) {
-	/*selection_id,verify:=ctx.GetQuery("selection_id")
-	if !verify{
-		ctx.JSON(401,gin.H{
-			"message":"error param",
-		})
+func Recorder(c *gin.Context) {
+	var params RecordParams
+	userID := tools.GetUser(c).ID
+	if err := c.ShouldBind(&params); err != nil {
+		c.JSON(400, e.ErrMsgResponse{Message: err.Error()})
+		return
+	}
+	url, err := convertMediaIdArrToQiniuUrl(params.ServerID)
+	if err != nil {
+		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
+		return
+	}
+	err = dao.CreateRecord(params.Id, url, int(userID))
+	if err != nil {
+		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
+		return
+	}
 
-	}*/
-
+	c.JSON(200, "OK")
 }
 
 //对经典治愈系的录音点赞
 func LikePoster(ctx *gin.Context) {
-
+	id, verify := ctx.GetQuery("covers_id")
+	if !verify {
+		ctx.JSON(401, gin.H{
+			"message": "error param",
+		})
+		return
+	}
+	coverId, err := strconv.Atoi(id)
+	if err != nil {
+		panic(err)
+		ctx.JSON(401, gin.H{
+			"message": "error param",
+		})
+		return
+	}
+	session := sessions.Default(ctx)
+	openid := session.Get("openid").(string)
+	err = dao.Like(coverId, openid)
 }

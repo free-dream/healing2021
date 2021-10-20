@@ -2,7 +2,10 @@ package dao
 
 import (
 	"database/sql"
+	"errors"
+	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
+	"strconv"
 )
 
 type UsrMsg struct {
@@ -175,3 +178,48 @@ func GetCovers(tag Tags) (interface{}, error) {
 }
 
 //治愈系对应的录音
+
+//翻唱点赞
+func Like(coverId int, openid string) error {
+	praise := statements.Praise{}
+	user := User{}
+	setting.DB.Table("user").Where("openid=?", openid).Scan(&user)
+	setting.DB.Table("praise").Where("cover_id=? and user_id=?", coverId, user.ID).Scan(&praise)
+	/*redis读写点赞数操作
+
+
+	 */
+
+	switch praise.IsLiked {
+	case 1:
+		setting.DB.Table("praise").Where("cover_id=? and user_id=?", coverId, user.ID).Update("is_liked", 0)
+
+	}
+	return err
+
+}
+
+func CreateRecord(id string, file string, uid int) error {
+	intId, _ := strconv.Atoi(id)
+	selectionId := intId
+	db := setting.MysqlConn()
+	userId := uid
+
+	var selection statements.Selection
+	result1 := db.Model(&statements.Selection{}).Where("id=?", selectionId).First(&selection)
+	if result1.Error != nil {
+		return errors.New("selection_id is unvalid")
+	}
+	var cover statements.Cover
+	cover.SelectionId = selectionId
+	cover.UserId = userId
+	cover.SongName = selection.SongName
+	cover.Likes = 0
+	cover.File = file
+	cover.Style = selection.Style
+	cover.Language = selection.Language
+
+	err := db.Model(&statements.Cover{}).Create(&cover).Error
+
+	return err
+}
