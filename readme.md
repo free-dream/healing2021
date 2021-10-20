@@ -463,7 +463,7 @@ GET /healing/cover
 ```json
 {
     "selection_id":int,//点歌id
-    "record":string,//录音url
+    "record":[]string,//拼接的录音url
    
 }
 ```
