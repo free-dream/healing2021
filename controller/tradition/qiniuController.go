@@ -102,7 +102,8 @@ func downloadSpeexFromWechat(media_id_arr []string) error {
 		// download byte data from wechat server
 		resp, err := http.Get(fmt.Sprintf(g_wechat_media_download_url, getAccessToken(), media_id))
 		if err != nil {
-			// TODO: handle nerwork error
+			//handle nerwork error
+			panic(err)
 			return err
 		}
 		defer resp.Body.Close()
@@ -119,7 +120,8 @@ func downloadSpeexFromWechat(media_id_arr []string) error {
 		f, err := os.Create(fmt.Sprintf("./media/spx/%s.spx", media_id))
 		defer f.Close()
 		if err != nil {
-			// TODO: handle os error
+			// handle os error
+			panic(err)
 			return err
 		}
 		io.Copy(f, resp.Body)
