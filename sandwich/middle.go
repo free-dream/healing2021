@@ -11,6 +11,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+//middle层用于控制mysql的更新
 var (
 	Sandwich *Middle
 )
