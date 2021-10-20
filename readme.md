@@ -905,7 +905,7 @@ Content-Type: application/json
 	{
     	"name":string,	//歌曲名
     	"icon":text(url),	//歌曲图标,此处是大图标
-        "click":int	//这里可以做一个小小的换算，比如1 click = 500 热度
+        "click":int	    //点赞数
 	}
     ...
 ]
@@ -934,7 +934,7 @@ Content-Type: application/json
     {
         "name":string,
         "avatar":text(url), //小图标
-        "discription":text,	//简单描述
+        "time":datetime,	//翻唱时间
         "work_name":string	//音乐出处
     }
     ...
