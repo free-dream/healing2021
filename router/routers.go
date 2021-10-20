@@ -89,7 +89,6 @@ func SetupRouter() *gin.Engine {
 	api.GET("/childhood/original/:name/info", childhood.GetOriginalInfo)
 	api.GET("/childhood/original/:name/cover", childhood.GetOriginalSingerList)
 	api.POST("/healing/player", childhood.LoadSongs)
-
 	// 广场 模块
 	api.GET("/dynamics/list/:method", playground.GetMomentList)
 	api.POST("/dynamics/send", playground.PostMoment)
