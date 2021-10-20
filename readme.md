@@ -463,7 +463,7 @@ GET /healing/cover
 ```json
 {
     "selection_id":int,//点歌id
-    "record":string,//录音url
+    "record":[]string,//拼接的录音url
    
 }
 ```
@@ -488,7 +488,7 @@ POST /healing/covers/like HTTP 1.1
 
 ***注意到点赞的话对应的排行会更新，此处应该对缓存数据进行更新并决定是否持久化***
 
-Content-Type: application/json
+query
 
 ```json
 {
