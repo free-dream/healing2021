@@ -3,6 +3,7 @@ package dao
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"strconv"
@@ -15,6 +16,11 @@ type UsrMsg struct {
 	SongName  string `json:"song_name":""`
 	Remark    string `json:"remark":""`
 	Nickname  string `json:"nickname":""`
+}
+type CovMsg struct {
+	UserId   int    `json:"user_id"`
+	Likes    int    `json:"likes"`
+	Nickname string `json:"nickname"`
 }
 
 var rows *sql.Rows
@@ -37,13 +43,14 @@ func GetHealingPage(selectionId int) (interface{}, error) {
 	}
 	defer rows.Close()
 	index := 0
+	obj := CovMsg{}
 	content := make(map[int]interface{})
 	for rows.Next() {
-		err = setting.DB.ScanRows(rows, &content)
+		err = setting.DB.ScanRows(rows, &obj)
 		if err != nil {
 			return nil, err
 		}
-		content[index] = content
+		content[index] = obj
 		index++
 	}
 	resp["user"] = userMsg
@@ -78,6 +85,14 @@ type Tags struct {
 	Language string `json:"language"`
 	RankWay  int    `json:"rankWay" binding:"required"`
 }
+type SelectionDetails struct {
+	Nickname  string `json:"nickname"`
+	ID        int    `json:"id"`
+	SongName  string `json:"song_name"`
+	UserId    int    `json:"user_id"`
+	CreatedAt string `json:"created_at"`
+	Avatar    string `json:"avatar"`
+}
 
 //获取点歌页以推荐方式
 //由于推荐方法尚未知道，暂未完成
@@ -94,7 +109,9 @@ func GetSelections(tag Tags) (interface{}, error) {
 		case 1:
 			rows, err = setting.DB.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at").Where("TIMESTAMPDIFF(second,user.login_time,now())<2880").Joins("left join selection on user.id=selection.user_id").Order("rand()").Rows()
 		case 2:
-			rows, err = setting.DB.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at").Joins("left join selection on user.selection_id=selection.id").Order("created_at DESC").Rows()
+			rows, err = setting.DB.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at").Joins("left join selection on user.id=selection.user_id").Order("selection.created_at DESC").Rows()
+			fmt.Println(rows)
+			fmt.Println(err)
 		}
 	case 3:
 		switch tag.RankWay {
@@ -112,23 +129,36 @@ func GetSelections(tag Tags) (interface{}, error) {
 		}
 	}
 	defer rows.Close()
+	fmt.Println(rows)
 	if err != nil {
 		return nil, err
 	}
 	index := 0
+	selectionDetails := SelectionDetails{}
 	content := make(map[int]interface{})
 	for rows.Next() {
-		err = setting.DB.ScanRows(rows, &content)
+		err = setting.DB.ScanRows(rows, &selectionDetails)
 		if err != nil {
 			break
 			return nil, err
 		}
-		content[index] = content
+		content[index] = selectionDetails
 		index++
 	}
 	return content, nil
 
 }
+
+type CoverDetails struct {
+	Nickname  string `json:"nickname"`
+	ID        int    `json:"id"`
+	SongName  string `json:"song_name"`
+	UserId    int    `json:"user_id"`
+	CreatedAt string `json:"created_at"`
+	Avatar    string `json:"avatar"`
+	File      string `json:"file"`
+}
+
 func GetCovers(tag Tags) (interface{}, error) {
 	switch tag.Sort {
 	case 1:
@@ -140,37 +170,47 @@ func GetCovers(tag Tags) (interface{}, error) {
 		switch tag.RankWay {
 		case 1:
 			rows, err = setting.DB.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("TIMESTAMPDIFF(second,user.login_time,now())<2880").Joins("left join cover on user.id=cover.user_id").Order("rand()").Rows()
+			fmt.Println(err)
 		case 2:
-			rows, err = setting.DB.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Joins("left join  on user.cover_id=cover.id").Order("created_at DESC").Rows()
+			rows, err = setting.DB.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Joins("left join cover on user.id=cover.user_id").Order("created_at DESC").Rows()
+			fmt.Println(err)
 		}
 	case 3:
 		switch tag.RankWay {
 		case 1:
 			rows, err = setting.DB.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("TIMESTAMPDIFF(second,user.login_time,now())<2880 and cover.style=?", tag.Style).Joins("left join cover on user.id=cover.user_id").Order("rand()").Rows()
+
+			fmt.Println(err)
 		case 2:
 			rows, err = setting.DB.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.style=?", tag.Style).Joins("left join cover on user.id=cover.user_id").Order("created_at DESC").Rows()
+
+			fmt.Println(err)
 		}
 	case 4:
 		switch tag.RankWay {
 		case 1:
 			rows, err = setting.DB.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("TIMESTAMPDIFF(second,user.login_time,now())<2880 and cover.language=?", tag.Language).Joins("left join cover on user.id=cover.user_id").Order("rand()").Rows()
+			fmt.Println(err)
+
 		case 2:
 			rows, err = setting.DB.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.language=?", tag.Language).Joins("left join cover on user.id=cover.user_id").Order("created_at DESC").Rows()
+
 		}
 	}
 	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
+	coverDetails := CoverDetails{}
 	index := 0
 	content := make(map[int]interface{})
 	for rows.Next() {
-		err = setting.DB.ScanRows(rows, &content)
+		err = setting.DB.ScanRows(rows, &coverDetails)
 		if err != nil {
 			break
 			return nil, err
 		}
-		content[index] = content
+		content[index] = coverDetails
 		index++
 	}
 	return content, nil

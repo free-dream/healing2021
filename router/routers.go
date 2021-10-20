@@ -50,7 +50,7 @@ func SetupRouter() *gin.Engine {
 	}
 	r.Use(sessions.Sessions("healing2021_session", store))
 
-	if !tools.IsDebug() {
+	if tools.IsDebug() {
 		r.Use(middleware.IdentityCheck())
 	}
 

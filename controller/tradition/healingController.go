@@ -1,6 +1,7 @@
 package tradition
 
 import (
+	"fmt"
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
@@ -84,7 +85,7 @@ func CoverFetcher(ctx *gin.Context) {
 
 type RecordParams struct {
 	SelectionId string   `json:"selection_id" binding:"required"`
-	record      []string `json:"record" binding:"required"`
+	Record      []string `json:"record" binding:"required"`
 }
 
 //唱歌接口
@@ -96,7 +97,8 @@ func Recorder(c *gin.Context) {
 		c.JSON(400, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
-	url, err := convertMediaIdArrToQiniuUrl(params.record)
+	fmt.Println(params.Record)
+	url, err := convertMediaIdArrToQiniuUrl(params.Record)
 	if err != nil {
 		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return

@@ -1,10 +1,9 @@
 package models
 
 import (
+	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"time"
-
-	"git.100steps.top/100steps/healing2021_be/models/statements"
 )
 
 func TableInit() {
@@ -25,20 +24,22 @@ func TableInit() {
 }
 
 // 假用户
-func CreateFakeUser(nickname string, openid string) {
+func CreateFakeUser(nickname string, openid string, time time.Time) {
 	User := statements.User{
-		Openid: openid,
-		Nickname: nickname,
+		Openid:    openid,
+		Nickname:  nickname,
+		LoginTime: time,
 	}
 
-	db := setting.MysqlConn()
+	db := setting.DB
 	db.Create(&User)
 }
 func AddFakeUsers() {
-	CreateFakeUser("heng1","123456")
-	CreateFakeUser("heng2","123456321")
-	CreateFakeUser("heng3","1231")
-	CreateFakeUser("heng4","99999")
+	CreateFakeUser("heng1", "123456", time.Now())
+	CreateFakeUser("heng2", "123456321", time.Date(2002, 12, 11, 10, 16, 55, 05, time.Local))
+	CreateFakeUser("heng3", "1231", time.Date(2021, 10, 20, 10, 16, 55, 05, time.Local))
+	CreateFakeUser("heng4", "99999", time.Now())
+	CreateFakeUser("juryo", "juryo", time.Now())
 }
 
 // 假动态
@@ -86,11 +87,46 @@ func AddFakeComments() {
 	CreateFakeComment(1, 1, "第wu条假评论", 3)
 }
 
+func AddFakeSelections() {
+	for index := 1; index < 6; index++ {
+		CreateFakeSelection(index, "测试歌曲")
+	}
+}
+
+// 假评论
+func CreateFakeSelection(uid int, name string) {
+	selection := statements.Selection{
+		UserId:   uid,
+		SongName: name,
+	}
+
+	db := setting.MysqlConn()
+	db.Create(&selection)
+}
+func AddFakeCovers() {
+	for index := 1; index < 6; index++ {
+		CreateFakeCovers(index+2, "测试歌曲", index+1)
+	}
+}
+
+// 假评论
+func CreateFakeCovers(uid int, name string, cid int) {
+	cover := statements.Cover{
+		UserId:      uid,
+		SongName:    name,
+		SelectionId: cid,
+	}
+
+	db := setting.MysqlConn()
+	db.Create(&cover)
+}
+
 // 造点测试用的假数据
 func FakeData() {
 	TableInit()
-
+	AddFakeCovers()
 	AddFakeUsers()
 	AddFakeMoments()
 	AddFakeComments()
+	AddFakeSelections()
 }
