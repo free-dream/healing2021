@@ -83,26 +83,25 @@ func CoverFetcher(ctx *gin.Context) {
 }
 
 type RecordParams struct {
-	Id       string   `json:"id" binding:"required"`
-	Name     string   `json:"name"`
-	ServerID []string `json:"server_id" binding:"required"`
+	SelectionId string   `json:"selection_id" binding:"required"`
+	record      []string `json:"record" binding:"required"`
 }
 
 //唱歌接口
-//录音操作还在写
+
 func Recorder(c *gin.Context) {
 	var params RecordParams
 	userID := tools.GetUser(c).ID
-	if err := c.ShouldBind(&params); err != nil {
+	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(400, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
-	url, err := convertMediaIdArrToQiniuUrl(params.ServerID)
+	url, err := convertMediaIdArrToQiniuUrl(params.record)
 	if err != nil {
 		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
-	err = dao.CreateRecord(params.Id, url, int(userID))
+	err = dao.CreateRecord(params.SelectionId, url, int(userID))
 	if err != nil {
 		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
