@@ -77,7 +77,7 @@ func SetupRouter() *gin.Engine {
 	api.POST("/background", controller.Refresher)
 	api.GET("/callee", controller.GetOther)
 	//qiniu
-	api.GET("/qiniu/token", controller.QiniuToken)
+	api.GET("/qiniu/token", tradition.QiniuToken)
 	//经典治愈 模块
 	api.GET("/healingPage", tradition.HealingPageFetcher)
 	api.GET("/healing/bulletin", tradition.AdsPlayer)
