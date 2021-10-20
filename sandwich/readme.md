@@ -107,6 +107,12 @@ request={composite,latest}
 
 **用户任务表,记录任务完成情况和目标,expile:24h**
 
+**登录时缓存一次,之后定时更新**
+
+| key                  | f1           | f2         |
+| -------------------- | ------------ | ---------- |
+| {userid}task{taskid} | process(int) | check(int) |
+
 
 
 ### 点赞表

@@ -23,6 +23,7 @@ func InitKVs() {
 	redisDb.SAdd("comment", "init")
 }
 
+//点赞，可直接调用
 func Likes(targetid int, liketype int) bool {
 	//此处应有读取用户userid的操作
 	var userid int = 0
@@ -63,4 +64,23 @@ func Changepoints(point float64) bool {
 	}
 	redisDb.HIncrBy(tempkey, "point", int64(point))
 	return true
+}
+
+//用户任务进度更新,若任务已完成，return true
+func HandleTask(process int, taskid int) bool {
+	//此处应有读取用户userid的操作
+	var userid int = 0
+	//
+	redisDb := setting.RedisConn()
+	tempkey := strconv.Itoa(userid) + "task" + strconv.Itoa(taskid)
+
+	currentval := redisDb.HIncrBy(tempkey, "record", int64(process)).Val()
+	target := redisDb.HMGet("task"+strconv.Itoa(taskid), "target").Val()
+	targetval, _ := target[0].(int64)
+
+	if currentval >= targetval {
+		redisDb.HIncrBy(tempkey, "check", 1)
+		return true
+	}
+	return false
 }
