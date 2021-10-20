@@ -60,7 +60,7 @@ request={composite,latest}
 
 ### 任务缓存表
 
-### **任务是人为设计的，所以不过期，如果有更新直接更新数据库**
+**任务是人为设计的，所以不过期，如果有更新直接更新数据库**
 
 **系统初始化的时候直接缓存**
 
@@ -77,6 +77,8 @@ request={composite,latest}
 **有序集合zset,zset名为学校名+rank,例如scutrank/allrank**
 
 **有n个学校所以有n+1张表，从userid获取头像（redis或mysql）**
+
+**可以确定，排行榜首位一定也是常使用产品的，redis大概率有其数据**
 
 | name       | number | value  |
 | ---------- | ------ | ------ |
@@ -97,9 +99,15 @@ request={composite,latest}
 
 **每小时更新排行榜时进行更新**
 
-| key            | f1          | f2         |
-| -------------- | ----------- | ---------- |
-| {userid}points | record(int) | point(int) |
+| key           | f1          | f2         |
+| ------------- | ----------- | ---------- |
+| {userid}point | record(int) | point(int) |
+
+### 任务表
+
+**用户任务表,记录任务完成情况和目标,expile:24h**
+
+
 
 ### 点赞表
 

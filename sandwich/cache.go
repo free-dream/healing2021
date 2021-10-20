@@ -21,11 +21,11 @@ func CacheCovers(models []*statements.Cover, request string) {
 		sv := reflect.ValueOf(data)
 		for i := 0; i < st.NumField(); i++ {
 			field := st.Field(i)
-			if alias, ok := field.Tag.Lookup("json"); ok {
-				if alias == "" {
+			if tag, ok := field.Tag.Lookup("json"); ok {
+				if tag == "" {
 					continue
 				} else {
-					temp[alias] = sv.Field(i).Interface()
+					temp[tag] = sv.Field(i).Interface()
 				}
 			} else {
 				continue
@@ -91,7 +91,29 @@ func CacheUser(record *statements.User, userid int) {
 	}
 }
 
-func Cache()
+//系统启动时直接初始化，加载任务文本时直接从redis读取
+func CacheTask(records []*statements.Task) {
+	redisDB := setting.RedisConn()
+	temp := make(map[string]interface{})
+	for i, data := range records {
+		st := reflect.TypeOf(data)
+		sv := reflect.ValueOf(data)
+		for i := 0; i < st.NumField(); i++ {
+			field := st.Field(i)
+			if tag, ok := field.Tag.Lookup("json"); ok {
+				if tag == "" {
+					continue
+				} else {
+					temp[tag] = sv.Field(i).Interface()
+				}
+			} else {
+				continue
+			}
+		}
+		key := "task" + strconv.Itoa(i)
+		redisDB.HMSet(key, temp)
+	}
+}
 
 // //sql缓存到redis
 // func (middle *Middle) Cache(table) {
