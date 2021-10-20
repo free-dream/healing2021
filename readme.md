@@ -953,7 +953,7 @@ Content-Type: application/json
 
 ### 4.2.1 获取原唱相关信息
 
-GET /childhood/original/{name}/info HTTP 1.1
+GET /childhood/original/{id}/info HTTP 1.1
 
 ***name指对应歌曲的名字***
 
