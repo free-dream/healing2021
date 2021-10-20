@@ -1,7 +1,6 @@
 package sandwich
 
 import (
-	"fmt"
 	"reflect"
 	"strconv"
 
@@ -66,7 +65,7 @@ func CacheSelections(records []*statements.Selection, request string) {
 }
 
 //缓存用户数据，尤其是点歌用的积分
-func CacheUser(record *statements.User, openid string) {
+func CacheUser(record *statements.User, userid int) {
 	redisDB := setting.RedisConn()
 	temp := make(map[string]interface{})
 	st := reflect.TypeOf(record)
@@ -74,25 +73,32 @@ func CacheUser(record *statements.User, openid string) {
 	for i := 0; i < st.NumField(); i++ {
 		field := st.Field(i)
 		if tag, ok := field.Tag.Lookup("json"); ok {
+			tempkey := strconv.Itoa(userid) + "points"
 			if tag == "" {
 				continue
+			} else if tag == "points" {
+				redisDB.HSet(tempkey, "points", sv.Field(i).Int())
+			} else if tag == "record" {
+				redisDB.HSet(tempkey, "record", sv.Field(i).Int())
 			} else {
 				temp[tag] = sv.Field(i).Interface()
 			}
 		} else {
 			continue
 		}
-		key := openid
+		key := "user" + strconv.Itoa(userid)
 		redisDB.HMSet(key, temp)
 	}
 }
 
-//sql缓存到redis
-func (middle *Middle) Cache(table) {
-	redisCli := setting.RedisConn()
-	fmt.Println(redisCli)
-	// redisDb := setting.RedisClient()
-	// mysqlDb := setting.MysqlConn()
+func Cache()
 
-	// mysqlDb.
-}
+// //sql缓存到redis
+// func (middle *Middle) Cache(table) {
+// 	redisCli := setting.RedisConn()
+// 	fmt.Println(redisCli)
+// 	// redisDb := setting.RedisClient()
+// 	// mysqlDb := setting.MysqlConn()
+
+// 	// mysqlDb.
+// }

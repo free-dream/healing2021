@@ -46,11 +46,13 @@ request={composite,latest}
 
 **首次登录时缓存**
 
-**key:info{userid}，**
+**expire 7\*24h**
 
-| key    | f1          | f2       | f3       | f4        | f5     | f6          | f7   | f8     | f9         | f10              | f11              | f12                 |
-| ------ | ----------- | -------- | -------- | --------- | ------ | ----------- | ---- | ------ | ---------- | ---------------- | ---------------- | ------------------- |
-| userid | userid(int) | nickname | realname | signature | avatar | phonenumber | sex  | school | background | avatarvisible(0) | phonesearch(int) | realnamesearch(int) |
+**key:info{userid}，例如info5**
+
+| key          | f1          | f2       | f3       | f4        | f5     | f6          | f7   | f8     | f9         | f10              | f11              | f12                 |
+| ------------ | ----------- | -------- | -------- | --------- | ------ | ----------- | ---- | ------ | ---------- | ---------------- | ---------------- | ------------------- |
+| info{userid} | userid(int) | nickname | realname | signature | avatar | phonenumber | sex  | school | background | avatarvisible(0) | phonesearch(int) | realnamesearch(int) |
 
 ### 奖品缓存表
 
@@ -91,13 +93,13 @@ request={composite,latest}
 
 **用户积分表,高频更新,key是{userid}point的字符串，例如:64point**
 
-**score只增不减,point有增有减，完成任务score/point增加，抽奖point减少**
+**score只增不减,point有增有减，完成任务record/point增加，抽奖point减少**
 
 **每小时更新排行榜时进行更新**
 
-| key            | f1         | f2    |
-| -------------- | ---------- | ----- |
-| {userid}points | score(int) | point |
+| key            | f1          | f2         |
+| -------------- | ----------- | ---------- |
+| {userid}points | record(int) | point(int) |
 
 ### 点赞表
 
