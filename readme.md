@@ -140,23 +140,20 @@ Content-Type: application/json
 },
   "mySelections": {
       index:{
-    "model": "string" ,//模块名 治愈或是投递箱
     "song_name": "string",
     "created_at": "string", //"yyyy-mm-dd
     "anonymous": int, //1:匿名 2:不匿名
-    "healingId": int, //所点歌对应的治愈模块id
       }
   },
   "mySongs": {
       index:{
-    "model": "string" ,//模块名 治愈或是投递箱
+
     "created_at": "string",
     "song_name": "string",
       }
   },
   "myLikes": {
       index:{
-    "model": "string",
     "created_at": "string",
     "song_name": "string",
     "id": int, //对应点赞的id

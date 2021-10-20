@@ -73,21 +73,44 @@ func UpdateUser(user *User, openid string) error {
 	}
 	return nil
 }
+
+type UserMsg struct {
+	Avatar    string `json:"avatar"`
+	Nickname  string `json:"nickname"`
+	ID        int    `json:"id"`
+	School    string `json:"school"`
+	signature string `json:"signature"`
+}
+type SelectionMsg struct {
+	SongName  string `json:"song_name"`
+	CreatedAt string `json:"created_at"`
+}
+type CoverMsg struct {
+	SongName  string `json:"song_name"`
+	CreatedAt string `json:"created_at"`
+}
+type PraiseMsg struct {
+	SongName  string `json:"song_name"`
+	CreatedAt string `json:"created_at"`
+	ID        int    `json:"id"`
+}
+type MomentMsg struct {
+	SongName  string `json:"song_name"`
+	CreatedAt string `json:"created_at"`
+	ID        int    `json:"id"`
+	State     string `json:"state"`
+	Content   string `json:"content"`
+}
+
 func GetUser(openid string) interface{} {
-	user := statements.User{}
+	user := UserMsg{}
 	resp := make(map[string]interface{})
-	setting.DB.Table("user").Where("openid=?", openid).First(&user)
-	selection := statements.Selection{}
-	cover := statements.Cover{}
-	moment := statements.Moment{}
-
-	praise := statements.Praise{}
-
+	setting.DB.Table("user").Select("id,avatar,nickname,school,signature").Where("openid=?", openid).Scan(&user)
 	resp["message"] = user
-	resp["mySelections"] = get(user.ID, "selection", "user_id=?", selection)
-	resp["mySongs"] = get(user.ID, "cover", "user_id=?", cover)
-	resp["moments"] = get(user.ID, "moment", "user_id=?", moment)
-	resp["myLikes"] = getPraise(praise, user.ID)
+	resp["mySelections"] = getSelections(user.ID, "selection", "user_id=?")
+	resp["mySongs"] = getCovers(user.ID, "cover", "user_id=?")
+	resp["moments"] = getMoments(user.ID, "moment", "user_id=?")
+	resp["myLikes"] = getPraises(user.ID, "praise", "praise.user_id=?")
 
 	return resp
 }
@@ -98,35 +121,30 @@ func UpdateBackground(openid string, background string) error {
 }
 
 func GetCallee(id int) interface{} {
-	user := statements.User{}
+	user := UserMsg{}
 	resp := make(map[string]interface{})
 	setting.DB.Table("user").Where("id=?", id).Scan(&user)
-	selection := statements.Selection{}
-	cover := statements.Cover{}
-	moment := statements.Moment{}
-
-	praise := statements.Praise{}
-
 	resp["message"] = user
-	resp["mySelections"] = get(user.ID, "selection", "user_id=?", selection)
-	resp["mySongs"] = get(user.ID, "cover", "user_id=?", cover)
-	resp["moments"] = get(user.ID, "moment", "user_id=?", moment)
-	resp["myLikes"] = getPraise(praise, user.ID)
+	resp["mySelections"] = getSelections(user.ID, "selection", "user_id=?")
+	resp["mySongs"] = getCovers(user.ID, "cover", "user_id=?")
+	resp["moments"] = getMoments(user.ID, "moment", "user_id=?")
+	resp["myLikes"] = getPraises(user.ID, "praise", "praise.user_id=?")
 
 	return resp
 
 }
 
 //返回所有信息采用扫描行的方式
-func get(value interface{}, tableName string, condition string, obj interface{}) interface{} {
+
+func getPraises(value interface{}, tableName string, condition string) interface{} {
+	obj := PraiseMsg{}
+	rows, err = setting.DB.Table(tableName).Joins("left join cover on cover.id=praise.cover_id").Where(condition, value).Rows()
 	index := 0
 	content := make(map[int]interface{})
-	rows, err := setting.DB.Table(tableName).Where(condition, value).Rows()
 	if err != nil {
 		panic(err)
 	}
 	defer rows.Close()
-
 	for rows.Next() {
 		err = setting.DB.ScanRows(rows, &obj)
 		if err != nil {
@@ -137,22 +155,59 @@ func get(value interface{}, tableName string, condition string, obj interface{})
 	}
 	return content
 }
-func getPraise(praise statements.Praise, id uint) interface{} {
+func getCovers(value interface{}, tableName string, condition string) interface{} {
+	obj := CoverMsg{}
+	rows, err = setting.DB.Table(tableName).Where(condition, value).Rows()
 	index := 0
 	content := make(map[int]interface{})
-	rows, err := setting.DB.Table("praise").Where("user_id=?", id).Not("cover_id", "").Select("cover_id").Rows()
-	defer rows.Close()
 	if err != nil {
 		panic(err)
 	}
-	cover := statements.Cover{}
+	defer rows.Close()
 	for rows.Next() {
-		err := setting.DB.ScanRows(rows, &praise)
+		err = setting.DB.ScanRows(rows, &obj)
 		if err != nil {
 			panic(err)
 		}
-		setting.DB.Table("cover").Where("id=?", praise.CoverId).Scan(cover)
-		content[index] = cover
+		content[index] = obj
+		index++
+	}
+	return content
+}
+func getSelections(value interface{}, tableName string, condition string) interface{} {
+	obj := SelectionMsg{}
+	rows, err = setting.DB.Table(tableName).Where(condition, value).Rows()
+	index := 0
+	content := make(map[int]interface{})
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err = setting.DB.ScanRows(rows, &obj)
+		if err != nil {
+			panic(err)
+		}
+		content[index] = obj
+		index++
+	}
+	return content
+}
+func getMoments(value interface{}, tableName string, condition string) interface{} {
+	obj := MomentMsg{}
+	rows, err = setting.DB.Table(tableName).Where(condition, value).Rows()
+	index := 0
+	content := make(map[int]interface{})
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err = setting.DB.ScanRows(rows, &obj)
+		if err != nil {
+			panic(err)
+		}
+		content[index] = obj
 		index++
 	}
 	return content

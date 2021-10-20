@@ -12,12 +12,12 @@ func Register(ctx *gin.Context) {
 	//登录奖励机制尚未完成
 	session := sessions.Default(ctx)
 	openid := session.Get("openid").(string)
-	headImgUrl := session.Get("headImgUrl").(string)
+	//headImgUrl := session.Get("headImgUrl").(string)
 
 	user := dao.User{}
 	err := ctx.ShouldBindJSON(&user)
 	user.Openid = openid
-	user.Avatar = headImgUrl
+	//user.Avatar = headImgUrl
 	if err != nil {
 		ctx.JSON(401, gin.H{
 			"message": "error param",
