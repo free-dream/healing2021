@@ -16,7 +16,6 @@ require (
 	github.com/onsi/ginkgo v1.15.1 // indirect
 	github.com/onsi/gomega v1.11.0 // indirect
 	github.com/robfig/cron v1.2.0
-	github.com/satori/go.uuid v1.2.0
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/stretchr/testify v1.6.1 // indirect
 	github.com/ugorji/go v1.1.13 // indirect

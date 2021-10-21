@@ -2,6 +2,7 @@ package sandwich
 
 //需要更新的主要是以积分和点赞为代表的高频表
 //这些表更新的同时还需要更新相关的排序
+//redis的并发控制比较头疼
 
 import (
 	"strconv"
@@ -111,4 +112,26 @@ func (box *MailBox) UpdateLikes() {
 }
 
 //更新任务信息
-func (box *MailBox) UpdateTasks() {}
+func (box *MailBox) UpdateTasks() {
+	redisDb := setting.RedisConn()
+
+	//判空
+	if len(box.PointBox) == 0 {
+		return
+	}
+
+	//取值并写回
+	var process, check int
+	for key, _ := range box.TaskBox {
+		value := redisDb.HMGet(key, "process", "check").Val()
+		process = value[0].(int)
+		check = value[1].(int)
+
+		//解析key中的userid
+		taskid, _ := strconv.Atoi(strings.Split(key, "/")[2])
+		userid, _ := strconv.Atoi(strings.Split(key, "/")[0])
+		dao.UpdateTasks(userid, taskid, process, check)
+
+		delete(box.PointBox, key)
+	}
+}
