@@ -1,12 +1,14 @@
 package tradition
 
 import (
+	"fmt"
+	"strconv"
+
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"strconv"
 )
 
 //治愈详情页，返回相关歌曲信息
@@ -22,12 +24,12 @@ func HealingPageFetcher(ctx *gin.Context) {
 	selectionId, err := strconv.Atoi(param)
 	if err != nil {
 		panic(err)
-		return
+		// return
 	}
 	resp, err := dao.GetHealingPage(selectionId)
 	if err != nil {
 		panic(err)
-		return
+		// return
 	}
 
 	ctx.JSON(200, gin.H{
@@ -40,7 +42,7 @@ func AdsPlayer(ctx *gin.Context) {
 	resp, err := dao.GetAds()
 	if err != nil {
 		panic(err)
-		return
+		// return
 	}
 	ctx.JSON(200, resp)
 
@@ -59,7 +61,7 @@ func SelectionFetcher(ctx *gin.Context) {
 	resp, err := dao.GetSelections(tag)
 	if err != nil {
 		panic(err)
-		return
+		// return
 	}
 	ctx.JSON(200, resp)
 
@@ -76,7 +78,7 @@ func CoverFetcher(ctx *gin.Context) {
 	resp, err := dao.GetCovers(tag)
 	if err != nil {
 		panic(err)
-		return
+		// return
 	}
 	ctx.JSON(200, resp)
 
@@ -84,7 +86,7 @@ func CoverFetcher(ctx *gin.Context) {
 
 type RecordParams struct {
 	SelectionId string   `json:"selection_id" binding:"required"`
-	record      []string `json:"record" binding:"required"`
+	Record      []string `json:"record" binding:"required"`
 }
 
 //唱歌接口
@@ -96,7 +98,8 @@ func Recorder(c *gin.Context) {
 		c.JSON(400, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
-	url, err := convertMediaIdArrToQiniuUrl(params.record)
+	fmt.Println(params.Record)
+	url, err := convertMediaIdArrToQiniuUrl(params.Record)
 	if err != nil {
 		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
@@ -122,10 +125,10 @@ func LikePoster(ctx *gin.Context) {
 	coverId, err := strconv.Atoi(id)
 	if err != nil {
 		panic(err)
-		ctx.JSON(401, gin.H{
-			"message": "error param",
-		})
-		return
+		// ctx.JSON(401, gin.H{
+		// 	"message": "error param",
+		// })
+		// return
 	}
 	session := sessions.Default(ctx)
 	openid := session.Get("openid").(string)

@@ -28,7 +28,7 @@ type User struct {
 }
 
 func UserInit() {
-	db := setting.MysqlConn()
+	db := setting.DB
 
 	if !db.HasTable(&User{}) {
 		if err := db.CreateTable(&User{}).Error; err != nil {

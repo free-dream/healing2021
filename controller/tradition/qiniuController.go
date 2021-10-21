@@ -26,7 +26,7 @@ type Token struct {
 	UpToken string `json:"uptoken"`
 }
 
-const g_bucket = "healing2021"
+const g_bucket = "healing2020"
 const g_wechat_media_download_url = "https://api.weixin.qq.com/cgi-bin/media/get/jssdk?access_token=%s&media_id=%s"
 
 var g_qiniu_upload_config storage.Config
@@ -63,6 +63,7 @@ func QiniuToken(c *gin.Context) {
 }
 
 func convertMediaIdArrToQiniuUrl(media_id_arr []string) (string, error) {
+	fmt.Println(media_id_arr)
 	new_name := media_id_arr[0] + fmt.Sprintf("%d", time.Now().Unix())
 	if err := downloadSpeexFromWechat(media_id_arr); err != nil {
 		return "", err
@@ -80,7 +81,7 @@ func convertMediaIdArrToQiniuUrl(media_id_arr []string) (string, error) {
 		return "", err
 	}
 	removeTmpFiles(media_id_arr)
-	return fmt.Sprintf("http://cdn.healing2020.100steps.top/%s.mp3", new_name), nil
+	return fmt.Sprintf("http://cdn.healing2021.100steps.top/%s.mp3", new_name), nil
 }
 
 func getUploadToken() string {
@@ -104,7 +105,7 @@ func downloadSpeexFromWechat(media_id_arr []string) error {
 		if err != nil {
 			//handle nerwork error
 			panic(err)
-			return err
+			// return err
 		}
 		defer resp.Body.Close()
 
@@ -122,7 +123,7 @@ func downloadSpeexFromWechat(media_id_arr []string) error {
 		if err != nil {
 			// handle os error
 			panic(err)
-			return err
+			// return err
 		}
 		io.Copy(f, resp.Body)
 	}
