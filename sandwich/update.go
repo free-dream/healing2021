@@ -6,36 +6,68 @@ package sandwich
 import (
 	"strconv"
 	"strings"
+	"sync"
 
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
 
 type MailBox struct {
-	PointsBox map[string]int
-	TaskBox   map[string]int
+	PointBox map[string]int
+	TaskBox  map[string]int
+	LikeBox  bool
 }
 
-var Sandwich *MailBox
+var (
+	Sandwich *MailBox
+)
 
 func init() {
 	Sandwich = new(MailBox)
-	Sandwich.PointsBox = make(map[string]int)
+	Sandwich.PointBox = make(map[string]int)
 	Sandwich.TaskBox = make(map[string]int)
 }
 
+func (box *MailBox) Update(tube chan int) {
+	var wg sync.WaitGroup
+	wg.Add(3)
+
+	go func() {
+		if len(box.PointBox) > 0 {
+			box.UpdatePoints()
+		}
+		wg.Done()
+	}()
+
+	go func() {
+		if len(box.TaskBox) > 0 {
+			box.UpdateTasks()
+		}
+		wg.Done()
+	}()
+
+	go func() {
+		if box.LikeBox {
+			box.UpdateLikes()
+		}
+		wg.Done()
+	}()
+
+	wg.Wait()
+}
+
 //更新points数据
-func (box *MailBox) updatePoints() {
+func (box *MailBox) UpdatePoints() {
 	redisDb := setting.RedisConn()
 
 	//判空
-	if len(box.PointsBox) == 0 {
+	if len(box.PointBox) == 0 {
 		return
 	}
 
 	//取值并写回
 	var record, point int
-	for key, _ := range box.PointsBox {
+	for key, _ := range box.PointBox {
 		value := redisDb.HMGet(key, "record", "point").Val()
 		record = value[0].(int)
 		point = value[1].(int)
@@ -44,12 +76,12 @@ func (box *MailBox) updatePoints() {
 		userid, _ := strconv.Atoi(strings.Split(key, "/")[0])
 		dao.UpdatePoints(userid, record, point)
 
-		delete(box.PointsBox, key)
+		delete(box.PointBox, key)
 	}
 }
 
 //更新点赞数
-func (box *MailBox) updateLikes() {
+func (box *MailBox) UpdateLikes() {
 	redisDb := setting.RedisConn()
 	//userid
 	userid := 0
@@ -77,3 +109,6 @@ func (box *MailBox) updateLikes() {
 		dao.UpdateLikesByID(userid, member, likes, "cover")
 	}
 }
+
+//更新任务信息
+func (box *MailBox) UpdateTasks() {}
