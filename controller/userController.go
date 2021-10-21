@@ -1,10 +1,11 @@
 package controller
 
 import (
+	"strconv"
+
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"strconv"
 )
 
 //用户注册
@@ -33,7 +34,6 @@ func Register(ctx *gin.Context) {
 	}
 	if err2 != nil {
 		panic(err)
-		return
 	}
 	ctx.JSON(200, "OK")
 
@@ -85,7 +85,6 @@ func Refresher(ctx *gin.Context) {
 
 	if err != nil {
 		panic(err)
-		return
 	}
 	err = dao.UpdateBackground(openid, obj.Background)
 	if err != nil {
@@ -113,7 +112,6 @@ func GetOther(ctx *gin.Context) {
 			"message": "error param",
 		})
 		panic(err)
-		return
 	}
 	resp := dao.GetCallee(calleeId)
 	ctx.JSON(200, resp)

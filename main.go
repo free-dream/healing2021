@@ -2,6 +2,10 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
+	"syscall"
+
 	"git.100steps.top/100steps/healing2021_be/controller/auth"
 	"git.100steps.top/100steps/healing2021_be/cron"
 	"git.100steps.top/100steps/healing2021_be/models"
@@ -9,11 +13,10 @@ import (
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"git.100steps.top/100steps/healing2021_be/router"
-	"github.com/fvbock/endless"
-	"io/ioutil"
-	"log"
-	"syscall"
+
 	"time"
+
+	"github.com/fvbock/endless"
 )
 
 // @Title healing2021
@@ -53,5 +56,4 @@ func main() {
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatalln(err.Error())
 	}
-
 }

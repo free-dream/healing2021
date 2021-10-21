@@ -11,19 +11,19 @@ import (
 type User struct {
 	gorm.Model
 	Openid         string `gorm:"default: '';index"`
-	Nickname       string `gorm:"default: ''"`
-	RealName       string `gorm:"default: ''"`
-	Signature      string `gorm:"default: ''"`
-	Avatar         string `gorm:"default: ''"`
-	PhoneNumber    string `gorm:"default: ''"`
-	Sex            int    `gorm:"default: 0"`
-	School         string `gorm:"default: ''"`
-	Points         int    `gorm:"default: 0"`
-	Record         int    `gorm:"default: 0"`
-	Background     string `gorm:"default: ''"`
-	AvatarVisible  int    `gorm:"default:0"`
-	PhoneSearch    int    `gorm:"default:0"`
-	RealNameSearch int    `gorm:"default:0"`
+	Nickname       string `gorm:"default: ''" json:"nickname"`
+	RealName       string `gorm:"default: ''" json:"realname"`
+	Signature      string `gorm:"default: ''" json:"signature"`
+	Avatar         string `gorm:"default: ''" json:"avatar"`
+	PhoneNumber    string `gorm:"default: ''" json:"phonenumber"`
+	Sex            int    `gorm:"default: 0" json:"sex"`
+	School         string `gorm:"default: ''" json:"school"`
+	Points         int    `gorm:"default: 0" json:"points"`
+	Record         int    `gorm:"default: 0" json:"record"`
+	Background     string `gorm:"default: ''" json:"background"`
+	AvatarVisible  int    `gorm:"default:0" json:"avatarvisible"`
+	PhoneSearch    int    `gorm:"default:0" json:"phonesearch"`
+	RealNameSearch int    `gorm:"default:0" json:"realnamesearch"`
 	LoginTime      time.Time
 }
 

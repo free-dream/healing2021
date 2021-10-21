@@ -3,18 +3,19 @@ package dao
 import (
 	"database/sql"
 	"errors"
+	"strconv"
+
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
-	"strconv"
 )
 
 type UsrMsg struct {
 	ID        int    `json:"selectionId"`
 	Style     string `json:"style"`
 	CreatedAt string `json:"created_at"`
-	SongName  string `json:"song_name":""`
-	Remark    string `json:"remark":""`
-	Nickname  string `json:"nickname":""`
+	SongName  string `json:"song_name"`
+	Remark    string `json:"remark"`
+	Nickname  string `json:"nickname"`
 }
 
 var rows *sql.Rows
@@ -121,7 +122,6 @@ func GetSelections(tag Tags) (interface{}, error) {
 		err = setting.DB.ScanRows(rows, &content)
 		if err != nil {
 			break
-			return nil, err
 		}
 		content[index] = content
 		index++
@@ -168,7 +168,6 @@ func GetCovers(tag Tags) (interface{}, error) {
 		err = setting.DB.ScanRows(rows, &content)
 		if err != nil {
 			break
-			return nil, err
 		}
 		content[index] = content
 		index++
@@ -211,7 +210,7 @@ func CreateRecord(id string, file string, uid int) error {
 		return errors.New("selection_id is unvalid")
 	}
 	var cover statements.Cover
-	cover.SelectionId = selectionId
+	cover.SelectionId = strconv.Itoa(selectionId)
 	cover.UserId = userId
 	cover.SongName = selection.SongName
 	cover.Likes = 0
