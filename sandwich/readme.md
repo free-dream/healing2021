@@ -93,15 +93,15 @@ request={composite,latest}
 
 ### 用户积分
 
-**用户积分表,高频更新,key是{userid}point的字符串，例如:64point**
+**用户积分表,高频更新,key是{userid}/point的字符串，例如:64/point**
 
 **score只增不减,point有增有减，完成任务record/point增加，抽奖point减少**
 
 **每小时更新排行榜时进行更新**
 
-| key           | f1          | f2         |
-| ------------- | ----------- | ---------- |
-| {userid}point | record(int) | point(int) |
+| key            | f1          | f2         |
+| -------------- | ----------- | ---------- |
+| {userid}/point | record(int) | point(int) |
 
 ### 任务表
 
@@ -109,9 +109,9 @@ request={composite,latest}
 
 **登录时缓存一次,之后定时更新**
 
-| key                       | f1           | f2         |
-| ------------------------- | ------------ | ---------- |
-| {userid}task{tasktableid} | process(int) | check(int) |
+| key                         | f1           | f2         |
+| --------------------------- | ------------ | ---------- |
+| {userid}/task/{tasktableid} | process(int) | check(int) |
 
 
 

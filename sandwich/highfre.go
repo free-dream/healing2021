@@ -55,7 +55,7 @@ func Changepoints(point float64) bool {
 	var userid int = 0
 	//
 	redisDb := setting.RedisConn()
-	tempkey := strconv.Itoa(userid) + "point"
+	tempkey := strconv.Itoa(userid) + "/point"
 
 	if data, _ := strconv.Atoi(redisDb.HGet(tempkey, "point").Val()); data < int(math.Abs(point)) {
 		return false
@@ -72,7 +72,7 @@ func HandleTask(process int, tasktableid int) bool {
 	var userid int = 0
 	//
 	redisDb := setting.RedisConn()
-	tempkey := strconv.Itoa(userid) + "task" + strconv.Itoa(tasktableid)
+	tempkey := strconv.Itoa(userid) + "/task/" + strconv.Itoa(tasktableid)
 
 	currentval := redisDb.HIncrBy(tempkey, "record", int64(process)).Val()
 	target := redisDb.HMGet("task"+strconv.Itoa(tasktableid), "target").Val()
