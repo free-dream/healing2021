@@ -11,7 +11,7 @@ import (
 //liketype{0:cover;1:moment;comment:2}
 //throw回bool,交付接口处理点赞信息
 
-//其它的任务任务对应积分常量
+//其它的任务对应积分常量
 const (
 	DRAWCOST int = -200
 )
@@ -67,15 +67,15 @@ func Changepoints(point float64) bool {
 }
 
 //用户任务进度更新,若任务已完成，return true
-func HandleTask(process int, taskid int) bool {
+func HandleTask(process int, tasktableid int) bool {
 	//此处应有读取用户userid的操作
 	var userid int = 0
 	//
 	redisDb := setting.RedisConn()
-	tempkey := strconv.Itoa(userid) + "task" + strconv.Itoa(taskid)
+	tempkey := strconv.Itoa(userid) + "task" + strconv.Itoa(tasktableid)
 
 	currentval := redisDb.HIncrBy(tempkey, "record", int64(process)).Val()
-	target := redisDb.HMGet("task"+strconv.Itoa(taskid), "target").Val()
+	target := redisDb.HMGet("task"+strconv.Itoa(tasktableid), "target").Val()
 	targetval, _ := target[0].(int64)
 
 	if currentval >= targetval {

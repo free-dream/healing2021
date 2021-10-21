@@ -4,7 +4,7 @@
 
 1. 点赞操作和数值缓存
 2. 预缓存热榜/用户信息/任务
-3. 此处的接口都要求前端
+3. 此处的接口都要求前端传回带openid的cookie
 
 ## 缓存表
 
@@ -109,9 +109,9 @@ request={composite,latest}
 
 **登录时缓存一次,之后定时更新**
 
-| key                  | f1           | f2         |
-| -------------------- | ------------ | ---------- |
-| {userid}task{taskid} | process(int) | check(int) |
+| key                       | f1           | f2         |
+| ------------------------- | ------------ | ---------- |
+| {userid}task{tasktableid} | process(int) | check(int) |
 
 
 
