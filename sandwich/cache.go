@@ -115,11 +115,11 @@ func CacheTask(records []*statements.Task) {
 	}
 }
 
-//展示缓存礼品
-func CachePrizes(prizes []*statements.Prize) {
+//缓存所有礼品
+func CachePrizes(lotteries []*statements.Lottery) {
 	redisDB := setting.RedisConn()
 	temp := make(map[string]interface{})
-	for i, data := range prizes {
+	for i, data := range lotteries {
 		st := reflect.TypeOf(data)
 		sv := reflect.ValueOf(data)
 		for i := 0; i < st.NumField(); i++ {
@@ -134,7 +134,7 @@ func CachePrizes(prizes []*statements.Prize) {
 				continue
 			}
 		}
-		key := "prize" + strconv.Itoa(i)
+		key := "lottery" + strconv.Itoa(i)
 		redisDB.HMSet(key, temp)
 	}
 }

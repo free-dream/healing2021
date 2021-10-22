@@ -636,7 +636,7 @@ Content-Type: application/json
 [//已按照时间戳进行排序
     {
         "name":string,	//奖品名
-        "picture":string	//奖品图片url
+        "picture":string,	//奖品图片url
     }
     ...
 ]

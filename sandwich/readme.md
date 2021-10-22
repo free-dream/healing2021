@@ -56,7 +56,13 @@ request={composite,latest}
 
 ### 奖品缓存表
 
-——>抽奖接口，完成接口的时候搞定
+**展示所有奖品,只缓存一次**
+
+| key              | prize  | possibility     |
+| ---------------- | ------ | --------------- |
+| lottery{prizeid} | string | string(float64) |
+
+
 
 ### 任务缓存表
 
