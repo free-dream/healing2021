@@ -10,9 +10,9 @@ import (
 
 type Prize struct {
 	gorm.Model
-	UserId int       `gorm:"default:0;index"`
-	Prize  int       `gorm:"default:0"`
-	Date   time.Time `gorm:"default:null"`
+	UserId int       `gorm:"default:0;index" json:"userid"`
+	Prize  int       `gorm:"default:0" json:"prize"`
+	Date   time.Time `gorm:"default:null" json:"date"`
 }
 
 func PrizeInit() {

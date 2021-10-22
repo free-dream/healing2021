@@ -100,14 +100,14 @@ func (box *MailBox) UpdateLikes() {
 	for _, unit := range momentdata {
 		likes = int(unit.Score)
 		member = unit.Member.(int)
-		dao.UpdateLikesByID(userid, member, likes, "cover")
+		dao.UpdateLikesByID(userid, member, likes, "moment")
 	}
 
 	commentdata := redisDb.ZRangeWithScores("comment", 0, -1).Val()
 	for _, unit := range commentdata {
 		likes = int(unit.Score)
 		member = unit.Member.(int)
-		dao.UpdateLikesByID(userid, member, likes, "cover")
+		dao.UpdateLikesByID(userid, member, likes, "comment")
 	}
 }
 

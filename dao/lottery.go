@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"git.100steps.top/100steps/healing2021_be/models/statements"
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	db "git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
@@ -13,7 +14,9 @@ var (
 )
 
 //不展示奖品归属
-func GetAllLotteries() {}
+func GetAllLotteries() {
+	var prize statements.Prize
+}
 
 //根据lottery里奖品的归属拉取奖品列表
 func GetPrizes() {}

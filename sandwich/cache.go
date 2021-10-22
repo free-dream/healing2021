@@ -115,6 +115,30 @@ func CacheTask(records []*statements.Task) {
 	}
 }
 
+//展示缓存礼品
+func CachePrizes(prizes []*statements.Prize) {
+	redisDB := setting.RedisConn()
+	temp := make(map[string]interface{})
+	for i, data := range prizes {
+		st := reflect.TypeOf(data)
+		sv := reflect.ValueOf(data)
+		for i := 0; i < st.NumField(); i++ {
+			field := st.Field(i)
+			if tag, ok := field.Tag.Lookup("json"); ok {
+				if tag == "" {
+					continue
+				} else {
+					temp[tag] = sv.Field(i).Interface()
+				}
+			} else {
+				continue
+			}
+		}
+		key := "prize" + strconv.Itoa(i)
+		redisDB.HMSet(key, temp)
+	}
+}
+
 // //sql缓存到redis
 // func (middle *Middle) Cache(table) {
 // 	redisCli := setting.RedisConn()
