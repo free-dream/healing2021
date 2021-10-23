@@ -1286,7 +1286,7 @@ Content-Type: application/json
     {
         "dynamics_id": integer,
         "content": string,								// 动态的内容
-        "created_at": timestamp,
+        "created_at": yyyy-mm-dd-hh-mm,
         "song" : string,								// 要分享的歌名
         "lauds" : integer,								// 动态的点赞数
         "lauded": integer(0/1),							// 当前用户是否点赞该动态
@@ -1351,7 +1351,7 @@ Content-Type: application/json
 {
     "dynamics_id": integer,
     "content": string,								// 动态的内容
-    "created_at": timestamp,
+    "created_at": yyyy-mm-dd-hh-mm,
     "song" : string,								// 要分享的歌名
     "lauds" : integer,								// 动态的点赞数
     "lauded": integer(0/1),							// 当前用户是否点赞该动态
@@ -1425,7 +1425,7 @@ Content-Type: application/json
             "avatar": string(url),						// 头像
             "avatar_visible": integer(0/1)				// 是否设置了头像（0代表没设置）
         },
-        "created_at": timestamp,
+        "created_at": yyyy-mm-dd-hh-mm,
         "lauds" : integer,								// 动态的点赞数
     	"lauded": integer(0/1)							// 当前用户是否点赞该动态
     },
@@ -1463,11 +1463,9 @@ Content-Type: application/json
 
 `{"message" : "取消点赞失败"}`
 
-## 6.7 热门搜索（最多十条）
+## 6.7 动态热门搜索（最多十条）
 
 GET /dynamics/hot HTTP1.1
-
-id 为动态对应的 id
 
 成功时：
 
@@ -1495,8 +1493,6 @@ Content-Type: application/json
 
 GET /dynamics/states HTTP1.1
 
-id 为动态对应的 id
-
 成功时：
 
 HTTP/1.1 200 OK
@@ -1519,5 +1515,33 @@ Content-Type: application/json
 {"message" : "服务端出错"}
 ```
 
-## 6.9 动态、评论删除（仅管理员可用）
+## 6.9 动态、评论删除
 
+仅管理员可用，现不妨将 userId 为 0-5 的账号预留，当管理员账号
+
+POST /administrators/content HTTP1.1
+
+成功时：
+
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+```json
+{
+    "type" : int (1代表动态，2代表评论),
+    "id" : int (对应动态、评论的Id)
+}
+```
+
+失败时(例子)：
+
+HTTP/1.1 500 Forbidden
+
+Content-Type: application/json
+
+```
+{"message" : "服务端出错"}
+```
+
+## 

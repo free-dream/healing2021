@@ -7,7 +7,7 @@ import (
 )
 
 type DeleteParams struct {
-	Type string `json:"type"`
+	Type int `json:"type"`
 	Id   int    `json:"id"`
 }
 
@@ -21,17 +21,17 @@ func DeleteMessage(ctx *gin.Context)  {
 	}
 
 	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
+	// 不妨将 userid 小于5的账号预留，充当管理员
 	if UserId > 5{
 		ctx.JSON(403, e.ErrMsgResponse{Message: "当前用户并非管理员"})
 		return
 	}
 
 	// 分模式进行删除内容
-	if param.Type != "momentcommont" && param.Type != "moment"{
+	if param.Type != 1 && param.Type != 2{
 		ctx.JSON(403, e.ErrMsgResponse{Message: "参数错误"})
 		return
 	}
-
 
 	ctx.JSON(200, e.ErrMsgResponse{Message: "删除操作成功"})
 }
