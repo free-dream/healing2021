@@ -2,6 +2,7 @@ package tools
 
 import (
 	"fmt"
+
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
 
 	"github.com/gin-contrib/sessions"
@@ -32,10 +33,10 @@ func GetUser(c *gin.Context) RedisUser {
 	data := session.Get("user")
 
 	// 用于测试
-	if IsDebug(){
+	if IsDebug() {
 		fmt.Println("默认提供一个已经登录好的用户,ID=1")
 		return RedisUser{
-			Model:gorm.Model{ID: 1},
+			Model: gorm.Model{ID: 1},
 		}
 	}
 
@@ -45,4 +46,12 @@ func GetUser(c *gin.Context) RedisUser {
 		return RedisUser{}
 	}
 	return data.(RedisUser)
+}
+
+//获取openid
+func GetOpenid(ctx *gin.Context) string {
+	session := sessions.Default(ctx)
+	raw := session.Get("openid")
+	openid := raw.(string)
+	return openid
 }

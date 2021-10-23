@@ -10,6 +10,16 @@ var (
 	MysqlDb = db.MysqlConn()
 )
 
+//获取用户id，不应该放在这里
+func GetUserid(openid string) (int, error) {
+	var user tables.User
+	err := MysqlDb.Where("OpenId = ?", openid).First(&user).Error
+	if err != nil {
+		return -1, err
+	}
+	return int(user.ID), nil
+}
+
 //获取所有奖品，不展示奖品归属
 func GetAllLotteries() ([]tables.Lottery, error) {
 	var lotteries []tables.Lottery
@@ -21,8 +31,8 @@ func GetAllLotteries() ([]tables.Lottery, error) {
 }
 
 //根据lottery里奖品的归属拉取奖品列表
-func GetPrizesById(userid int) ([]tables.Prize, error) {
-	var prizes []tables.Prize
+func GetPrizesById(userid int) ([]tables.Lottery, error) {
+	var prizes []tables.Lottery
 	err := MysqlDb.Where("UserId = ?", userid).Find(&prizes).Error
 	if err != nil {
 		return nil, err
@@ -38,6 +48,7 @@ func GetPrizesById(userid int) ([]tables.Prize, error) {
 	return true
 }*/
 
+//我的回合，抽卡！
 func Draw(id int) (tables.Lottery, error) {
 	var target tables.Lottery
 	err := MysqlDb.Where("Id = ?", id).Find(target).Error

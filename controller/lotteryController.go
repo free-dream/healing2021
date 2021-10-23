@@ -1,9 +1,8 @@
 package controller
 
 import (
-	"fmt"
-
 	"git.100steps.top/100steps/healing2021_be/dao"
+	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	resp "git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"github.com/gin-gonic/gin"
@@ -11,11 +10,12 @@ import (
 
 const (
 	PRIZES = 100 //暂定
+	DRAW   = 200 //抽奖的代价
 )
 
-func test() {
-	fmt.Println("test")
-}
+var (
+	openid string = "test"
+)
 
 func errHandler(err error) {
 	if err != nil {
@@ -24,6 +24,7 @@ func errHandler(err error) {
 }
 
 //抽奖算法
+//在等奖品的安排和可能性
 func methods(possibilities ...float64) int {
 	base := 0
 	phase := make([]int, 10)
@@ -42,17 +43,14 @@ func methods(possibilities ...float64) int {
 	switch i {
 
 	}
-	return 0
+	return -1
 }
 
-//获取用户积分数
-func getPoints() int {
-	return 0
-}
-
-//索引时按概率大小排序,小--大
-//先在redis里找，没有再索引数据库
-//GET /healing/lotterybox/lotteries
+/*
+索引时按概率大小排序,小--大
+先在redis里找，没有再索引数据库
+GET /healing/lotterybox/lotteries
+*/
 func GetLotteries(ctx *gin.Context) {
 	//从数据库里调，redis爆炸的备选方案
 	lotteries := make([]resp.LotteryResp, 10)
@@ -68,16 +66,58 @@ func GetLotteries(ctx *gin.Context) {
 	ctx.JSON(200, lotteries)
 }
 
-//POST /healing/lotterybox/draw
+//GET /healing/lotterybox/draw
+//先写mysql的版本,防爆,暂时没有写回mysql
 func Draw(ctx *gin.Context) {
-	id := methods()
-	result, err := dao.Draw(id)
+	//返回格式
+	drawResp := new(respModel.DrawResp)
+	//获取openid和userid和points
+	openid := tools.GetOpenid(ctx)
+	userid, err := dao.GetUserid(openid)
 	errHandler(err)
-	ctx.JSON(200, result)
+	points, err := dao.GetPoints(userid)
+	errHandler(err)
+	//判断是否可抽
+	if points < DRAW {
+		drawResp.Check = 2
+		ctx.JSON(200, drawResp)
+		return
+	}
+	//抽卡，中或不中
+	prizeid := methods()
+	//不中
+	if prizeid < 0 {
+		drawResp.Check = 0
+		ctx.JSON(200, drawResp)
+	}
+	//中
+	result, err := dao.Draw(prizeid)
+	errHandler(err)
+	drawResp.Check = 1
+	drawResp.Name = result.Name
+	drawResp.Picture = result.Picture
+	ctx.JSON(200, drawResp)
 }
 
 //GET /healing/lotterybox/prizes
-func GetPrizes(ctx *gin.Context) {}
+//同理，先写mysql版本的防爆
+func GetPrizes(ctx *gin.Context) {
+	prizes := make([]respModel.PrizesResp, 10)
+	//获取openid和userid
+	openid := tools.GetOpenid(ctx)
+	userid, err := dao.GetUserid(openid)
+	errHandler(err)
+	//获取中奖数据
+	raws, err := dao.GetPrizesById(userid)
+	errHandler(err)
+	for _, prize := range raws {
+		res := new(respModel.PrizesResp)
+		res.Name = prize.Name
+		res.Picture = prize.Picture
+		prizes = append(prizes, *res)
+	}
+	ctx.JSON(200, prizes)
+}
 
 //GET /healing/lotterybox/tasktable
 func GetTasktable(ctx *gin.Context) {}

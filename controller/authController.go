@@ -1,12 +1,13 @@
 package controller
 
 import (
+	"io"
+	"os"
+
 	"git.100steps.top/100steps/ginwechat"
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"io"
-	"os"
 )
 
 // 微信登录
@@ -66,10 +67,10 @@ func FakeLogin(ctx *gin.Context) {
 
 	if err != nil {
 		panic(err)
-		ctx.JSON(401, gin.H{
-			"message": "error param",
-		})
-		return
+		// ctx.JSON(401, gin.H{
+		// 	"message": "error param",
+		// })
+		// return
 	}
 	openid, err1 := dao.FakeCreateUser(&user)
 	if err1 != nil {
@@ -83,7 +84,7 @@ func FakeLogin(ctx *gin.Context) {
 	err2 := session.Save()
 	if err2 != nil {
 		panic(err2)
-		return
+		// return
 	}
 	ctx.JSON(200, "OK")
 }
