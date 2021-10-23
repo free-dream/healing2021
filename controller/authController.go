@@ -1,4 +1,4 @@
-package auth
+package controller
 
 import (
 	"git.100steps.top/100steps/ginwechat"

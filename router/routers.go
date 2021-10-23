@@ -2,7 +2,6 @@ package router
 
 import (
 	"encoding/gob"
-	"git.100steps.top/100steps/healing2021_be/controller/tradition"
 	"git.100steps.top/100steps/healing2021_be/models"
 	"io"
 	"log"
@@ -10,10 +9,7 @@ import (
 	"time"
 
 	"git.100steps.top/100steps/healing2021_be/controller"
-	"git.100steps.top/100steps/healing2021_be/controller/auth"
-	"git.100steps.top/100steps/healing2021_be/controller/childhood"
 	"git.100steps.top/100steps/healing2021_be/controller/middleware"
-	"git.100steps.top/100steps/healing2021_be/controller/playground"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"github.com/gin-contrib/sessions"
@@ -61,9 +57,9 @@ func SetupRouter() *gin.Engine {
 	})
 	//授权路由
 	if tools.IsDebug() {
-		r.GET(test_prefix+"/auth", auth.FakeLogin)
+		r.GET(test_prefix+"/auth", controller.FakeLogin)
 	} else {
-		r.GET(test_prefix+"/auth", auth.WechatUser)
+		r.GET(test_prefix+"/auth", controller.WechatUser)
 	}
 
 	// 业务路由
@@ -77,27 +73,28 @@ func SetupRouter() *gin.Engine {
 	api.POST("/background", controller.Refresher)
 	api.GET("/callee", controller.GetOther)
 	//qiniu
-	api.GET("/qiniu/token", tradition.QiniuToken)
+	api.GET("/qiniu/token", controller.QiniuToken)
 	//经典治愈 模块
-	api.GET("/healingPage", tradition.HealingPageFetcher)
-	api.GET("/healing/bulletin", tradition.AdsPlayer)
-	api.GET("/healing/selections/list", tradition.SelectionFetcher)
-	api.GET("/healing/covers/list", tradition.CoverFetcher)
-	api.POST("/healing/cover", tradition.Recorder)
-	api.POST("healing/cover/likes", tradition.LikePoster)
+	api.GET("/healingPage", controller.HealingPageFetcher)
+	api.GET("/healing/bulletin", controller.AdsPlayer)
+	api.GET("/healing/selections/list", controller.SelectionFetcher)
+	api.GET("/healing/covers/list", controller.CoverFetcher)
+	api.POST("/healing/cover", controller.Recorder)
+	api.POST("healing/cover/likes", controller.LikePoster)
 	// childhood 模块
-	api.GET("/childhood/rank", childhood.GetRank)
-	api.GET("/childhood/list", childhood.GetList)
-	api.GET("/childhood/original/:name/info", childhood.GetOriginalInfo)
-	api.GET("/childhood/original/:name/cover", childhood.GetOriginalSingerList)
-	api.POST("/healing/player", childhood.LoadSongs)
+	api.GET("/childhood/rank", controller.GetRank)
+	api.GET("/childhood/list", controller.GetList)
+	api.GET("/childhood/original/:name/info", controller.GetOriginalInfo)
+	api.GET("/childhood/original/:name/cover", controller.GetOriginalSingerList)
+	api.POST("/healing/player", controller.LoadSongs)
 	// 广场 模块
-	api.GET("/dynamics/list/:method", playground.GetMomentList)
-	api.POST("/dynamics/send", playground.PostMoment)
-	api.GET("/dynamics/detail/:id", playground.GetMomentDetail)
-	api.POST("/dynamics/comment", playground.PostComment)
-	api.GET("/dynamics/comment/:id", playground.GetCommentList)
-	api.PUT("/laud/:type/:id", playground.PriseOrNot)
+	api.GET("/dynamics/list/:method", controller.GetMomentList)
+	api.POST("/dynamics/send", controller.PostMoment)
+	api.GET("/dynamics/detail/:id", controller.GetMomentDetail)
+	api.POST("/dynamics/comment", controller.PostComment)
+	api.GET("/dynamics/comment/:id", controller.GetCommentList)
+	api.PUT("/laud/:type/:id", controller.PriseOrNot)
+	api.POST("/administrators", controller.DeleteMessage)
 
 	return r
 }

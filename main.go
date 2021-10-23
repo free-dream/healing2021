@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	"git.100steps.top/100steps/healing2021_be/controller"
 	"io/ioutil"
 	"log"
 	"syscall"
 
-	"git.100steps.top/100steps/healing2021_be/controller/auth"
 	"git.100steps.top/100steps/healing2021_be/cron"
 	"git.100steps.top/100steps/healing2021_be/models"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
@@ -31,7 +31,7 @@ func main() {
 
 	models.TableInit()
 	routers := router.SetupRouter()
-	auth.Login()
+	controller.Login()
 	defer setting.DB.Close()
 	defer setting.RedisClient.Close()
 	var port string

@@ -1,4 +1,4 @@
-package childhood
+package controller
 
 import (
 	"git.100steps.top/100steps/healing2021_be/dao"

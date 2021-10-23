@@ -1,4 +1,4 @@
-package tradition
+package controller
 
 import (
 	"fmt"
