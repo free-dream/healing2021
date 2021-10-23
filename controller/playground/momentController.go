@@ -1,7 +1,6 @@
 package playground
 
 import (
-	"fmt"
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
@@ -14,7 +13,6 @@ import (
 // 拉取广场动态列表[三种模式:new/recommend/search]
 func GetMomentList(ctx *gin.Context) {
 	var MomentsResp []respModel.MomentResp
-	var TmpMoment respModel.MomentResp
 	// 获取 url 参数
 	Method := ctx.Param("method")
 	Keyword := ctx.Query("keyword")
@@ -42,31 +40,29 @@ func GetMomentList(ctx *gin.Context) {
 
 	// 获取和整理其他所需信息，装进 response
 	for _, OneMoment := range AllMoment {
-		// 错误判断还没做
-		TmpMoment.Content = OneMoment.Content
-		TmpMoment.DynamicsId = int(OneMoment.ID)
-		TmpMoment.CreatedAt = OneMoment.CreatedAt
-		TmpMoment.Song = OneMoment.SongName
-		TmpMoment.SelectionId = OneMoment.SelectionId
-		TmpMoment.Lauds = dao.CountMLaudsById(TmpMoment.DynamicsId)
-		//把缓存加进来之前注释的部分都用不了
-		UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
-		TmpMoment.Lauded = dao.HaveMLauded(int(UserId), TmpMoment.DynamicsId)
-
-		TmpMoment.Comments = dao.CountCommentsById(TmpMoment.DynamicsId)
-		TmpMoment.Status = tools.DecodeStrArr(OneMoment.State)
 		User := statements.User{}
+		UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
 		User, ok := dao.GetUserById(OneMoment.UserId)
-		fmt.Println(User)
-		fmt.Println(OneMoment.UserId)
 		if !ok {
-			ctx.JSON(403, e.ErrMsgResponse{Message: "数据库查询失败"})
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
 			return
 		}
-		TmpMoment.Creator = respModel.TransformUserInfo(User)
+
+		TmpMoment := respModel.MomentResp{
+			Content : OneMoment.Content,
+			DynamicsId : int(OneMoment.ID),
+			CreatedAt : OneMoment.CreatedAt,
+			Song : OneMoment.SongName,
+			SelectionId : OneMoment.SelectionId,
+			Lauds : dao.CountMLaudsById(int(OneMoment.ID)),
+			Lauded : dao.HaveMLauded(int(UserId), int(OneMoment.ID)),
+			Comments : dao.CountCommentsById(int(OneMoment.ID)),
+			Status : tools.DecodeStrArr(OneMoment.State),
+			Creator : respModel.TransformUserInfo(User),
+		}
 		MomentsResp = append(MomentsResp, TmpMoment)
 	}
-
+	
 	ctx.JSON(200, MomentsResp)
 }
 
@@ -84,14 +80,15 @@ func PostMoment(ctx *gin.Context) {
 	ctx.ShouldBind(&NewMoment)
 
 	// 转换参数
-	var Moment statements.Moment
-	Moment.Content = NewMoment.Content
-	Moment.SongName = NewMoment.Song
 	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
-	Moment.UserId = int(UserId)
-	Moment.State = tools.EncodeStrArr(NewMoment.Status)
-	Moment.SelectionId = NewMoment.SelectionId
-
+	Moment := statements.Moment{
+		Content : NewMoment.Content,
+		SongName : NewMoment.Song,
+		UserId : int(UserId),
+		State : tools.EncodeStrArr(NewMoment.Status),
+		SelectionId : NewMoment.SelectionId,
+	}
+	
 	// 存入数据库
 	if ok := dao.CreateMoment(Moment); !ok {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入失败"})
@@ -123,22 +120,25 @@ func GetMomentDetail(ctx *gin.Context) {
 	}
 
 	// 数据转换
-	var MomentDetail respModel.MomentResp
-	MomentDetail.DynamicsId = int(Moment.ID)
-	MomentDetail.Content = Moment.Content
-	MomentDetail.CreatedAt = Moment.CreatedAt
-	MomentDetail.Song = Moment.SongName
-	MomentDetail.Lauds = dao.CountMLaudsById(MomentDetail.DynamicsId)
 	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
-	MomentDetail.Lauded = dao.HaveMLauded(int(UserId), MomentDetail.DynamicsId)
-	MomentDetail.Comments = dao.CountCommentsById(MomentDetail.DynamicsId)
-	MomentDetail.Status = tools.DecodeStrArr(Moment.State)
 	User, ok_ := dao.GetUserById(Moment.UserId)
 	if !ok_ {
-		ctx.JSON(403, e.ErrMsgResponse{Message: "数据库查询失败"})
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
 		return
 	}
-	MomentDetail.Creator = respModel.TransformUserInfo(User)
+	
+	MomentDetail := respModel.MomentResp{
+		DynamicsId : int(Moment.ID),
+		Content : Moment.Content,
+		CreatedAt : Moment.CreatedAt,
+		Song : Moment.SongName,
+		Lauds : dao.CountMLaudsById(int(Moment.ID)),
+		Lauded : dao.HaveMLauded(int(UserId), int(Moment.ID)),
+		Comments : dao.CountCommentsById(int(Moment.ID)),
+		Status : tools.DecodeStrArr(Moment.State),
+		Creator : respModel.TransformUserInfo(User),
+	}
+	
 
 	ctx.JSON(200, MomentDetail)
 }
@@ -157,11 +157,12 @@ func PostComment(ctx *gin.Context) {
 	}
 
 	// 转换参数
-	var Comment statements.MomentComment
-	Comment.Comment = NewComment.Content
-	Comment.MomentId = NewComment.DynamicsId
 	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
-	Comment.UserId = int(UserId)
+	Comment := statements.MomentComment{
+		Comment : NewComment.Content,
+		MomentId : NewComment.DynamicsId,
+		UserId : int(UserId),
+	}
 
 	// 存入数据库
 	if ok := dao.CreateComment(Comment); !ok {
@@ -175,7 +176,6 @@ func PostComment(ctx *gin.Context) {
 // 拉取动态的评论列表
 func GetCommentList(ctx *gin.Context) {
 	var CommentsResp []respModel.CommentResp
-	var Comment respModel.CommentResp
 
 	// 获取 url 参数并判断合法性
 	CommentIdstr := ctx.Param("id")
@@ -197,21 +197,22 @@ func GetCommentList(ctx *gin.Context) {
 	}
 
 	// 参数转换，填入响应
+	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
 	for _, comment := range CommentsList {
-		Comment.CommentId = int(comment.ID)
-		Comment.Content = comment.Comment
-		UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
-		Comment.Lauded = dao.HaveCLauded(int(UserId), Comment.CommentId)
-		Comment.Lauds = dao.CountCLaudsById(Comment.CommentId)
-
 		User, ok := dao.GetUserById(comment.UserId)
 		if !ok {
 			ctx.JSON(403, e.ErrMsgResponse{Message: "数据库查询失败"})
 			return
 		}
-		Comment.Creator = respModel.TransformUserInfo(User)
-		Comment.CreatedAt = comment.CreatedAt
 
+		Comment := respModel.CommentResp{
+			CommentId : int(comment.ID),
+			Content : comment.Comment,
+			Lauded : dao.HaveCLauded(int(UserId), int(comment.ID)),
+			Lauds : dao.CountCLaudsById(int(comment.ID)),
+			Creator : respModel.TransformUserInfo(User),
+			CreatedAt : comment.CreatedAt,
+		}
 		CommentsResp = append(CommentsResp, Comment)
 	}
 

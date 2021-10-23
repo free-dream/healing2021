@@ -1463,5 +1463,61 @@ Content-Type: application/json
 
 `{"message" : "取消点赞失败"}`
 
+## 6.7 热门搜索（最多十条）
 
+GET /dynamics/hot HTTP1.1
+
+id 为动态对应的 id
+
+成功时：
+
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+```json
+[
+    string1, string2,...
+]
+```
+
+失败时(例子)：
+
+HTTP/1.1 500 Forbidden
+
+Content-Type: application/json
+
+```
+{"message" : "服务端出错"}
+```
+
+## 6.8 大家的状态（最多十八条）
+
+GET /dynamics/states HTTP1.1
+
+id 为动态对应的 id
+
+成功时：
+
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+```json
+[
+    state1, state2,...
+]
+```
+
+失败时(例子)：
+
+HTTP/1.1 500 Forbidden
+
+Content-Type: application/json
+
+```
+{"message" : "服务端出错"}
+```
+
+## 6.9 动态、评论删除（仅管理员可用）
 
