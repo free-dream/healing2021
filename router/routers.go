@@ -94,7 +94,11 @@ func SetupRouter() *gin.Engine {
 	api.POST("/dynamics/comment", controller.PostComment)
 	api.GET("/dynamics/comment/:id", controller.GetCommentList)
 	api.PUT("/laud/:type/:id", controller.PriseOrNot)
-	api.POST("/administrators", controller.DeleteMessage)
+	api.GET("/dynamics/hot", controller.DynamicsSearchHot)
+	api.GET("/dynamics/states", controller.OursStates)
+
+	// 管理员操作
+	api.POST("/administrators", controller.DeleteContent)
 
 	return r
 }

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"github.com/gin-gonic/gin"
@@ -11,7 +12,7 @@ type DeleteParams struct {
 	Id   int    `json:"id"`
 }
 
-func DeleteMessage(ctx *gin.Context)  {
+func DeleteContent(ctx *gin.Context)  {
 	// 参数获取
 	param := DeleteParams{}
 	err := ctx.ShouldBind(&param)
@@ -30,6 +31,11 @@ func DeleteMessage(ctx *gin.Context)  {
 	// 分模式进行删除内容
 	if param.Type != 1 && param.Type != 2{
 		ctx.JSON(403, e.ErrMsgResponse{Message: "参数错误"})
+		return
+	}
+	err = dao.DeleteContent(param.Type, param.Id)
+	if err != nil {
+		ctx.JSON(403, e.ErrMsgResponse{Message: "数据库操作失败"})
 		return
 	}
 

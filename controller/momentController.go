@@ -249,3 +249,13 @@ func PriseOrNot(ctx *gin.Context) {
 
 	ctx.JSON(200, e.ErrMsgResponse{Message: "点赞或取消点赞成功"})
 }
+
+// 动态搜索推荐
+func DynamicsSearchHot(ctx *gin.Context){
+
+}
+
+// 大家的状态推荐
+func OursStates(ctx *gin.Context) {
+	
+}

@@ -1,5 +1,7 @@
 package dao
 
-func DeleteContent()  {
-	
+func DeleteContent(types int, id int)  error{
+	// 直接删库
+
+	return nil
 }
