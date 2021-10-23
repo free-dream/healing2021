@@ -196,7 +196,7 @@ Content-Type: application/json
   "mySelections": {
       index:{
     "song_name": "string",
-    "created_at": "string", //"yyyy-mm-dd
+    "created_at": "string", //“yyyy-mm-dd-hh-mm-ss”
     "anonymous": int, //1:匿名 2:不匿名
       }
   },
@@ -279,7 +279,7 @@ Content-Type: application/json
   "selectionId": int,
   "name": "string",//点歌用户名
   "style": "string",//风格
-  "created_at": "string", //"yyyy-mm-dd"
+  "created_at": "string", //“yyyy-mm-dd-hh-mm-ss”
   "remark": "string" //30字以内
 }
   "singers": {
@@ -333,7 +333,7 @@ Content-Type: application/json
       index:{
     "model": "string", //模块名 治愈或是投递箱
     "song_name": "string",
-    "created_at": "string", //"yyyy-mm-dd
+    "created_at": "string", //“yyyy-mm-dd-hh-mm-ss”
       },
   },
   "mySongs": {
@@ -443,7 +443,7 @@ Content-Type: application/json
         "id":int,//对应点歌id
         "song_name":string,
         "user_id":integer,	//点歌用户的id
-        "created_at":string(datetime),	//时间，排序用
+        "created_at":string(datetime),	//“yyyy-mm-dd-hh-mm-ss”
         "avatar":string
 	}
     ...
@@ -492,7 +492,7 @@ Content-Type: application/json
         "id":int,//对应翻唱歌id
         "song_name":string,
         "user_id":integer,	//翻唱用户的id
-        "created_at":string(datetime),	//时间，排序用
+        "created_at":string(datetime),	//“yyyy-mm-dd-hh-mm-ss”
         "avatar":string,
         "file":string//歌曲url
     }
@@ -987,7 +987,7 @@ Content-Type: application/json
     {
         "name":string,
         "avatar":text(url), //小图标
-        "time":datetime,	//翻唱时间
+        "time":datetime,	//翻唱时间 “yyyy-mm-dd-hh-mm-ss”
         "work_name":string	//音乐出处
     }
     ...
@@ -1048,7 +1048,7 @@ Content-Type: application/json
     {	//此处应该是不需要用户id的，对应的记录索引后应位于歌曲id下
         "nickname": string,
         "avatar": text(url),   //用户头像
-        "post_time": datetime,	//可以按时间顺序排序，不过这里最好还是按喜爱数排序
+        "post_time": datetime,	//“yyyy-mm-dd-hh-mm-ss”
         //"like": integer(uint) ,可选，设计上没有提到
     }
     ...
@@ -1192,7 +1192,7 @@ Content-Type: application/json
 			"avatar": text(url) 		// 用户头像
         }, 
         "content":text,					// 信息的内容
-        "time":datatime,				// 信息的时间
+        "time":datatime,				// 信息的时间“yyyy-mm-dd-hh-mm-ss”
         "type":integer,  				// 消息类型 0:普通消息 1:系统消息
     },
     ...
@@ -1286,7 +1286,7 @@ Content-Type: application/json
     {
         "dynamics_id": integer,
         "content": string,								// 动态的内容
-        "created_at": yyyy-mm-dd-hh-mm,
+        "created_at": “yyyy-mm-dd-hh-mm-ss”,
         "song" : string,								// 要分享的歌名
         "lauds" : integer,								// 动态的点赞数
         "lauded": integer(0/1),							// 当前用户是否点赞该动态
@@ -1351,7 +1351,7 @@ Content-Type: application/json
 {
     "dynamics_id": integer,
     "content": string,								// 动态的内容
-    "created_at": yyyy-mm-dd-hh-mm,
+    "created_at": “yyyy-mm-dd-hh-mm-ss”,
     "song" : string,								// 要分享的歌名
     "lauds" : integer,								// 动态的点赞数
     "lauded": integer(0/1),							// 当前用户是否点赞该动态
@@ -1425,7 +1425,7 @@ Content-Type: application/json
             "avatar": string(url),						// 头像
             "avatar_visible": integer(0/1)				// 是否设置了头像（0代表没设置）
         },
-        "created_at": yyyy-mm-dd-hh-mm,
+        "created_at": “yyyy-mm-dd-hh-mm-ss”,
         "lauds" : integer,								// 动态的点赞数
     	"lauded": integer(0/1)							// 当前用户是否点赞该动态
     },
