@@ -61,7 +61,7 @@
 
 ## 1.1 授权
 
-GET /auth  HTTP/1.1
+GET /wx/jump/?redirect=  HTTP/1.1
 
 成功：
 
