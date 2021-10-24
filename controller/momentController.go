@@ -257,5 +257,5 @@ func DynamicsSearchHot(ctx *gin.Context){
 
 // 大家的状态推荐
 func OursStates(ctx *gin.Context) {
-	
+
 }

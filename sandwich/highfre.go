@@ -70,7 +70,7 @@ func Changepoints(point float64) bool {
 func HandleTask(process int, tasktableid int) bool {
 	//此处应有读取用户userid的操作
 	var userid int = 0
-	//
+
 	redisDb := setting.RedisConn()
 	tempkey := strconv.Itoa(userid) + "/task/" + strconv.Itoa(tasktableid)
 
