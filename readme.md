@@ -687,6 +687,8 @@ Content-Type: application/json
 
 ### 3.2.2 排行榜
 
+#### 3.2.2.1 学校积分排名
+
 GET /healing/rank/{school}
 
 ***school指学校名称，中间有一次对换，例如华工==华南理工大学==scut***
@@ -719,7 +721,37 @@ Content-Type: application/json
 
 `{"message" : "加载排行榜失败"}`
 
+#### 3.2.2.2 用户当前排名
 
+GET /healing/rank/user
+
+**200人以内有详细排名，接下来依次是:**
+
+**200--500**
+
+**500--1000**
+
+**>1000**
+
+成功:
+
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+```json
+{
+    "rank":string
+}
+```
+
+失败(例)：
+
+HTTP/1.1 403 Forbidden
+
+Content-Type: application/json
+
+`{"message" : "加载用户排名失败"}`
 
 ### 3.2.3 每日热榜
 
