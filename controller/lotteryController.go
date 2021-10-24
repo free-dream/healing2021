@@ -2,11 +2,12 @@ package controller
 
 import (
 	"git.100steps.top/100steps/healing2021_be/dao"
-	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	resp "git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"github.com/gin-gonic/gin"
 )
+
+//大部分错误还没处理，目前先panic
 
 const (
 	PRIZES = 100 //暂定
@@ -70,7 +71,7 @@ func GetLotteries(ctx *gin.Context) {
 //先写mysql的版本,防爆,暂时没有写回mysql
 func Draw(ctx *gin.Context) {
 	//返回格式
-	drawResp := new(respModel.DrawResp)
+	drawResp := new(resp.DrawResp)
 	//获取openid和userid和points
 	openid := tools.GetOpenid(ctx)
 	userid, err := dao.GetUserid(openid)
@@ -102,7 +103,7 @@ func Draw(ctx *gin.Context) {
 //GET /healing/lotterybox/prizes
 //同理，先写mysql版本的防爆
 func GetPrizes(ctx *gin.Context) {
-	prizes := make([]respModel.PrizesResp, 10)
+	prizes := make([]resp.PrizesResp, 10)
 	//获取openid和userid
 	openid := tools.GetOpenid(ctx)
 	userid, err := dao.GetUserid(openid)
@@ -111,7 +112,7 @@ func GetPrizes(ctx *gin.Context) {
 	raws, err := dao.GetPrizesById(userid)
 	errHandler(err)
 	for _, prize := range raws {
-		res := new(respModel.PrizesResp)
+		res := new(resp.PrizesResp)
 		res.Name = prize.Name
 		res.Picture = prize.Picture
 		prizes = append(prizes, *res)
@@ -122,7 +123,7 @@ func GetPrizes(ctx *gin.Context) {
 //GET /healing/lotterybox/tasktable
 func GetTasktable(ctx *gin.Context) {
 	//返回结构体
-	respTasks := make([]respModel.TaskTableResp, 10)
+	respTasks := make([]resp.TaskTableResp, 10)
 	//获取openid和userid
 	openid := tools.GetOpenid(ctx)
 	userid, err := dao.GetUserid(openid)
@@ -137,12 +138,12 @@ func GetTasktable(ctx *gin.Context) {
 		task, err := dao.GetTasks(taskid)
 		errHandler(err)
 		//生成任务返回
-		taskresp := new(respModel.TaskResp)
+		taskresp := new(resp.TaskResp)
 		taskresp.ID = taskid
 		taskresp.Target = task.Target
 		taskresp.Text = task.Text
 		//生成任务返回表
-		tasktableresp := new(respModel.TaskTableResp)
+		tasktableresp := new(resp.TaskTableResp)
 		tasktableresp.Check = table.Check
 		tasktableresp.Counter = table.Counter
 		tasktableresp.Task = *taskresp
@@ -151,6 +152,6 @@ func GetTasktable(ctx *gin.Context) {
 	ctx.JSON(200, respTasks)
 }
 
-//更新任务状态，视情况更新用户积分数
+//更新任务状态，视情况更新用户积分数,由于任务未定，这里建议单独拉出来
 //POST /healing/lotterybox/task
 func UpdateTask(ctx *gin.Context) {}
