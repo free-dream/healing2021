@@ -151,6 +151,6 @@ func GetTasktable(ctx *gin.Context) {
 	ctx.JSON(200, respTasks)
 }
 
-//更新任务状态，视情况更新用户积分数
+//更新任务状态，视情况更新用户积分数,由于任务未定，这里建议单独拉出来
 //POST /healing/lotterybox/task
 func UpdateTask(ctx *gin.Context) {}
