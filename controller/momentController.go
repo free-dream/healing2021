@@ -6,6 +6,7 @@ import (
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
 	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
+	"git.100steps.top/100steps/healing2021_be/sandwich"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -29,6 +30,10 @@ func GetMomentList(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(403, e.ErrMsgResponse{Message: "page参数非法"})
 		return
+	}
+
+	if Keyword != ""{
+		sandwich.PutInSearchWord(Keyword)
 	}
 
 	// 从数据库中得到经过筛选的一页 Momment 列表
@@ -78,6 +83,11 @@ func PostMoment(ctx *gin.Context) {
 	// 参数绑定
 	var NewMoment MomentBase
 	ctx.ShouldBind(&NewMoment)
+
+	// 统计大家的状态
+	for _, state := range NewMoment.Status {
+		sandwich.PutInStates(state)
+	}
 
 	// 转换参数
 	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
@@ -252,10 +262,12 @@ func PriseOrNot(ctx *gin.Context) {
 
 // 动态搜索推荐
 func DynamicsSearchHot(ctx *gin.Context){
-
+	result := sandwich.GetSearchWord()
+	ctx.JSON(200, result)
 }
 
 // 大家的状态推荐
 func OursStates(ctx *gin.Context) {
-
+	result := sandwich.GetStates()
+	ctx.JSON(200, result)
 }
