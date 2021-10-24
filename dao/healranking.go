@@ -21,3 +21,12 @@ func GetRankingBySchool(school string) ([]tables.User, error) {
 	}
 	return users, nil
 }
+
+// //陷入僵局
+// func GetRankByUserId(userid int) (tables.User, error) {
+// 	// mysqlDb := db.MysqlConn()
+
+// 	// var user tables.User
+// 	// err := mysqlDb.Where("ID = ?", userid)
+// 	return nil, nil
+// }

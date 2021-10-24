@@ -3,7 +3,6 @@ package controller
 import (
 	"git.100steps.top/100steps/healing2021_be/dao"
 	resp "git.100steps.top/100steps/healing2021_be/pkg/respModel"
-	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"github.com/gin-gonic/gin"
 )
 
@@ -29,7 +28,7 @@ func GetRanking(ctx *gin.Context) {
 //获取用户当前排名
 func GetMyRank(ctx *gin.Context) {
 	//获取openid和userid
-	openid := tools.GetOpenid(ctx)
-	userid, err := dao.GetUserid(openid)
-	errHandler(err)
+	// openid := tools.GetOpenid(ctx)
+	// userid, err := dao.GetUserid(openid)
+	// errHandler(err)
 }
