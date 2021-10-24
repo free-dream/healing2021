@@ -58,7 +58,14 @@ func Draw(id int) (tables.Lottery, error) {
 	return target, nil
 }
 
-func UpdateLotterybox() bool {
-	//没中的情形：抽中已抽中的奖品
-	return true
+//更新奖品归属
+func UpdateLotterybox(lotteryid int, userid int) (bool, error) {
+	var target tables.Lottery
+	err := MysqlDb.Where("ID = ?", lotteryid).Find(target).Error
+	if err != nil {
+		return false, err
+	}
+	target.UserId = userid
+	MysqlDb.Save(target)
+	return true, nil
 }

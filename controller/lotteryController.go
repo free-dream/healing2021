@@ -120,7 +120,36 @@ func GetPrizes(ctx *gin.Context) {
 }
 
 //GET /healing/lotterybox/tasktable
-func GetTasktable(ctx *gin.Context) {}
+func GetTasktable(ctx *gin.Context) {
+	//返回结构体
+	respTasks := make([]respModel.TaskTableResp, 10)
+	//获取openid和userid
+	openid := tools.GetOpenid(ctx)
+	userid, err := dao.GetUserid(openid)
+	errHandler(err)
+	//获取任务表
+	task_table, err := dao.GetTasktables(userid)
+	errHandler(err)
+	//读取任务信息并拼合成对应数据体系
+	for _, table := range task_table {
+		//获取对应task
+		taskid := table.TaskId
+		task, err := dao.GetTasks(taskid)
+		errHandler(err)
+		//生成任务返回
+		taskresp := new(respModel.TaskResp)
+		taskresp.ID = taskid
+		taskresp.Target = task.Target
+		taskresp.Text = task.Text
+		//生成任务返回表
+		tasktableresp := new(respModel.TaskTableResp)
+		tasktableresp.Check = table.Check
+		tasktableresp.Counter = table.Counter
+		tasktableresp.Task = *taskresp
+		respTasks = append(respTasks, *tasktableresp)
+	}
+	ctx.JSON(200, respTasks)
+}
 
 //更新任务状态，视情况更新用户积分数
 //POST /healing/lotterybox/task
