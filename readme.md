@@ -598,7 +598,7 @@ Content-Type: application/json
 
 #### 3.2.1.2 抽奖
 
-POST /healing/lotterybox/draw HTTP 1.1
+GET /healing/lotterybox/draw HTTP 1.1
 
 成功:
 
@@ -755,7 +755,8 @@ Content-Type: application/json
 
 ### 3.2.3 每日热榜
 
-POST /healing/dailyrank/{date}
+Get /healing/dailyrank/{date}
+***date的日期遵循统一格式***
 
 ***date指日期，default为当天日期,在索引前有一个转换***
 
