@@ -12,19 +12,20 @@ type User struct {
 	gorm.Model
 	Openid         string `gorm:"default: '';index"`
 	Nickname       string `gorm:"default: ''" json:"nickname"`
-	RealName       string `gorm:"default: ''" json:"realname"`
+	RealName       string `gorm:"default: ''" json:"real_name"`
 	Signature      string `gorm:"default: ''" json:"signature"`
 	Avatar         string `gorm:"default: ''" json:"avatar"`
-	PhoneNumber    string `gorm:"default: ''" json:"phonenumber"`
+	PhoneNumber    string `gorm:"default: ''" json:"phone_number"`
 	Sex            int    `gorm:"default: 0" json:"sex"`
 	School         string `gorm:"default: ''" json:"school"`
 	Points         int    `gorm:"default: 0" json:"points"`
 	Record         int    `gorm:"default: 0" json:"record"`
 	Background     string `gorm:"default: ''" json:"background"`
-	AvatarVisible  int    `gorm:"default:0" json:"avatarvisible"`
-	PhoneSearch    int    `gorm:"default:0" json:"phonesearch"`
-	RealNameSearch int    `gorm:"default:0" json:"realnamesearch"`
+	AvatarVisible  int    `gorm:"default:0" json:"avatar_visible"`
+	PhoneSearch    int    `gorm:"default:0" json:"phone_search"`
+	RealNameSearch int    `gorm:"default:0" json:"real_name_search"`
 	LoginTime      time.Time
+	Hobby          string `gorm:"default:''" json:"hobby"`
 }
 
 func UserInit() {

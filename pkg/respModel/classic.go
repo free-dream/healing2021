@@ -1,7 +1,5 @@
 package respModel
 
-import "time"
-
 // 推荐童年歌曲信息
 type ClassicResp struct {
 	Name  string `json:"name"`
@@ -13,7 +11,7 @@ type ClassicResp struct {
 type ClassicListResp struct {
 	Name        string `json:"name"`
 	Avatar      string `json:"avatar"`
-	Time time.Time `json:"time"`
+	Time string `json:"time"`
 	WorkName    string `json:"work_name"`
 }
 

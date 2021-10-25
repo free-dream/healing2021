@@ -1,11 +1,9 @@
 package respModel
 
-import "time"
-
 type CoverResp struct {
 	Nickname string    `json:"nickname,omitempty"`
 	Avatar   string    `json:"avatar,omitempty"`
-	PostTime time.Time `json:"post_time"`
+	PostTime string `json:"post_time"`
 }
 
 type PlayerChildResp struct {

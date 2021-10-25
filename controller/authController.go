@@ -19,7 +19,7 @@ func Login() {
 	ginwechat.UpdateEngine(r, &ginwechat.Config{
 		Appid:     "wx293bc6f4ee88d87d",
 		Appsecret: "",
-		BaseUrl:   "http://healing2021.100steps.top",
+		BaseUrl:   "https://healing2021.100steps.top",
 		StoreSession: func(ctx *gin.Context, wechatUser *ginwechat.WechatUser) error {
 			session := sessions.Default(ctx)
 			//等任务出来具体修改

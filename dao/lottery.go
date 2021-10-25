@@ -53,6 +53,7 @@ func GetPrizesById(userid int) ([]tables.Lottery, error) {
 //已实现于points
 /*func UpdateUserPoints() bool {
 	//获取当前用户
+	//-->redis里搜索/更新，成功则尚需要持久化
 	//-->mysql里搜索/更新，若上述行不通
 	//更新成功/失败把结果抛给调用者
 	return true
