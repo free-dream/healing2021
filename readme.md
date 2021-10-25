@@ -913,7 +913,6 @@ Content-Type: application/json
         "song_name":string,	
         "language":string,	
         "style":string,
-        "model":string,	//所属模块名，有限选项，索引用
 	}
 }
 ```
