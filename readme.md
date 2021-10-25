@@ -1588,7 +1588,12 @@ Content-Type: application/json
 
 ```json
 {
-    [songName1, songName2...]
+    {
+    "song_name":string,	
+    "language":string,	
+    "style":string,
+	}
+	...
 }
 ```
 
