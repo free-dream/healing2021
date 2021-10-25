@@ -81,7 +81,8 @@ func SetupRouter() *gin.Engine {
 	api.GET("/healing/selections/list", controller.SelectionFetcher)
 	api.GET("/healing/covers/list", controller.CoverFetcher)
 	api.POST("/healing/cover", controller.Recorder)
-	api.POST("healing/cover/likes", controller.LikePoster)
+	api.POST("/healing/cover/likes", controller.LikePoster)
+	api.POST("/healing/selection", controller.Selector)
 	//经典治愈——抽奖箱
 	api.GET("healing/lotterybox/prizes", controller.GetPrizes)
 	api.GET("/healing/lotterybox/draw", controller.Draw)

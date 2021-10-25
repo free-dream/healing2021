@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"strconv"
 
 	"git.100steps.top/100steps/healing2021_be/dao"
@@ -48,7 +49,20 @@ func AdsPlayer(ctx *gin.Context) {
 
 }
 
-//点歌控制
+//点歌接口
+func Selector(ctx *gin.Context) {
+	param := statements.Selection{}
+	err := ctx.ShouldBindJSON(&param)
+	if err != nil {
+		panic(err)
+		return
+	}
+	param.UserId = sessions.Default(ctx).Get("id").(int)
+	dao.Select(param)
+
+}
+
+//首页控制
 func SelectionFetcher(ctx *gin.Context) {
 	tag := dao.Tags{}
 	err := ctx.ShouldBindJSON(&tag)
