@@ -1,6 +1,9 @@
 package tools
 
-import "strings"
+import (
+	"strings"
+	"time"
+)
 
 const gap = "#$%%$#"
 
@@ -20,4 +23,8 @@ func EncodeStrArr(input []string) string {
 func DecodeStrArr(input string) []string {
 	ret := strings.Split(input, gap)
 	return ret
+}
+
+func DecodeTime(input time.Time)  string{
+	return input.Format("2006-01-02 15:04:05")
 }

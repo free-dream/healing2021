@@ -2,7 +2,6 @@ package respModel
 
 import (
 	"git.100steps.top/100steps/healing2021_be/models/statements"
-	"time"
 )
 
 // 用户信息
@@ -29,7 +28,7 @@ func TransformUserInfo(OneUser statements.User) UserInfo {
 type MomentResp struct {
 	DynamicsId  int       `json:"dynamics_id"`
 	Content     string    `json:"content"`
-	CreatedAt   time.Time `json:"created_at"`
+	CreatedAt   string `json:"created_at"`
 	Song        string    `json:"song"`
 	SelectionId int       `json:"selection_id"`
 	Lauds       int       `json:"lauds"`
@@ -44,7 +43,7 @@ type CommentResp struct {
 	Creator   UserInfo  `json:"creator"`
 	CommentId int       `json:"comment_id"`
 	Content   string    `json:"content"`
-	CreatedAt time.Time `json:"created_at"`
+	CreatedAt string `json:"created_at"`
 	Lauds     int       `json:"lauds"`
 	Lauded    int       `json:"lauded"`
 }

@@ -1352,8 +1352,10 @@ Content-Type: application/json
 ```js
 {
     "content": string,								// 动态的内容
-    "song" : string,								// 要分享的歌名
     "status" : ["status1", "status2" ...]			// 状态列表 元素都是string
+    "song_name":string,	
+    "language":string,	
+    "style":string,
 }
 ```
 
@@ -1547,7 +1549,39 @@ Content-Type: application/json
 {"message" : "服务端出错"}
 ```
 
-## 6.9 动态、评论删除
+## 6.9 点歌页歌曲推荐(最多30条)
+
+GET //content HTTP1.1
+
+成功时：
+
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+```json
+{
+    {
+    	"song_name":string,	
+    	"language":string,	
+    	"style":string,
+    	"model":string,	//所属模块名，有限选项，索引用
+	}
+	...
+}
+```
+
+失败时(例子)：
+
+HTTP/1.1 500 Forbidden
+
+Content-Type: application/json
+
+```
+{"message" : "服务端出错"}
+```
+
+## 6.10 动态、评论删除
 
 仅管理员可用，现不妨将 userId 为 0-5 的账号预留，当管理员账号
 
@@ -1576,39 +1610,4 @@ Content-Type: application/json
 {"message" : "服务端出错"}
 ```
 
-## 6.10 点歌页歌曲推荐(最多20条)
-
-GET //content HTTP1.1
-
-成功时：
-
-HTTP/1.1 200 OK
-
-Content-Type: application/json
-
-```json
-{
-    {
-    "song_name":string,	
-    "language":string,	
-    "style":string,
-	}
-	...
-}
-```
-
-失败时(例子)：
-
-HTTP/1.1 500 Forbidden
-
-Content-Type: application/json
-
-```
-{"message" : "服务端出错"}
-```
-
-## 6.11 点歌
-
-POST /healing/selection
-
-同接口3,3
+## 

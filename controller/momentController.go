@@ -56,7 +56,7 @@ func GetMomentList(ctx *gin.Context) {
 		TmpMoment := respModel.MomentResp{
 			Content : OneMoment.Content,
 			DynamicsId : int(OneMoment.ID),
-			CreatedAt : OneMoment.CreatedAt,
+			CreatedAt : tools.DecodeTime(OneMoment.CreatedAt),
 			Song : OneMoment.SongName,
 			SelectionId : OneMoment.SelectionId,
 			Lauds : dao.CountMLaudsById(int(OneMoment.ID)),
@@ -140,7 +140,7 @@ func GetMomentDetail(ctx *gin.Context) {
 	MomentDetail := respModel.MomentResp{
 		DynamicsId : int(Moment.ID),
 		Content : Moment.Content,
-		CreatedAt : Moment.CreatedAt,
+		CreatedAt : tools.DecodeTime(Moment.CreatedAt),
 		Song : Moment.SongName,
 		Lauds : dao.CountMLaudsById(int(Moment.ID)),
 		Lauded : dao.HaveMLauded(int(UserId), int(Moment.ID)),
@@ -221,7 +221,7 @@ func GetCommentList(ctx *gin.Context) {
 			Lauded : dao.HaveCLauded(int(UserId), int(comment.ID)),
 			Lauds : dao.CountCLaudsById(int(comment.ID)),
 			Creator : respModel.TransformUserInfo(User),
-			CreatedAt : comment.CreatedAt,
+			CreatedAt : tools.DecodeTime(comment.CreatedAt),
 		}
 		CommentsResp = append(CommentsResp, Comment)
 	}
