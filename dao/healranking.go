@@ -22,7 +22,7 @@ func GetRankingBySchool(school string) ([]tables.User, error) {
 	return users, nil
 }
 
-// //陷入僵局
+// 获取排名，有一点小问题
 // func GetRankByUserId(userid int) (tables.User, error) {
 // 	// mysqlDb := db.MysqlConn()
 

@@ -756,7 +756,7 @@ Content-Type: application/json
 ### 3.2.3 每日热榜
 
 Get /healing/dailyrank/{date}
-***date的日期遵循统一格式 yyyy--mm--dd*** 
+***date的日期遵循统一格式 yyyymmdd*** 
 ***日期不早于上线当日***
 
 点赞调用 /healing/covers/like 接口
@@ -802,9 +802,11 @@ Content-Type: application/json
 
 //此处前端或后端应对搜索记录和对应的页面url作一保存
 
+//暂时只支持单关键字查询
+
 ```json
 {
-    "keyword":string,	//以空格或tab分开，便于检索
+    "keyword":string,
 }
 ```
 
@@ -816,11 +818,11 @@ Content-Type: application/json
 
 ```json
 [//返回一个包含三个长列表和一个含一个json的短列表,按返回顺序:
-    [{//依次是以下三个列表的长度
-        "user":int,
+   	{//依次是以下三个列表的长度
+        "users":int,
         "selections":int,
         "covers":int
-    }],
+    },
     [//用户表
         {
             "user_id":int,	//用于组合跳转个人页面，可改为个人页面的url

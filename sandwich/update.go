@@ -29,7 +29,7 @@ func init() {
 	Sandwich.TaskBox = make(map[string]int)
 }
 
-func (box *MailBox) Update(tube chan int) {
+func (box *MailBox) Update() {
 	var wg sync.WaitGroup
 	wg.Add(3)
 
