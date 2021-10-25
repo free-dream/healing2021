@@ -1578,4 +1578,39 @@ Content-Type: application/json
 {"message" : "服务端出错"}
 ```
 
-## 
+## 6.10 点歌页歌曲推荐(最多20条)
+
+GET //content HTTP1.1
+
+成功时：
+
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+```json
+{
+    {
+    "song_name":string,	
+    "language":string,	
+    "style":string,
+	}
+	...
+}
+```
+
+失败时(例子)：
+
+HTTP/1.1 500 Forbidden
+
+Content-Type: application/json
+
+```
+{"message" : "服务端出错"}
+```
+
+## 6.11 点歌
+
+POST /healing/selection
+
+同接口3,3
