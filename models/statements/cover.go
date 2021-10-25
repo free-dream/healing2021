@@ -13,6 +13,7 @@ type Cover struct {
 	Avatar      string `gorm:"default:''" json:"avatar"`
 	SelectionId string `gorm:"default:'';index" json:"selectionid"`
 	SongName    string `gorm:"default:''" json:"songname"`
+	Nickname	string 	`gorm:"default:''" json:"nickname"`
 	ClassicId   int    `gorm:"default:0;index" json:"classicid"`
 	Likes       int    `gorm:"default:0" json:"likes"`
 	File        string `gorm:"default:''" json:"file"`

@@ -74,9 +74,11 @@ func GetMomentList(ctx *gin.Context) {
 // 发布动态
 type MomentBase struct {
 	Content     string   `json:"content"`
-	Song        string   `json:"song"`
 	Status      []string `json:"status"`
+	SongName        string   `json:"song_name"`
 	SelectionId int      `json:"selection_id"`
+	Language string `json:"language"`
+	Style string `json:"style"`
 }
 
 func PostMoment(ctx *gin.Context) {
@@ -93,10 +95,15 @@ func PostMoment(ctx *gin.Context) {
 	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
 	Moment := statements.Moment{
 		Content : NewMoment.Content,
-		SongName : NewMoment.Song,
+		SongName : NewMoment.SongName,
 		UserId : int(UserId),
 		State : tools.EncodeStrArr(NewMoment.Status),
 		SelectionId : NewMoment.SelectionId,
+	}
+
+	// 点歌去
+	if NewMoment.SelectionId != 0 && NewMoment.SongName != ""{
+
 	}
 	
 	// 存入数据库
@@ -142,6 +149,7 @@ func GetMomentDetail(ctx *gin.Context) {
 		Content : Moment.Content,
 		CreatedAt : tools.DecodeTime(Moment.CreatedAt),
 		Song : Moment.SongName,
+		SelectionId : Moment.SelectionId,
 		Lauds : dao.CountMLaudsById(int(Moment.ID)),
 		Lauded : dao.HaveMLauded(int(UserId), int(Moment.ID)),
 		Comments : dao.CountCommentsById(int(Moment.ID)),

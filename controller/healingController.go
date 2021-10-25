@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//治愈详情页，返回相关歌曲信息
+// 治愈详情页，返回相关歌曲信息
 func HealingPageFetcher(ctx *gin.Context) {
 	param, verify := ctx.GetQuery("selectionId")
 	//resp:=make(map[string]interface{})

@@ -9,7 +9,6 @@ type CoverResp struct {
 type PlayerChildResp struct {
 	SongName string `json:"song_name,omitempty"`
 	File     string `json:"file,omitempty"`
-	Lyrics   string `json:"lyrics,omitempty"`
 	Icon     string `json:"icon,omitempty"`
 	WorkName string `json:"work_name,omitempty"`
 	Nickname string `json:"nickname,omitempty"`

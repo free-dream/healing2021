@@ -21,7 +21,7 @@ func LoadSongs(ctx *gin.Context) {
 		return
 	}
 
-	if Param.Check == 0{
+	if Param.Check == 0 {
 		Player, err := dao.GetPlayerNormal(Param.Jump, Param.CoverId)
 		if err != nil {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败"})
