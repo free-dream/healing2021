@@ -262,3 +262,14 @@ func CreateRecord(id string, file string, uid int) error {
 
 	return err
 }
+
+func Select(selection statements.Selection) error {
+	err = setting.DB.Table("selection").Create(&selection).Error
+	s := make(map[string]interface{})
+	s["id"] = selection.ID
+	s["song_name"] = selection.SongName
+	setting.RedisClient.HMSet("ll", s)
+	res := setting.RedisClient.HGetAll("ll").Val()
+	fmt.Println(res)
+	return err
+}

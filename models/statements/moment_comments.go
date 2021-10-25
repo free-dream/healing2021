@@ -8,11 +8,11 @@ import (
 )
 
 type MomentComment struct {
-	*gorm.Model
+	gorm.Model
 	UserId   int    `gorm:"default:0;index"`
 	MomentId int    `gorm:"default:0;index"`
 	Comment  string `gorm:"default:''"`
-	LikeNum  int    `gorm:"default:0;index"`
+	LikeNum  int    `gorm:"default:0"`
 }
 
 func MomentCommentInit() {
@@ -26,4 +26,5 @@ func MomentCommentInit() {
 		db.AutoMigrate(&MomentComment{})
 		fmt.Println("Table MomentComment has existed")
 	}
+	setting.TimeSetting("moment_comment")
 }
