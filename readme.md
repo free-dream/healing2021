@@ -1351,10 +1351,11 @@ Content-Type: application/json
 ```js
 {
     "content": string,								// 动态的内容
-    "status" : ["status1", "status2" ...]			// 状态列表 元素都是string
+    "status": ["status1", "status2"...],		// 状态列表 元素都是string
     "song_name":string,	
     "language":string,	
     "style":string,
+    "selection_id": int
 }
 ```
 
@@ -1385,7 +1386,8 @@ Content-Type: application/json
     "dynamics_id": integer,
     "content": string,								// 动态的内容
     "created_at": “yyyy-mm-dd-hh-mm-ss”,
-    "song" : string,								// 要分享的歌名
+    "song" : string, //歌名
+    "selection_id" : string //所点歌曲的id
     "lauds" : integer,								// 动态的点赞数
     "lauded": integer(0/1),							// 当前用户是否点赞该动态
     "comments" : integer,							// 动态的评论数
