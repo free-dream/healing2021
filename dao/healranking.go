@@ -5,6 +5,7 @@ import (
 	db "git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
 
+//基于学校获取排名，仅有sql版
 func GetRankingBySchool(school string) ([]tables.User, error) {
 	mysqlDb := db.MysqlConn()
 
