@@ -756,7 +756,7 @@ Content-Type: application/json
 ### 3.2.3 每日热榜
 
 Get /healing/dailyrank/{date}
-***date的日期遵循统一格式 yyyy--mm--dd*** 
+***date的日期遵循统一格式 yyyymmdd*** 
 ***日期不早于上线当日***
 
 点赞调用 /healing/covers/like 接口
