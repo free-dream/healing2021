@@ -13,10 +13,12 @@ func GetDailyrank(ctx *gin.Context) {
 	respCovers := make([]resp.HotResp, 10)
 	errHandler(err)
 	for _, cover := range raws {
+		nickname, err := dao.GetUserNickname(cover.UserId)
+		errHandler(err)
 		respCover := new(resp.HotResp)
 		respCover.Avatar = cover.Avatar
 		respCover.Likes = cover.Likes
-		respCover.Nickname = ""
+		respCover.Nickname = nickname
 		respCover.Posttime = cover.CreatedAt
 		respCover.Songname = cover.SongName
 		respCovers = append(respCovers, *respCover)
