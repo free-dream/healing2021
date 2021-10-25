@@ -12,7 +12,7 @@ type MomentComment struct {
 	UserId   int    `gorm:"default:0;index"`
 	MomentId int    `gorm:"default:0;index"`
 	Comment  string `gorm:"default:''"`
-	LikeNum  int    `gorm:"default:0;index"`
+	LikeNum  int    `gorm:"default:0"`
 }
 
 func MomentCommentInit() {

@@ -9,13 +9,12 @@ import (
 
 type Selection struct {
 	gorm.Model
-	SongName string `gorm:"default:''" json:"songname"`
+	SongName string `gorm:"default:''" json:"song_name"`
 	Remark   string `gorm:"default:''" json:"remark"`
 	Language string `gorm:"default:''" json:"language"`
 	Style    string `gorm:"default:''" json:"style"`
-	UserId   int    `gorm:"default:0;index" json:"userid"`
+	UserId   int    `gorm:"default:0;index" json:"user_id"`
 	Avatar   string `gorm:"default:''" json:"avatar"`
-	Module   string `gorm:"default:''" json:"module"`
 }
 
 func SelectionInit() {
