@@ -51,7 +51,7 @@ func dummyUser() *statements.User {
 	return &user
 }
 
-// //假彩票
-// func fakeLotteries() *statements.Lottery {
-
-// }
+//假彩票
+func fakeLotteries() *statements.Lottery {
+	return nil
+}
