@@ -1,10 +1,11 @@
-package dao
+package models
 
 import (
 	"strconv"
 
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
+	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 )
 
@@ -26,7 +27,7 @@ const (
 	PRIZE3  = "三等奖"
 
 	//欢迎扩充测试用例
-	//流行歌
+	//由于翻唱是个性要求，所以录音的语言风格与歌曲本身不做绑定
 	CSONG1 = "一剪梅" //中文歌
 	CSONG2 = "稻香"
 	CSONG3 = "忐忑"
@@ -48,10 +49,27 @@ const (
 	CHILDHOOD4 = "小英雄哪吒"
 )
 
+const (
+	L1 = "Chinese"
+	L2 = "Cantonese"
+	L3 = "Japanese"
+	L4 = "English"
+	L5 = "Other"
+
+	S1 = "pop"
+	S2 = "classical"
+	S3 = "ACG"
+	S4 = "Rock"
+	S5 = "Tiktok"
+	S6 = "Other"
+)
+
 var (
 	SchoolPool = []string{SCUT, SYU, JU, SCNU, OTHER}
 	TargetPool = []string{TARGET1, TARGET2, TARGET3}
-	Prizetool  = []string{PRIZESP, PRIZE1, PRIZE2, PRIZE3}
+	PrizePool  = []string{PRIZESP, PRIZE1, PRIZE2, PRIZE3}
+	StylePool  = []string{S1, S2, S3, S4, S5, S6}
+	MysqlDb    = setting.MysqlConn()
 )
 
 //获取用户id
@@ -82,6 +100,16 @@ func GetUserAvatar(userid int) (string, error) {
 		return "", err
 	}
 	return user.Avatar, nil
+}
+
+//获取selection的通用信息
+func GetAttr(selectionid int) (string, string, string, error) {
+	var selection tables.Selection
+	err := MysqlDb.Where("Id = ?", selectionid).First(&selection).Error
+	if err != nil {
+		return "", "", "", err
+	}
+	return selection.SongName, selection.Language, selection.Style, nil
 }
 
 //生成dummy用户
@@ -118,7 +146,7 @@ func fakeLotteries(name string, possilbity float64) *statements.Lottery {
 }
 
 //基于用户创建点歌
-func dummySelections(userid int, song string, language string) (*statements.Selection, error) {
+func dummySelections(userid int, song string, language string, style string) (*statements.Selection, error) {
 	avatar, err := GetUserAvatar(userid)
 	if err != nil {
 		return nil, err
@@ -129,17 +157,23 @@ func dummySelections(userid int, song string, language string) (*statements.Sele
 		Language: language,
 		UserId:   userid,
 		Avatar:   avatar,
+		Style:    style,
 	}
 	return &selection, nil
 }
 
 //基于用户创建翻唱,若为非童年,classicid = -1
-func dummyCovers(userid int, selectionid int, songname string, classicid int) (*statements.Cover, error) {
+//翻唱基于点歌要求而存在，所以一定和点歌要求相同
+func dummyCovers(userid int, selectionid int, classicid int) (*statements.Cover, error) {
 	nickname, err := GetUserNickname(userid)
 	if err != nil {
 		return nil, err
 	}
 	avatar, err := GetUserAvatar(userid)
+	if err != nil {
+		return nil, err
+	}
+	song, language, style, err := GetAttr(selectionid)
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +184,9 @@ func dummyCovers(userid int, selectionid int, songname string, classicid int) (*
 		SelectionId: strconv.Itoa(selectionid),
 		ClassicId:   classicid,
 		File:        string(tools.GetRandomString(30)),
-		SongName:    songname,
+		SongName:    song,
+		Language:    language,
+		Style:       style,
 	}
 	return &cover, nil
 }
