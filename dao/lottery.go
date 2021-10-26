@@ -10,7 +10,7 @@ var (
 	MysqlDb = db.MysqlConn()
 )
 
-//获取用户id，不应该放在这里
+//获取用户id
 func GetUserid(openid string) (int, error) {
 	var user tables.User
 	err := MysqlDb.Where("OpenId = ?", openid).First(&user).Error
@@ -28,6 +28,16 @@ func GetUserNickname(userid int) (string, error) {
 		return "", err
 	}
 	return user.Nickname, nil
+}
+
+//获取用户的avatar
+func GetUserAvatar(userid int) (string, error) {
+	var user tables.User
+	err := MysqlDb.Where("Id = ?", userid).First(&user).Error
+	if err != nil {
+		return "", err
+	}
+	return user.Avatar, nil
 }
 
 //获取所有奖品，不展示奖品归属

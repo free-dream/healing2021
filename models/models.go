@@ -6,6 +6,7 @@ import (
 
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
+	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 )
 
 func TableInit() {
@@ -26,26 +27,92 @@ func TableInit() {
 }
 
 // 假用户
-func CreateFakeUser(nickname string, openid string, time time.Time, hobby string) {
+func CreateFakeUser(nickname string, openid string, time time.Time) { /*hobby map[string]string) */
 	User := statements.User{
 		Openid:    openid,
 		Nickname:  nickname,
 		LoginTime: time,
-		Hobby:     hobby,
 	}
 
 	db := setting.DB
 	db.Create(&User)
 }
-func AddFakeUsers() {
-	CreateFakeUser("heng1", "123456", time.Now(), "")
-	CreateFakeUser("heng2", "123456321", time.Date(2002, 12, 11, 10, 16, 55, 05, time.Local), "")
-	CreateFakeUser("heng3", "1231", time.Date(2021, 10, 20, 10, 16, 55, 05, time.Local), "")
-	CreateFakeUser("heng4", "99999", time.Now(), "")
-	CreateFakeUser("juryo", "juryo", time.Now(), "")
+
+//可以生成给定了学校和特定用户名的用户
+func CreateDummyUser(model *statements.User) {
+	db := setting.DB
+	db.Create(&model)
 }
 
-// 假动态
+//生成假用户
+func AddFakeUsers() {
+	CreateFakeUser("heng1", "123456", time.Now())
+	CreateFakeUser("heng2", "123456321", time.Date(2002, 12, 11, 10, 16, 55, 05, time.Local))
+	CreateFakeUser("heng3", "1231", time.Date(2021, 10, 20, 10, 16, 55, 05, time.Local))
+	CreateFakeUser("heng4", "99999", time.Now())
+	CreateFakeUser("juryo", "juryo", time.Now())
+	for i := 0; i < 10; i++ {
+		CreateDummyUser(dummyUser())
+	}
+}
+
+//假点歌
+func CreateDummySelections(userid int) {
+	style := StylePool[tools.GetRandomNumbers(len(StylePool))]
+	language := LanguagePool[tools.GetRandomNumbers(len(LanguagePool))]
+	song := SongPool[tools.GetRandomNumbers(len(SongPool))]
+	selection, err := dummySelections(userid, song, language, style)
+	if err != nil {
+		panic(err)
+	}
+
+	db := setting.DB
+	db.Create(&selection)
+}
+
+func CreateFakeSelection(uid int, name string) {
+	selection := statements.Selection{
+		UserId:   uid,
+		SongName: name,
+	}
+
+	db := setting.MysqlConn()
+	db.Create(&selection)
+}
+
+//目前总计181个点歌请求
+func AddFakeSelections() {
+	for index := 1; index < 6; index++ {
+		CreateFakeSelection(index, "测试歌曲")
+	}
+
+	//目前目录下的假用户有15个,每个用户生成15条点歌需求
+	for i := 0; i < 15; i++ {
+		for j := 0; j < 15; j++ {
+			CreateDummySelections(i)
+		}
+	}
+}
+
+//假翻唱
+func CreateFakeCovers(uid int, name string, cid int) {
+	cover := statements.Cover{
+		UserId:      uid,
+		SongName:    name,
+		SelectionId: strconv.Itoa(cid),
+	}
+
+	db := setting.MysqlConn()
+	db.Create(&cover)
+}
+
+func AddFakeCovers() {
+	for index := 1; index < 6; index++ {
+		CreateFakeCovers(index+2, "测试歌曲", index+1)
+	}
+}
+
+//假动态
 func CreateFakeMoment(id int, likes int, content string, songName string, selectId int, states string, picture string) {
 	Moment := statements.Moment{
 		UserId:      id,
@@ -88,39 +155,6 @@ func AddFakeComments() {
 	CreateFakeComment(1, 1, "第san条假评论", 3)
 	CreateFakeComment(1, 1, "第si条假评论", 3)
 	CreateFakeComment(1, 1, "第wu条假评论", 3)
-}
-
-func AddFakeSelections() {
-	for index := 1; index < 6; index++ {
-		CreateFakeSelection(index, "测试歌曲")
-	}
-}
-
-// 假评论
-func CreateFakeSelection(uid int, name string) {
-	selection := statements.Selection{
-		UserId:   uid,
-		SongName: name,
-	}
-
-	db := setting.MysqlConn()
-	db.Create(&selection)
-}
-func AddFakeCovers() {
-	for index := 1; index < 6; index++ {
-		CreateFakeCovers(index+2, "测试歌曲", index+1)
-	}
-}
-
-func CreateFakeCovers(uid int, name string, cid int) {
-	cover := statements.Cover{
-		UserId:      uid,
-		SongName:    name,
-		SelectionId: strconv.Itoa(cid),
-	}
-
-	db := setting.MysqlConn()
-	db.Create(&cover)
 }
 
 // 造点测试用的假数据

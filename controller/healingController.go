@@ -2,8 +2,9 @@ package controller
 
 import (
 	"fmt"
-	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"strconv"
+
+	"git.100steps.top/100steps/healing2021_be/models/statements"
 
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
@@ -25,12 +26,12 @@ func HealingPageFetcher(ctx *gin.Context) {
 	selectionId, err := strconv.Atoi(param)
 	if err != nil {
 		panic(err)
-		// return
+		return
 	}
 	resp, err := dao.GetHealingPage(selectionId)
 	if err != nil {
 		panic(err)
-		// return
+		return
 	}
 
 	ctx.JSON(200, gin.H{
@@ -43,7 +44,7 @@ func AdsPlayer(ctx *gin.Context) {
 	resp, err := dao.GetAds()
 	if err != nil {
 		panic(err)
-		// return
+		return
 	}
 	ctx.JSON(200, resp)
 
@@ -57,9 +58,13 @@ func Selector(ctx *gin.Context) {
 		panic(err)
 		return
 	}
-	param.UserId = sessions.Default(ctx).Get("id").(int)
-	dao.Select(param)
-
+	param.UserId = sessions.Default(ctx).Get("user_id").(int)
+	resp, err := dao.Select(param)
+	if err != nil {
+		panic(err)
+		return
+	}
+	ctx.JSON(200, resp)
 }
 
 //首页控制
@@ -75,7 +80,7 @@ func SelectionFetcher(ctx *gin.Context) {
 	resp, err := dao.GetSelections(tag)
 	if err != nil {
 		panic(err)
-		// return
+		return
 	}
 	ctx.JSON(200, resp)
 
@@ -92,7 +97,7 @@ func CoverFetcher(ctx *gin.Context) {
 	resp, err := dao.GetCovers(tag)
 	if err != nil {
 		panic(err)
-		// return
+		return
 	}
 	ctx.JSON(200, resp)
 
@@ -118,13 +123,13 @@ func Recorder(c *gin.Context) {
 		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
-	err = dao.CreateRecord(params.SelectionId, url, int(userID))
+	resp, err := dao.CreateRecord(params.SelectionId, url, int(userID))
 	if err != nil {
 		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
 
-	c.JSON(200, "OK")
+	c.JSON(200, resp)
 }
 
 //对经典治愈系的录音点赞

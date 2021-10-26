@@ -128,6 +128,7 @@ Content-Type: application/json
   "phone_number": "string", //选填
   "sex": int,// 1:男 2:女 3:其他
   "school": "string" //可以传缩写过来 scut
+   "hobby":[]string
 
 }
 ```
@@ -427,6 +428,7 @@ GET /healing/selections/list HTTP 1.1
 "style":string //
 "language":string
 "rankWay":int //1综合排序，2最新binding:"required"`
+"page":int//页数
 }
 ```
 
@@ -476,6 +478,7 @@ GET /healing/selections/list HTTP 1.1
 "style":string //
 "language":string
 "rankWay":int //1综合排序，2最新binding:"required"`
+"page":int //页数
 }
 ```
 
@@ -510,7 +513,7 @@ Content-Type: application/json
 
 ### 3.1.4 治愈系翻唱接口
 
-GET /healing/cover
+POST /healing/cover
 
 ```json
 {
@@ -521,6 +524,19 @@ GET /healing/cover
 ```
 
 成功：
+
+```json
+{		"nickname":string,	//可匿名
+        "id":int,//对应翻唱歌id
+        "song_name":string,
+        "user_id":integer,	//翻唱用户的id
+        "created_at":string(datetime),	//“yyyy-mm-dd-hh-mm-ss”
+        "avatar":string,
+        "file":string//歌曲url
+}
+```
+
+
 
 200 "OK"
 
@@ -902,18 +918,28 @@ POST /healing/selection
 
 //上传一条点歌需求
 
-Content-Type: application/json
-
 ```json
-{
-    {
+ {
         "remark":text,	//备注
         "song_name":string,	
         "language":string,	
         "style":string,
-        "model":string,	//所属模块名，有限选项，索引用
 	}
-}
+```
+
+
+
+Content-Type: application/json
+
+```json
+	{
+        "nickname": string,
+        "id": int,//点歌的id
+        "song_name": string,
+        "user_id": int,
+        "created_at": "2021-10-26T16:30:27+08:00",
+        "avatar":string
+    } 
 ```
 
 成功:
@@ -929,47 +955,6 @@ Content-Type: application/json
 `{"message" : "搜索历史获取失败"}`
 
 
-
-## 3.4 录音接口
-
-POST /healing/recording
-
-**//录音接口按去年应该另有途径，这里姑且使用http表单上传**
-
-Content-Type: multipart/form-data
-
-```multipart/form-data
-......
-Content-Type: multipart/form-data; boundary=---------------------------58731222010402	
-//http表单会自己生成boundary分割不同数据，此处随便拿了一个
-......
------------------------------1100116873645
-Content-Disposition: form-data; name="public" 	//0为私有，1为公开
-
-0
------------------------------1100116873645
-Content-Disposition: form-data; name="childhood"	//0为经典，1为童年
- 
-1
------------------------------1100116873645
-Content-Disposition: form-data; name="视录音名称,由前端决定"	
-Content-Type:audio/mp3
-//传递录音文件,目前不知道是什么格式，姑且视为mp3
- 
------------------------------1100116873645
-```
-
-成功:
-
-HTTP/1.1 200 OK
-
-失败(例)：
-
-HTTP/1.1 403 Forbidden
-
-Content-Type: application/json
-
-`{"message" : "上传录音失败"}`
 
 # 4.追忆童年
 

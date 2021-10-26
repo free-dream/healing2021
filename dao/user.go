@@ -1,8 +1,10 @@
 package dao
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
@@ -51,13 +53,28 @@ func FakeCreateUser(user *User) (string, error) {
 
 }
 
-func CreateUser(user *statements.User) (int, error) {
+func CreateUser(param *User) (int, error) {
 	count := 0
+	user := statements.User{
+		Nickname:    param.Nickname,
+		RealName:    param.RealName,
+		PhoneNumber: param.PhoneNumber,
+		Sex:         param.Sex,
+		School:      param.School,
+	}
+
 	setting.DB.Table("user").Where("nickname=?", user.Nickname).Count(&count)
 	if count != 0 {
 		return 0, errors.New("error")
 	}
 	setting.DB.Table("user").Create(&user)
+	value, err := json.Marshal(param.Hobby)
+	if err != nil {
+		panic(err)
+		return 0, err
+	}
+	setting.RedisClient.HSet("hobby", strconv.Itoa(int(user.ID)), value)
+
 	return int(user.ID), nil
 
 }
