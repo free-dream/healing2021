@@ -3,8 +3,6 @@ package controller
 import (
 	"strconv"
 
-	"git.100steps.top/100steps/healing2021_be/models/statements"
-
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -17,7 +15,7 @@ func Register(ctx *gin.Context) {
 	openid := session.Get("openid").(string)
 	//headImgUrl := session.Get("headImgUrl").(string)
 
-	user := statements.User{}
+	user := dao.User{}
 	err := ctx.ShouldBindJSON(&user)
 	user.Openid = openid
 	//user.Avatar = headImgUrl
@@ -36,7 +34,7 @@ func Register(ctx *gin.Context) {
 	}
 	if err != nil {
 		panic(err)
-		// return
+		return
 	}
 	session.Set("user_id", id)
 	session.Save()

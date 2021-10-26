@@ -26,12 +26,12 @@ func HealingPageFetcher(ctx *gin.Context) {
 	selectionId, err := strconv.Atoi(param)
 	if err != nil {
 		panic(err)
-		// return
+		return
 	}
 	resp, err := dao.GetHealingPage(selectionId)
 	if err != nil {
 		panic(err)
-		// return
+		return
 	}
 
 	ctx.JSON(200, gin.H{
@@ -44,7 +44,7 @@ func AdsPlayer(ctx *gin.Context) {
 	resp, err := dao.GetAds()
 	if err != nil {
 		panic(err)
-		// return
+		return
 	}
 	ctx.JSON(200, resp)
 
@@ -56,7 +56,7 @@ func Selector(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&param)
 	if err != nil {
 		panic(err)
-		// return
+		return
 	}
 	param.UserId = sessions.Default(ctx).Get("user_id").(int)
 	resp, err := dao.Select(param)
@@ -80,7 +80,7 @@ func SelectionFetcher(ctx *gin.Context) {
 	resp, err := dao.GetSelections(tag)
 	if err != nil {
 		panic(err)
-		// return
+		return
 	}
 	ctx.JSON(200, resp)
 
@@ -97,7 +97,7 @@ func CoverFetcher(ctx *gin.Context) {
 	resp, err := dao.GetCovers(tag)
 	if err != nil {
 		panic(err)
-		// return
+		return
 	}
 	ctx.JSON(200, resp)
 

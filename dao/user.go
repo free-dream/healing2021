@@ -1,8 +1,10 @@
 package dao
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
@@ -26,17 +28,18 @@ func GetUserById(Id int) (statements.User, bool) {
 
 type User struct {
 	ID             uint
-	Openid         string `json:"openid"`
-	Nickname       string `json:"nickname"`
-	RealName       string `json:"real_name"`
-	PhoneNumber    string `json:"phone_number"`
-	Sex            int    `json:"sex"`
-	School         string `json:"school"`
-	Avatar         string `json:"avatar"`
-	AvatarVisible  int    `json:"avatar_visible"`
-	PhoneSearch    int    `json:"phone_search"`
-	RealNameSearch int    `json:"real_name_search"`
-	Signature      string `json:"signature"`
+	Openid         string   `json:"openid"`
+	Nickname       string   `json:"nickname"`
+	RealName       string   `json:"real_name"`
+	PhoneNumber    string   `json:"phone_number"`
+	Sex            int      `json:"sex"`
+	School         string   `json:"school"`
+	Avatar         string   `json:"avatar"`
+	AvatarVisible  int      `json:"avatar_visible"`
+	PhoneSearch    int      `json:"phone_search"`
+	RealNameSearch int      `json:"real_name_search"`
+	Signature      string   `json:"signature"`
+	Hobby          []string `json:"hobby"`
 }
 
 func FakeCreateUser(user *User) (string, error) {
@@ -50,13 +53,28 @@ func FakeCreateUser(user *User) (string, error) {
 
 }
 
-func CreateUser(user *statements.User) (int, error) {
+func CreateUser(param *User) (int, error) {
 	count := 0
+	user := statements.User{
+		Nickname:    param.Nickname,
+		RealName:    param.RealName,
+		PhoneNumber: param.PhoneNumber,
+		Sex:         param.Sex,
+		School:      param.School,
+	}
+
 	setting.DB.Table("user").Where("nickname=?", user.Nickname).Count(&count)
 	if count != 0 {
 		return 0, errors.New("error")
 	}
 	setting.DB.Table("user").Create(&user)
+	value, err := json.Marshal(param.Hobby)
+	if err != nil {
+		panic(err)
+		return 0, err
+	}
+	setting.RedisClient.HSet("hobby", strconv.Itoa(int(user.ID)), value)
+
 	return int(user.ID), nil
 
 }

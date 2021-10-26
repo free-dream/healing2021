@@ -128,6 +128,7 @@ Content-Type: application/json
   "phone_number": "string", //选填
   "sex": int,// 1:男 2:女 3:其他
   "school": "string" //可以传缩写过来 scut
+   "hobby":[]string
 
 }
 ```
@@ -427,6 +428,7 @@ GET /healing/selections/list HTTP 1.1
 "style":string //
 "language":string
 "rankWay":int //1综合排序，2最新binding:"required"`
+"page":int//页数
 }
 ```
 
@@ -476,6 +478,7 @@ GET /healing/selections/list HTTP 1.1
 "style":string //
 "language":string
 "rankWay":int //1综合排序，2最新binding:"required"`
+"page":int //页数
 }
 ```
 
