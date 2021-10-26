@@ -1131,7 +1131,6 @@ Content-Type: application/json
 {//童年模式下的返回值
     "song_name":string,	//歌曲名
     "file":string,	//翻唱文件url
-    "lyrics":string,	//如果有的话，默认是null
     "icon":string,	//图标url
     "work_name":string,	//作品名
     "nickname":string	//翻唱者

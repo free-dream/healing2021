@@ -11,16 +11,10 @@ type Cover struct {
 	gorm.Model
 	UserId      int    `gorm:"default:0;index" json:"userid"`
 	Avatar      string `gorm:"default:''" json:"avatar"`
-<<<<<<< HEAD
 	SelectionId string `gorm:"default:'';index" json:"selectionid"`
 	SongName    string `gorm:"default:''" json:"songname"`
-	Nickname	string 	`gorm:"default:''" json:"nickname"`
+	Nickname    string `gorm:"default:''" json:"nickname"`
 	ClassicId   int    `gorm:"default:0;index" json:"classicid"`
-=======
-	SelectionId string `gorm:"default:'';index" json:"selection_id"`
-	SongName    string `gorm:"default:''" json:"song_name"`
-	ClassicId   int    `gorm:"default:0;index" json:"classic_id"`
->>>>>>> 0a9c658cad10bccf1f7c09c239fe72665d5c8795
 	Likes       int    `gorm:"default:0" json:"likes"`
 	File        string `gorm:"default:''" json:"file"`
 	Module      int    `gorm:"default:0" json:"module"`
