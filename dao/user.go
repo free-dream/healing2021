@@ -26,18 +26,17 @@ func GetUserById(Id int) (statements.User, bool) {
 
 type User struct {
 	ID             uint
-	Openid         string   `json:"openid"`
-	Nickname       string   `json:"nickname"`
-	RealName       string   `json:"real_name"`
-	PhoneNumber    string   `json:"phone_number"`
-	Sex            int      `json:"sex"`
-	School         string   `json:"school"`
-	Avatar         string   `json:"avatar"`
-	AvatarVisible  int      `json:"avatar_visible"`
-	PhoneSearch    int      `json:"phone_search"`
-	RealNameSearch int      `json:"real_name_search"`
-	Signature      string   `json:"signature"`
-	Hobby          []string `json:"hobby"`
+	Openid         string `json:"openid"`
+	Nickname       string `json:"nickname"`
+	RealName       string `json:"real_name"`
+	PhoneNumber    string `json:"phone_number"`
+	Sex            int    `json:"sex"`
+	School         string `json:"school"`
+	Avatar         string `json:"avatar"`
+	AvatarVisible  int    `json:"avatar_visible"`
+	PhoneSearch    int    `json:"phone_search"`
+	RealNameSearch int    `json:"real_name_search"`
+	Signature      string `json:"signature"`
 }
 
 func FakeCreateUser(user *User) (string, error) {

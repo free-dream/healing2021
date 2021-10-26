@@ -58,9 +58,13 @@ func Selector(ctx *gin.Context) {
 		panic(err)
 		// return
 	}
-	param.UserId = sessions.Default(ctx).Get("id").(int)
-	dao.Select(param)
-
+	param.UserId = sessions.Default(ctx).Get("user_id").(int)
+	resp, err := dao.Select(param)
+	if err != nil {
+		panic(err)
+		return
+	}
+	ctx.JSON(200, resp)
 }
 
 //首页控制
@@ -119,13 +123,13 @@ func Recorder(c *gin.Context) {
 		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
-	err = dao.CreateRecord(params.SelectionId, url, int(userID))
+	resp, err := dao.CreateRecord(params.SelectionId, url, int(userID))
 	if err != nil {
 		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
 
-	c.JSON(200, "OK")
+	c.JSON(200, resp)
 }
 
 //对经典治愈系的录音点赞

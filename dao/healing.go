@@ -2,6 +2,7 @@ package dao
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
@@ -111,8 +112,6 @@ func GetSelections(tag Tags) (interface{}, error) {
 			rows, err = setting.DB.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at").Where("TIMESTAMPDIFF(second,user.login_time,now())<2880").Joins("left join selection on user.id=selection.user_id").Order("rand()").Rows()
 		case 2:
 			rows, err = setting.DB.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at").Joins("left join selection on user.id=selection.user_id").Order("selection.created_at DESC").Rows()
-			fmt.Println(rows)
-			fmt.Println(err)
 		}
 	case 3:
 		switch tag.RankWay {
@@ -130,7 +129,6 @@ func GetSelections(tag Tags) (interface{}, error) {
 		}
 	}
 	defer rows.Close()
-	fmt.Println(rows)
 	if err != nil {
 		return nil, err
 	}
@@ -170,10 +168,10 @@ func GetCovers(tag Tags) (interface{}, error) {
 		switch tag.RankWay {
 		case 1:
 			rows, err = setting.DB.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("TIMESTAMPDIFF(second,user.login_time,now())<2880").Joins("left join cover on user.id=cover.user_id").Order("rand()").Rows()
-			fmt.Println(err)
+
 		case 2:
 			rows, err = setting.DB.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Joins("left join cover on user.id=cover.user_id").Order("created_at DESC").Rows()
-			fmt.Println(err)
+
 		}
 	case 3:
 		switch tag.RankWay {
@@ -238,7 +236,7 @@ func Like(coverId int, openid string) error {
 
 }
 
-func CreateRecord(id string, file string, uid int) error {
+func CreateRecord(id string, file string, uid int) (CoverDetails, error) {
 	intId, _ := strconv.Atoi(id)
 	selectionId := intId
 	db := setting.MysqlConn()
@@ -247,7 +245,7 @@ func CreateRecord(id string, file string, uid int) error {
 	var selection statements.Selection
 	result1 := db.Model(&statements.Selection{}).Where("id=?", selectionId).First(&selection)
 	if result1.Error != nil {
-		return errors.New("selection_id is unvalid")
+		return CoverDetails{}, errors.New("selection_id is unvalid")
 	}
 	var cover statements.Cover
 	cover.SelectionId = strconv.Itoa(selectionId)
@@ -257,19 +255,38 @@ func CreateRecord(id string, file string, uid int) error {
 	cover.File = file
 	cover.Style = selection.Style
 	cover.Language = selection.Language
-
+	coverDetails := CoverDetails{}
 	err := db.Model(&statements.Cover{}).Create(&cover).Error
-
-	return err
+	setting.DB.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
+	value, err := json.Marshal(coverDetails)
+	if err != nil {
+		return coverDetails, err
+	}
+	if cover.Style != "" {
+		setting.RedisClient.RPush("cover"+cover.Style, string(value))
+	}
+	if cover.Language != "" {
+		setting.RedisClient.RPush("cover"+cover.Language, string(value))
+	}
+	setting.RedisClient.RPush("coverall", string(value))
+	return coverDetails, err
 }
 
-func Select(selection statements.Selection) error {
+func Select(selection statements.Selection) (SelectionDetails, error) {
 	err = setting.DB.Table("selection").Create(&selection).Error
-	s := make(map[string]interface{})
-	s["id"] = selection.ID
-	s["song_name"] = selection.SongName
-	setting.RedisClient.HMSet("ll", s)
-	res := setting.RedisClient.HGetAll("ll").Val()
-	fmt.Println(res)
-	return err
+	selectionDetails := SelectionDetails{}
+	fmt.Println(selection.ID)
+	err = setting.DB.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at").Where("selection.id=?", selection.ID).Joins("left join selection on user.id=selection.user_id").Scan(&selectionDetails).Error
+	value, err := json.Marshal(selectionDetails)
+	if err != nil {
+		return selectionDetails, err
+	}
+	if selection.Style != "" {
+		setting.RedisClient.RPush("selection"+selection.Style, string(value))
+	}
+	if selection.Language != "" {
+		setting.RedisClient.RPush("selection"+selection.Language, string(value))
+	}
+	setting.RedisClient.RPush("selectionall", string(value))
+	return selectionDetails, err
 }
