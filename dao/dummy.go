@@ -16,7 +16,7 @@ const (
 	TARGET2 = "bbt1021ad"
 	TARGET3 = "bbt21bc"
 
-	PRIZESP = "特奖" //目前设计四个奖项，特奖，一等奖，二等奖，三等奖
+	PRIZESP = "特奖" //目前设计四个奖项，特奖 1%，一等奖 5%，二等奖 15%，三等奖 29%
 	PRIZE1  = "一等奖"
 	PRIZE2  = "二等奖"
 	PRIZE3  = "三等奖"
@@ -25,6 +25,7 @@ const (
 var (
 	SchoolPool = []string{SCUT, SYU, JU, SCNU, OTHER}
 	TargetPool = []string{TARGET1, TARGET2, TARGET3}
+	Prizetool  = []string{PRIZESP, PRIZE1, PRIZE2, PRIZE3}
 )
 
 //生成dummy用户
@@ -52,6 +53,10 @@ func dummyUser() *statements.User {
 }
 
 //假彩票
-func fakeLotteries() *statements.Lottery {
-	return nil
+func fakeLotteries(name string, possilbity float64) *statements.Lottery {
+	lottery := statements.Lottery{
+		Name:        name,
+		Possibility: possilbity,
+	}
+	return &lottery
 }
