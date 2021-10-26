@@ -1,8 +1,9 @@
 package controller
 
 import (
-	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"strconv"
+
+	"git.100steps.top/100steps/healing2021_be/models/statements"
 
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"github.com/gin-contrib/sessions"
@@ -35,7 +36,7 @@ func Register(ctx *gin.Context) {
 	}
 	if err != nil {
 		panic(err)
-		return
+		// return
 	}
 	session.Set("user_id", id)
 	session.Save()

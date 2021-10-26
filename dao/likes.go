@@ -6,6 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+//基于redis更新mysql
 func UpdateLikesByID(user int, target int, likes int, kind string) bool {
 	mysqlDb := db.MysqlConn()
 	var like tables.Praise

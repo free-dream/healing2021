@@ -2,8 +2,9 @@ package controller
 
 import (
 	"fmt"
-	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"strconv"
+
+	"git.100steps.top/100steps/healing2021_be/models/statements"
 
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
@@ -55,7 +56,7 @@ func Selector(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&param)
 	if err != nil {
 		panic(err)
-		return
+		// return
 	}
 	param.UserId = sessions.Default(ctx).Get("user_id").(int)
 	resp, err := dao.Select(param)
