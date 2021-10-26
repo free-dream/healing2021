@@ -13,7 +13,7 @@ const ourStates = "ourStates"
 const hotSearch = "hotSearch"
 
 // 放入状态
-func PutInStates(States string)  {
+func PutInStates(States string) {
 	redisDb := setting.RedisConn()
 	redisDb.ZIncrBy(ourStates, 1, States)
 }
@@ -24,8 +24,8 @@ func GetStates() []string {
 
 	// 设置查找要求并找到前18个状态
 	op := redis.ZRangeBy{
-		Offset:0, // 类似sql的limit, 表示开始偏移量
-		Count:18, // 一次返回多少数据
+		Offset: 0,  // 类似sql的limit, 表示开始偏移量
+		Count:  18, // 一次返回多少数据
 	}
 	values, err := redisDb.ZRevRangeByScore(ourStates, op).Result()
 	if err != nil {
@@ -40,7 +40,7 @@ func GetStates() []string {
 	return values
 }
 
-func PutInSearchWord(Word string)  {
+func PutInSearchWord(Word string) {
 	redisDb := setting.RedisConn()
 	redisDb.ZIncrBy(hotSearch, 1, Word)
 }
@@ -50,8 +50,8 @@ func GetSearchWord() []string {
 
 	// 设置查找要求并找到前10条搜索记录
 	op := redis.ZRangeBy{
-		Offset:0, // 类似sql的limit, 表示开始偏移量
-		Count:10, // 一次返回多少数据
+		Offset: 0,  // 类似sql的limit, 表示开始偏移量
+		Count:  10, // 一次返回多少数据
 	}
 	values, err := redisDb.ZRevRangeByScore(hotSearch, op).Result()
 	if err != nil {

@@ -25,4 +25,3 @@ func GetList(ctx *gin.Context) {
 	}
 	ctx.JSON(200, ListResp)
 }
-

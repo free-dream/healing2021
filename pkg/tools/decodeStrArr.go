@@ -25,6 +25,6 @@ func DecodeStrArr(input string) []string {
 	return ret
 }
 
-func DecodeTime(input time.Time)  string{
+func DecodeTime(input time.Time) string {
 	return input.Format("2006-01-02 15:04:05")
 }

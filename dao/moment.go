@@ -22,12 +22,12 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 		}
 	} else if Method == "recommend" {
 		// 按点赞排序
-		if err := MysqlDB.Order("like_num DESC").Offset(Page*10).Limit(10).Find(&AllMoment).Error; err != nil {
+		if err := MysqlDB.Order("like_num DESC").Offset(Page * 10).Limit(10).Find(&AllMoment).Error; err != nil {
 			return AllMoment, false
 		}
 	} else {
 		// 模糊查找
-		if err := MysqlDB.Where("name LIKE ?", Keyword).Order("created_at DESC").Offset(Page*10).Limit(10).Find(&AllMoment).Error; err != nil {
+		if err := MysqlDB.Where("name LIKE ?", Keyword).Order("created_at DESC").Offset(Page * 10).Limit(10).Find(&AllMoment).Error; err != nil {
 			return AllMoment, false
 		}
 	}
@@ -71,7 +71,7 @@ func GetMomentById(MomentId int) (statements.Moment, bool) {
  */
 func CountMLaudsById(MomentId int) int {
 	Moment, ok := GetMomentById(MomentId)
-	if !ok{
+	if !ok {
 		return -1
 	}
 
@@ -87,7 +87,7 @@ func HaveMLauded(UserId int, MomentId int) int {
 	MysqlDB := setting.MysqlConn()
 
 	err := MysqlDB.Where("user_id=? and moment_id=?", UserId, MomentId).First(&statements.Praise{}).Error
-	if gorm.IsRecordNotFoundError(err){
+	if gorm.IsRecordNotFoundError(err) {
 		return 0
 	} else if err != nil {
 		return -1
@@ -108,7 +108,7 @@ func CountCommentsById(MomentId int) int {
 	err := MysqlDB.Model(&statements.MomentComment{}).Where("moment_id=?", MomentId).Count(&Tot).Error
 	fmt.Println(err)
 	if err != nil {
-		return  -1
+		return -1
 	}
 	return Tot
 }
@@ -165,7 +165,7 @@ func GetCommentIdById(CommentId int) (statements.MomentComment, bool) {
  */
 func CountCLaudsById(CommentId int) int {
 	Comment, ok := GetCommentIdById(CommentId)
-	if !ok{
+	if !ok {
 		return -1
 	}
 
@@ -181,7 +181,7 @@ func HaveCLauded(UserId int, CommentId int) int {
 	MysqlDB := setting.MysqlConn()
 
 	err := MysqlDB.Where("user_id=? and moment_comment_id=?", UserId, CommentId).First(&statements.Praise{}).Error
-	if gorm.IsRecordNotFoundError(err){
+	if gorm.IsRecordNotFoundError(err) {
 		return 0
 	} else if err != nil {
 		return -1
@@ -217,12 +217,12 @@ func CLaudedById(CommentId int, UserId int) error {
 
 	// 判断是点赞还是取消点赞,并进行更新
 	Praise := statements.Praise{
-		UserId: UserId,
+		UserId:          UserId,
 		MomentCommentId: CommentId,
 	}
-	if HaveCLauded(UserId, CommentId) == 1{
+	if HaveCLauded(UserId, CommentId) == 1 {
 		// 取消点赞，删除一条点赞记录
-		if err := tx.Delete(&Praise).Error;err != nil {
+		if err := tx.Delete(&Praise).Error; err != nil {
 			return err
 		}
 		if err := tx.Model(&statements.MomentComment{}).Where("id = ? ", CommentId).Update("like_num", gorm.Expr("like_num- ?", 1)).Error; err != nil {
@@ -274,12 +274,12 @@ func MLaudedById(MomentId int, UserId int) error {
 
 	// 判断是点赞还是取消点赞,并进行更新
 	Praise := statements.Praise{
-		UserId: UserId,
+		UserId:   UserId,
 		MomentId: MomentId,
 	}
-	if HaveMLauded(UserId, MomentId) == 1{
+	if HaveMLauded(UserId, MomentId) == 1 {
 		// 取消点赞，删除一条点赞记录
-		if err := tx.Delete(&Praise).Error;err != nil {
+		if err := tx.Delete(&Praise).Error; err != nil {
 			return err
 		}
 		if err := tx.Model(&statements.Moment{}).Where("id = ? ", MomentId).Update("like_num", gorm.Expr("like_num- ?", 1)).Error; err != nil {

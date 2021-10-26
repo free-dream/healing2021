@@ -32,7 +32,7 @@ func GetMomentList(ctx *gin.Context) {
 		return
 	}
 
-	if Keyword != ""{
+	if Keyword != "" {
 		sandwich.PutInSearchWord(Keyword)
 	}
 
@@ -54,20 +54,20 @@ func GetMomentList(ctx *gin.Context) {
 		}
 
 		TmpMoment := respModel.MomentResp{
-			Content : OneMoment.Content,
-			DynamicsId : int(OneMoment.ID),
-			CreatedAt : tools.DecodeTime(OneMoment.CreatedAt),
-			Song : OneMoment.SongName,
-			SelectionId : OneMoment.SelectionId,
-			Lauds : dao.CountMLaudsById(int(OneMoment.ID)),
-			Lauded : dao.HaveMLauded(int(UserId), int(OneMoment.ID)),
-			Comments : dao.CountCommentsById(int(OneMoment.ID)),
-			Status : tools.DecodeStrArr(OneMoment.State),
-			Creator : respModel.TransformUserInfo(User),
+			Content:     OneMoment.Content,
+			DynamicsId:  int(OneMoment.ID),
+			CreatedAt:   tools.DecodeTime(OneMoment.CreatedAt),
+			Song:        OneMoment.SongName,
+			SelectionId: OneMoment.SelectionId,
+			Lauds:       dao.CountMLaudsById(int(OneMoment.ID)),
+			Lauded:      dao.HaveMLauded(int(UserId), int(OneMoment.ID)),
+			Comments:    dao.CountCommentsById(int(OneMoment.ID)),
+			Status:      tools.DecodeStrArr(OneMoment.State),
+			Creator:     respModel.TransformUserInfo(User),
 		}
 		MomentsResp = append(MomentsResp, TmpMoment)
 	}
-	
+
 	ctx.JSON(200, MomentsResp)
 }
 
@@ -75,10 +75,10 @@ func GetMomentList(ctx *gin.Context) {
 type MomentBase struct {
 	Content     string   `json:"content"`
 	Status      []string `json:"status"`
-	SongName        string   `json:"song_name"`
+	SongName    string   `json:"song_name"`
 	SelectionId int      `json:"selection_id"`
-	Language string `json:"language"`
-	Style string `json:"style"`
+	Language    string   `json:"language"`
+	Style       string   `json:"style"`
 }
 
 func PostMoment(ctx *gin.Context) {
@@ -94,18 +94,18 @@ func PostMoment(ctx *gin.Context) {
 	// 转换参数
 	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
 	Moment := statements.Moment{
-		Content : NewMoment.Content,
-		SongName : NewMoment.SongName,
-		UserId : int(UserId),
-		State : tools.EncodeStrArr(NewMoment.Status),
-		SelectionId : NewMoment.SelectionId,
+		Content:     NewMoment.Content,
+		SongName:    NewMoment.SongName,
+		UserId:      int(UserId),
+		State:       tools.EncodeStrArr(NewMoment.Status),
+		SelectionId: NewMoment.SelectionId,
 	}
 
 	// 点歌去
-	if NewMoment.SelectionId != 0 && NewMoment.SongName != ""{
+	if NewMoment.SelectionId != 0 && NewMoment.SongName != "" {
 
 	}
-	
+
 	// 存入数据库
 	if ok := dao.CreateMoment(Moment); !ok {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入失败"})
@@ -143,20 +143,19 @@ func GetMomentDetail(ctx *gin.Context) {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
 		return
 	}
-	
+
 	MomentDetail := respModel.MomentResp{
-		DynamicsId : int(Moment.ID),
-		Content : Moment.Content,
-		CreatedAt : tools.DecodeTime(Moment.CreatedAt),
-		Song : Moment.SongName,
-		SelectionId : Moment.SelectionId,
-		Lauds : dao.CountMLaudsById(int(Moment.ID)),
-		Lauded : dao.HaveMLauded(int(UserId), int(Moment.ID)),
-		Comments : dao.CountCommentsById(int(Moment.ID)),
-		Status : tools.DecodeStrArr(Moment.State),
-		Creator : respModel.TransformUserInfo(User),
+		DynamicsId:  int(Moment.ID),
+		Content:     Moment.Content,
+		CreatedAt:   tools.DecodeTime(Moment.CreatedAt),
+		Song:        Moment.SongName,
+		SelectionId: Moment.SelectionId,
+		Lauds:       dao.CountMLaudsById(int(Moment.ID)),
+		Lauded:      dao.HaveMLauded(int(UserId), int(Moment.ID)),
+		Comments:    dao.CountCommentsById(int(Moment.ID)),
+		Status:      tools.DecodeStrArr(Moment.State),
+		Creator:     respModel.TransformUserInfo(User),
 	}
-	
 
 	ctx.JSON(200, MomentDetail)
 }
@@ -177,9 +176,9 @@ func PostComment(ctx *gin.Context) {
 	// 转换参数
 	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
 	Comment := statements.MomentComment{
-		Comment : NewComment.Content,
-		MomentId : NewComment.DynamicsId,
-		UserId : int(UserId),
+		Comment:  NewComment.Content,
+		MomentId: NewComment.DynamicsId,
+		UserId:   int(UserId),
 	}
 
 	// 存入数据库
@@ -224,12 +223,12 @@ func GetCommentList(ctx *gin.Context) {
 		}
 
 		Comment := respModel.CommentResp{
-			CommentId : int(comment.ID),
-			Content : comment.Comment,
-			Lauded : dao.HaveCLauded(int(UserId), int(comment.ID)),
-			Lauds : dao.CountCLaudsById(int(comment.ID)),
-			Creator : respModel.TransformUserInfo(User),
-			CreatedAt : tools.DecodeTime(comment.CreatedAt),
+			CommentId: int(comment.ID),
+			Content:   comment.Comment,
+			Lauded:    dao.HaveCLauded(int(UserId), int(comment.ID)),
+			Lauds:     dao.CountCLaudsById(int(comment.ID)),
+			Creator:   respModel.TransformUserInfo(User),
+			CreatedAt: tools.DecodeTime(comment.CreatedAt),
 		}
 		CommentsResp = append(CommentsResp, Comment)
 	}
@@ -269,7 +268,7 @@ func PriseOrNot(ctx *gin.Context) {
 }
 
 // 动态搜索推荐
-func DynamicsSearchHot(ctx *gin.Context){
+func DynamicsSearchHot(ctx *gin.Context) {
 	result := sandwich.GetSearchWord()
 	ctx.JSON(200, result)
 }

@@ -13,8 +13,8 @@ type Classic struct {
 	Icon     string `gorm:"default:''"`
 	Singer   string `gorm:"default:''"`
 	WorkName string `gorm:"default:''"`
-	Click    int	`gorm:"default:0"`
-	Lyrics   string `gorm:"default:''"`
+	Click    int    `gorm:"default:0"`
+	File     string `gorm:"default:''"`
 }
 
 func ClassicInit() {

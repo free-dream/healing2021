@@ -12,7 +12,7 @@ func GetTop10() ([]respModel.ClassicResp, error) {
 	var ClassicResp []respModel.ClassicResp
 	var ClassicList []statements.Classic
 
-	err := MysqlDB.Order("likes desc").Limit(10).Find(&ClassicList).Error
+	err := MysqlDB.Order("click desc").Limit(10).Find(&ClassicList).Error
 	if err != nil {
 		return ClassicResp, err
 	}
@@ -20,9 +20,10 @@ func GetTop10() ([]respModel.ClassicResp, error) {
 	//格式转换
 	for _, classic := range ClassicList {
 		classicResp := respModel.ClassicResp{
-			Name:  classic.SongName,
-			Icon:  classic.Icon,
-			Click: classic.Click,
+			ClassicId: int(classic.ID),
+			Name:      classic.SongName,
+			Icon:      classic.Icon,
+			Click:     classic.Click,
 		}
 		ClassicResp = append(ClassicResp, classicResp)
 	}
@@ -42,9 +43,10 @@ func GetLIst() ([]respModel.ClassicListResp, error) {
 
 	for _, classic := range ClassicList {
 		classicList := respModel.ClassicListResp{
-			Name:   classic.SongName,
-			Avatar: classic.Icon,
-			Time:   classic.CreatedAt.String(),
+			ClassicId: int(classic.ID),
+			Name:      classic.SongName,
+			Icon:      classic.Icon,
+			WorkName:  classic.WorkName,
 		}
 		ClassicListResp = append(ClassicListResp, classicList)
 	}
@@ -52,21 +54,21 @@ func GetLIst() ([]respModel.ClassicListResp, error) {
 }
 
 // 获取原唱的信息
-func GetOriginInfo(Name string) (respModel.OriginInfoResp, error) {
+func GetOriginInfo(ClassicId int) (respModel.OriginInfoResp, error) {
 	MysqlDB := setting.MysqlConn()
 	Origin := statements.Classic{}
 
-	err := MysqlDB.Where("song name=?", Name).First(&Origin).Error
+	err := MysqlDB.Where("id=?", ClassicId).First(&Origin).Error
 	if err != nil {
 		return respModel.OriginInfoResp{}, err
 	}
 
 	// 格式转换
 	OriginInfoResp := respModel.OriginInfoResp{
-		SongId: int(Origin.ID),
-		Name:   Origin.SongName,
-		Singer: Origin.Singer,
-		Icon:   Origin.Icon,
+		ClassicId: ClassicId,
+		SongName:  Origin.SongName,
+		Singer:    Origin.Singer,
+		Icon:      Origin.Icon,
 	}
 	return OriginInfoResp, nil
 }

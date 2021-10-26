@@ -7,7 +7,6 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-//module已删除,Classicid default=-1,用于判断是否属于童年
 type Cover struct {
 	gorm.Model
 	UserId      int    `gorm:"default:0;index" json:"userid"`
@@ -21,6 +20,7 @@ type Cover struct {
 	Style       string `gorm:"default:''" json:"style"`
 	Language    string `gorm:"default:''" json:"language"`
 	Module      int    `gorm:"default:0" json:"module"`
+	// Module 1经典 2童年
 }
 
 func CoverInit() {

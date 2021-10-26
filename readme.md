@@ -975,7 +975,7 @@ Content-Type: application/json
         "classic_id":int, //用于跳转到对应的原翻唱页
     	"name":string,	//歌曲名
     	"icon":text(url),	//歌曲图标
-        "click":int	    //点赞数
+        "click":int	    //听歌人数
 	}
     ...
 ]
@@ -1137,7 +1137,7 @@ Content-Type: application/json
 
 ### 4.3.2  歌曲跳转(翻唱)
 
-POST /healing/player
+POST /healing/covers/jump
 
 ```json
 {
@@ -1157,10 +1157,10 @@ Content-Type: application/json
 ```json
 {//童年模式下的返回值
     "cover_id":int,
-	"file":  url,		//歌曲录音的
+	"file":  url,		//翻唱文件url
 	"name":string,		//歌曲名
-	"nickname":string,	//翻唱者
     "icon":text(url),	//歌曲图标
+    "nickname":string,	//翻唱者
     "work_name":string	//作品名
 }
 ```
@@ -1168,10 +1168,11 @@ Content-Type: application/json
 ```json
 {//常规模式下的返回值
     "cover_id":int,
-    "song_name":string,		//歌曲名
     "file":string,			//翻唱文件url
+    "name":string,			//歌曲名
     "icon":string,			//头像大图url
     "nickname":string		//翻唱者
+    "work_name":string(空串) //作品名
 }
 ```
 

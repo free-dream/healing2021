@@ -1,24 +1,25 @@
 package respModel
 
-// 推荐童年歌曲信息
+// 推荐童年原唱歌曲信息
 type ClassicResp struct {
-	Name  string `json:"name"`
-	Icon  string `json:"icon"`
-	Click int    `json:"click"`
+	ClassicId int    `json:"classic_id"`
+	Name      string `json:"name"`
+	Icon      string `json:"icon"`
+	Click     int    `json:"click"`
 }
 
-// 童年歌曲列表版本信息
+// 童年歌曲列表翻唱信息
 type ClassicListResp struct {
-	Name        string `json:"name"`
-	Avatar      string `json:"avatar"`
-	Time string `json:"time"`
-	WorkName    string `json:"work_name"`
+	ClassicId int    `json:"classic_id"`
+	Name      string `json:"name"`
+	Icon      string `json:"icon"`
+	WorkName  string `json:"work_name"`
 }
 
-// 童年歌曲完全版信息
+// 童年原唱页原唱信息
 type OriginInfoResp struct {
-	SongId int    `json:"song_id,omitempty"`
-	Name   string `json:"name,omitempty"`
-	Singer string `json:"singer,omitempty"`
-	Icon   string `json:"icon,omitempty"`
+	ClassicId int    `json:"classic_id"`
+	SongName  string `json:"song_name"`
+	Singer    string `json:"singer"`
+	Icon      string `json:"icon"`
 }

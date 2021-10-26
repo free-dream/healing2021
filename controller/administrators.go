@@ -9,10 +9,10 @@ import (
 
 type DeleteParams struct {
 	Type int `json:"type"`
-	Id   int    `json:"id"`
+	Id   int `json:"id"`
 }
 
-func DeleteContent(ctx *gin.Context)  {
+func DeleteContent(ctx *gin.Context) {
 	// 参数获取
 	param := DeleteParams{}
 	err := ctx.ShouldBind(&param)
@@ -23,13 +23,13 @@ func DeleteContent(ctx *gin.Context)  {
 
 	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
 	// 不妨将 userid 小于5的账号预留，充当管理员
-	if UserId > 5{
+	if UserId > 5 {
 		ctx.JSON(403, e.ErrMsgResponse{Message: "当前用户并非管理员"})
 		return
 	}
 
 	// 分模式进行删除内容
-	if param.Type != 1 && param.Type != 2{
+	if param.Type != 1 && param.Type != 2 {
 		ctx.JSON(403, e.ErrMsgResponse{Message: "参数错误"})
 		return
 	}
