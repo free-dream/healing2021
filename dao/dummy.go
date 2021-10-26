@@ -2,10 +2,12 @@ package dao
 
 import (
 	"git.100steps.top/100steps/healing2021_be/models/statements"
+	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 )
 
 const (
+	//可扩充
 	SCUT  = "华南理工大学"
 	SYU   = "中山大学"
 	JU    = "暨南大学"
@@ -20,6 +22,28 @@ const (
 	PRIZE1  = "一等奖"
 	PRIZE2  = "二等奖"
 	PRIZE3  = "三等奖"
+
+	//欢迎扩充测试用例
+	//流行歌
+	CSONG1 = "一剪梅" //中文歌
+	CSONG2 = "稻香"
+	CSONG3 = "忐忑"
+	CSONG4 = "海阔天空" //可粤语可中文
+	CSONG5 = "光辉岁月"
+	CSONG6 = "富士山下"
+	JSONG1 = "砂之惑星" //日文歌
+	JSONG2 = "向夜晚奔去"
+	JSONG3 = "蓝二乘"
+	JSONG4 = "初音未来的消失"
+	ESONG1 = "viva la vida" //英文歌
+	ESONG2 = "Numb"
+	ESONG3 = "Never Gonna Give You Up"
+	ESONG4 = "Monster"
+	//童年曲目
+	CHILDHOOD1 = "葫芦娃"
+	CHILDHOOD2 = "黑猫警长"
+	CHILDHOOD3 = "邋遢大王奇遇记"
+	CHILDHOOD4 = "小英雄哪吒"
 )
 
 var (
@@ -27,6 +51,36 @@ var (
 	TargetPool = []string{TARGET1, TARGET2, TARGET3}
 	Prizetool  = []string{PRIZESP, PRIZE1, PRIZE2, PRIZE3}
 )
+
+//获取用户id
+func GetUserid(openid string) (int, error) {
+	var user tables.User
+	err := MysqlDb.Where("OpenId = ?", openid).First(&user).Error
+	if err != nil {
+		return -1, err
+	}
+	return int(user.ID), nil
+}
+
+//获取用户的nickname
+func GetUserNickname(userid int) (string, error) {
+	var user tables.User
+	err := MysqlDb.Where("Id = ?", userid).First(&user).Error
+	if err != nil {
+		return "", err
+	}
+	return user.Nickname, nil
+}
+
+//获取用户的avatar
+func GetUserAvatar(userid int) (string, error) {
+	var user tables.User
+	err := MysqlDb.Where("Id = ?", userid).First(&user).Error
+	if err != nil {
+		return "", err
+	}
+	return user.Avatar, nil
+}
 
 //生成dummy用户
 func dummyUser() *statements.User {
@@ -59,4 +113,29 @@ func fakeLotteries(name string, possilbity float64) *statements.Lottery {
 		Possibility: possilbity,
 	}
 	return &lottery
+}
+
+//基于用户创建点歌
+func dummySelections(userid int, song string, language string) *statements.Selection {
+
+	selection := statements.Selection{
+		SongName: song,
+		Remark:   string(tools.GetRandomString(20)),
+		Language: language,
+		UserId:   userid,
+	}
+	return &selection
+}
+
+//基于用户创建翻唱
+func dummyCovers(userid int, selectionid int) (*statements.Cover, error) {
+	nickname, err := GetUserNickname(userid)
+	if err != nil {
+		return nil, err
+	}
+	cover := statements.Cover{
+		UserId:   userid,
+		Nickname: nickname,
+	}
+	return &cover, nil
 }
