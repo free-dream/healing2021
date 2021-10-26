@@ -1,6 +1,8 @@
 package dao
 
 import (
+	"strconv"
+
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
@@ -116,26 +118,39 @@ func fakeLotteries(name string, possilbity float64) *statements.Lottery {
 }
 
 //基于用户创建点歌
-func dummySelections(userid int, song string, language string) *statements.Selection {
-
+func dummySelections(userid int, song string, language string) (*statements.Selection, error) {
+	avatar, err := GetUserAvatar(userid)
+	if err != nil {
+		return nil, err
+	}
 	selection := statements.Selection{
 		SongName: song,
 		Remark:   string(tools.GetRandomString(20)),
 		Language: language,
 		UserId:   userid,
+		Avatar:   avatar,
 	}
-	return &selection
+	return &selection, nil
 }
 
-//基于用户创建翻唱
-func dummyCovers(userid int, selectionid int) (*statements.Cover, error) {
+//基于用户创建翻唱,若为非童年,classicid = -1
+func dummyCovers(userid int, selectionid int, songname string, classicid int) (*statements.Cover, error) {
 	nickname, err := GetUserNickname(userid)
 	if err != nil {
 		return nil, err
 	}
+	avatar, err := GetUserAvatar(userid)
+	if err != nil {
+		return nil, err
+	}
 	cover := statements.Cover{
-		UserId:   userid,
-		Nickname: nickname,
+		UserId:      userid,
+		Nickname:    nickname,
+		Avatar:      avatar,
+		SelectionId: strconv.Itoa(selectionid),
+		ClassicId:   classicid,
+		File:        string(tools.GetRandomString(30)),
+		SongName:    songname,
 	}
 	return &cover, nil
 }
