@@ -25,7 +25,6 @@ type User struct {
 	PhoneSearch    int    `gorm:"default:0" json:"phone_search"`
 	RealNameSearch int    `gorm:"default:0" json:"real_name_search"`
 	LoginTime      time.Time
-	Hobby          string `gorm:"default:''" json:"hobby"`
 }
 
 func UserInit() {

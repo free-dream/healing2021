@@ -26,23 +26,22 @@ func TableInit() {
 }
 
 // 假用户
-func CreateFakeUser(nickname string, openid string, time time.Time, hobby string) {
+func CreateFakeUser(nickname string, openid string, time time.Time) { /*hobby map[string]string) */
 	User := statements.User{
 		Openid:    openid,
 		Nickname:  nickname,
 		LoginTime: time,
-		Hobby:     hobby,
 	}
 
 	db := setting.DB
 	db.Create(&User)
 }
 func AddFakeUsers() {
-	CreateFakeUser("heng1", "123456", time.Now(), "")
-	CreateFakeUser("heng2", "123456321", time.Date(2002, 12, 11, 10, 16, 55, 05, time.Local), "")
-	CreateFakeUser("heng3", "1231", time.Date(2021, 10, 20, 10, 16, 55, 05, time.Local), "")
-	CreateFakeUser("heng4", "99999", time.Now(), "")
-	CreateFakeUser("juryo", "juryo", time.Now(), "")
+	CreateFakeUser("heng1", "123456", time.Now())
+	CreateFakeUser("heng2", "123456321", time.Date(2002, 12, 11, 10, 16, 55, 05, time.Local))
+	CreateFakeUser("heng3", "1231", time.Date(2021, 10, 20, 10, 16, 55, 05, time.Local))
+	CreateFakeUser("heng4", "99999", time.Now())
+	CreateFakeUser("juryo", "juryo", time.Now())
 }
 
 // 假动态
