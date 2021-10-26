@@ -920,11 +920,14 @@ POST /healing/selection
 
 ```json
  {
-        "remark":text,	//备注
+       	"remark":text,	//备注
         "song_name":string,	
         "language":string,	
         "style":string,
-	}
+}
+//童年歌曲点歌的格式
+//"style":童年
+//"language":中文
 ```
 
 
@@ -1019,6 +1022,14 @@ HTTP/1.1 403 Forbidden
 Content-Type: application/json
 
 `{"message" : "列表不存在"}
+
+## 4.1.3 唱歌列表
+
+直接使用 3.1.2接口进行拉取，其中的要填写的参数说明如下：
+
+"style":童年
+"language":中文
+（童年歌曲点歌的格式）
 
 ## 4.2 原翻唱页相关接口
 
@@ -1128,8 +1139,6 @@ Content-Type: application/json
 }
 ```
 
-
-
 ### 4.3.2  歌曲跳转(翻唱)
 
 POST /healing/player
@@ -1139,7 +1148,7 @@ POST /healing/player
     "jump":integer,		//0为上一首,1为下一首
     "check":integer,	//0为经典治愈，1为童年
     "cover_id":integer	//若jump=2，则传回对应的翻唱id
-    // 分享，传回对应歌曲的信息
+    // 分享，直接拿着"classic_id"参数去发布动态的接口即可
 }
 ```
 
@@ -1169,8 +1178,6 @@ Content-Type: application/json
     "nickname":string		//翻唱者
 }
 ```
-
-
 
 失败(例)：
 
@@ -1342,11 +1349,11 @@ Content-Type: application/json
         "dynamics_id": integer,
         "content": string,								// 动态的内容
         "created_at": “yyyy-mm-dd-hh-mm-ss”,
-        "song" : string,								// 要分享的歌名
+        "song" : string,								// 要点的歌名
         "lauds" : integer,								// 动态的点赞数
-        "lauded": integer(0/1),							// 当前用户是否点赞该动态
+        "lauded": integer(0/1),						// 当前用户是否点赞该动态
         "comments" : integer,							// 动态的评论数
-        "status" : ["status1", "status2" ...],			// 状态列表 元素都是string
+        "status" : ["status1", "status2" ...],			// 状态列表
         "creator": {
             "id": integer,	
             "nackname" : string,						// 用户名
