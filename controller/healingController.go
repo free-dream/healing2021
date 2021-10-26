@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"strconv"
 
 	"git.100steps.top/100steps/healing2021_be/models/statements"
@@ -59,6 +58,7 @@ func Selector(ctx *gin.Context) {
 		return
 	}
 	param.UserId = sessions.Default(ctx).Get("user_id").(int)
+	param.Module = 1
 	resp, err := dao.Select(param)
 	if err != nil {
 		panic(err)
@@ -106,24 +106,24 @@ func CoverFetcher(ctx *gin.Context) {
 type RecordParams struct {
 	SelectionId string   `json:"selection_id" binding:"required"`
 	Record      []string `json:"record" binding:"required"`
+	Module      int      `json:"module"`
 }
 
 //唱歌接口
 
 func Recorder(c *gin.Context) {
-	var params RecordParams
+	params := RecordParams{}
 	userID := tools.GetUser(c).ID
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(400, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
-	fmt.Println(params.Record)
 	url, err := convertMediaIdArrToQiniuUrl(params.Record)
 	if err != nil {
 		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
-	resp, err := dao.CreateRecord(params.SelectionId, url, int(userID))
+	resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, int(userID))
 	if err != nil {
 		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return

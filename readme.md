@@ -30,7 +30,6 @@
       * [3\.2\.4\.2 搜索历史 (保留，可选，视前端需求)](#3242-搜索历史-保留可选视前端需求)
       * [3\.4\.2\.3 热榜](#3423-热榜)
   * [3\.3 点歌页接口](#33-点歌页接口)
-  * [3\.4 录音接口](#34-录音接口)
 * [4\.追忆童年](#4追忆童年)
   * [4\.1 追忆童年主页相关接口](#41-追忆童年主页相关接口)
     * [4\.1\.1 推荐歌曲，根据click数降序获取10项(大家都在听)](#411-推荐歌曲根据click数降序获取10项大家都在听)
@@ -358,7 +357,7 @@ Content-Type: application/json
   "moments": {
       index:{
     "created_at": "string",
-    "state": "string", //状态:摸鱼
+    "state": "[]string", //状态:摸鱼
     "content": "string", //动态内容
     "momentId": int, //对应动态的id
     "song_name": string, //分享的歌曲名
@@ -424,9 +423,7 @@ GET /healing/selections/list HTTP 1.1
 
 ```
 {
-"sort":int, //1推荐，2全部，3风格，4语言 binding:"required"`
-"style":string //
-"language":string
+label:string //recommend all 或对应风格，语言
 "rankWay":int //1综合排序，2最新binding:"required"`
 "page":int//页数
 }
@@ -474,9 +471,7 @@ GET /healing/selections/list HTTP 1.1
 
 ```
 {
-"sort":int, //1推荐，2全部，3风格，4语言 binding:"required"`
-"style":string //
-"language":string
+label：string //recommend all 或对应风格，语言
 "rankWay":int //1综合排序，2最新binding:"required"`
 "page":int //页数
 }
@@ -519,6 +514,7 @@ POST /healing/cover
 {
     "selection_id":int,//点歌id
     "record":[]string,//拼接的录音url
+    module:int 1表示治愈系翻唱
 }
 ```
 

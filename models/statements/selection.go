@@ -15,6 +15,7 @@ type Selection struct {
 	Style    string `gorm:"default:''" json:"style"`
 	UserId   int    `gorm:"default:0;index" json:"user_id"`
 	Avatar   string `gorm:"default:''" json:"avatar"`
+	Module   int    `gorm:"default:0" json:"module"`
 }
 
 func SelectionInit() {
