@@ -29,7 +29,7 @@ thumbnail可以通过url的变换来获取，但暂时保留thumbnail字段
 | background   | varchar(255) | 背景图片url                   |
 | openid       | int          | 微信颁发的用户openid          |
 
-### selection
+### selection（点歌）
 
 | 字段值         | 字段类型     | 说明               |
 | -------------- | ------------ | ------------------ |
@@ -41,7 +41,7 @@ thumbnail可以通过url的变换来获取，但暂时保留thumbnail字段
 | user_id        | int          | 点歌用户的id       |
 | module         | varchar(255) | 模块名             |
 
-### moment
+### moment（动态）
 
 | 字段值       | 字段类型     | 说明     |
 | ------------ | ------------ | -------- |
@@ -55,7 +55,7 @@ thumbnail可以通过url的变换来获取，但暂时保留thumbnail字段
 | picture      | varchar(255) | 图片url  |
 
 
-### moment_comment
+### moment_comment（评论）
 
 | 字段值    | 字段类型     | 说明     |
 | --------- | ------------ | -------- |
@@ -128,7 +128,7 @@ thumbnail可以通过url的变换来获取，但暂时保留thumbnail字段
 
 
 
-### classic
+### classic（原唱）
 
 | 字段值    | 字段类型     | 说明                 |
 | --------- | ------------ | -------------------- |
@@ -139,9 +139,9 @@ thumbnail可以通过url的变换来获取，但暂时保留thumbnail字段
 | singer    | varchar(255) | 原唱歌手             |
 | work_name | varchar(255) | 出处作品名称         |
 | click     | int          | 听歌人数，每小时更新 |
-| lyrics    | varchar(255) | 可能的歌词文件url    |
+| record    | varchar(255) | 原唱歌曲的录音url    |
 
-### cover
+### cover(翻唱)
 
 //一个用户界面、经典治愈、童年界面、排行榜通用的表，基于不同接口提供不同的视图
 

@@ -519,20 +519,20 @@ POST /healing/cover
 {
     "selection_id":int,//点歌id
     "record":[]string,//拼接的录音url
-   
 }
 ```
 
 成功：
 
 ```json
-{		"nickname":string,	//可匿名
-        "id":int,//对应翻唱歌id
-        "song_name":string,
-        "user_id":integer,	//翻唱用户的id
-        "created_at":string(datetime),	//“yyyy-mm-dd-hh-mm-ss”
-        "avatar":string,
-        "file":string//歌曲url
+{		
+    "nickname":string,	//可匿名
+    "id":int,//对应翻唱歌id
+    "song_name":string,
+    "user_id":integer,	//翻唱用户的id
+    "created_at":string(datetime),	//“yyyy-mm-dd-hh-mm-ss”
+    "avatar":string,
+    "file":string//歌曲url
 }
 ```
 
@@ -971,10 +971,11 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 ```json
-[//列表长度为10，若出现等click数的情况按name字母序
+[//列表长度为10，click数降序
 	{
+        "classic_id":int, //用于跳转到对应的原翻唱页
     	"name":string,	//歌曲名
-    	"icon":text(url),	//歌曲图标,此处是大图标
+    	"icon":text(url),	//歌曲图标
         "click":int	    //点赞数
 	}
     ...
@@ -1000,12 +1001,12 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 ```json
-[//列表name字母序
+[
     {
-        "name":string,
-        "avatar":text(url), //小图标
-        "time":datetime,	//翻唱时间 “yyyy-mm-dd-hh-mm-ss”
-        "work_name":string	//音乐出处
+       	"classic_id":int, 	//用于跳转到对应的原翻唱页
+    	"name":string,		//歌曲名
+    	"icon":text(url),	//歌曲图标
+        "work_name":string	//作品名
     }
     ...
 ]
@@ -1023,9 +1024,13 @@ Content-Type: application/json
 
 ### 4.2.1 获取原唱相关信息
 
-GET /childhood/original/{name}/info HTTP 1.1
+GET /childhood/original/info HTTP 1.1
 
-***name指对应歌曲的名字***
+```json
+{
+	"classic_id":int
+}
+```
 
 成功:
 
@@ -1035,8 +1040,8 @@ Content-Type: application/json
 
 ```json
 {
-    "song_id":integer,	//歌曲id
-    "name": string,
+    "classic_id":int, 	//用于播放原唱
+    "song_name": string,
     "singer": string,
     "icon":text(url)   //歌曲图标
 }
@@ -1052,7 +1057,13 @@ Content-Type: application/json
 
 ### 4.2.2  获取用户翻唱列表并排序
 
-GET /childhood/original/{name}/cover HTTP 1.1
+GET /childhood/original/covers HTTP 1.1
+
+```json
+{
+	"classic_id":int
+}
+```
 
 成功:
 
@@ -1062,11 +1073,11 @@ Content-Type: application/json
 
 ```json
 [
-    {	//此处应该是不需要用户id的，对应的记录索引后应位于歌曲id下
+    {
+        "cover_id":int,			// 用于进入歌曲页
         "nickname": string,
         "avatar": text(url),   //用户头像
         "post_time": datetime,	//“yyyy-mm-dd-hh-mm-ss”
-        //"like": integer(uint) ,可选，设计上没有提到
     }
     ...
 ]
@@ -1090,19 +1101,45 @@ Content-Type: application/json
 
 调用 POST /healing/covers/like 接口
 
-### 4.3.2  加载歌曲(翻唱)
+### 4.3.2 当前歌曲的信息获取
+
+GET /healing/covers/player
+
+```
+{
+	"cover_id":int
+}
+```
+
+成功:
+
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+```
+{
+	"cover_id":int，
+	"file":  url,		//歌曲录音的
+	"name":string,		//歌曲名
+	"nickname":string	//翻唱者
+    "icon":text(url),	//歌曲图标
+    "work_name":string	//作品名
+}
+```
+
+
+
+### 4.3.2  歌曲跳转(翻唱)
 
 POST /healing/player
 
-//不知道这里有没有播放列表的设计
-
-//这里关于童年的设计挺奇怪的，不过我自己先填上了
-
 ```json
 {
-    "jump":integer,	//0为上一首,1为下一首,2为跳转，跳转则传回对应歌曲的id
+    "jump":integer,		//0为上一首,1为下一首
     "check":integer,	//0为经典治愈，1为童年
     "cover_id":integer	//若jump=2，则传回对应的翻唱id
+    // 分享，传回对应歌曲的信息
 }
 ```
 
@@ -1114,24 +1151,26 @@ Content-Type: application/json
 
 ```json
 {//童年模式下的返回值
-    "song_name":string,	//歌曲名
-    "file":string,	//翻唱文件url
-    "icon":string,	//图标url
-    "work_name":string,	//作品名
-    "nickname":string	//翻唱者
+    "cover_id":int,
+	"file":  url,		//歌曲录音的
+	"name":string,		//歌曲名
+	"nickname":string,	//翻唱者
+    "icon":text(url),	//歌曲图标
+    "work_name":string	//作品名
 }
 ```
-
-
 
 ```json
 {//常规模式下的返回值
-    "song_name":string,	//歌曲名
-    "file":string,	//翻唱文件url
-    "avatar":string,	//头像大图url
-    "nickname":string	//翻唱者
+    "cover_id":int,
+    "song_name":string,		//歌曲名
+    "file":string,			//翻唱文件url
+    "icon":string,			//头像大图url
+    "nickname":string		//翻唱者
 }
 ```
+
+
 
 失败(例)：
 
@@ -1335,12 +1374,20 @@ Content-Type: application/json
 
 ```js
 {
-    "content": string,								// 动态的内容
-    "status": ["status1", "status2"...],		// 状态列表 元素都是string
+    "content": string,							// 动态的内容
+    "status": ["status1", "status2"...],		// 状态列表元素都是string
+        
+    "have_selection":int,						// 点歌了为1，否则为0
+    "is_normal":int,							// 经典点歌为0，童年为1
+   
+    // 经典点歌填这四个
     "song_name":string,	
     "language":string,	
     "style":string,
-    "selection_id": int
+    "remark":text,								//点歌的备注
+     
+     // 童年点歌填这一个
+    "classic_id":int
 }
 ```
 
@@ -1372,16 +1419,16 @@ Content-Type: application/json
     "content": string,								// 动态的内容
     "created_at": “yyyy-mm-dd-hh-mm-ss”,
     "song" : string, //歌名
-    "selection_id" : string //所点歌曲的id
+    "selection_id" : string, //所点歌曲的id
     "lauds" : integer,								// 动态的点赞数
     "lauded": integer(0/1),							// 当前用户是否点赞该动态
     "comments" : integer,							// 动态的评论数
-    "status" : ["status1", "status2" ...],			// 状态列表 元素都是string
+    "status" : ["status1", "status2" ...],			// 状态列表
     "creator": {
         "id": integer,	
         "nackname" : string,						// 用户名
         "avatar": string(url),						// 头像
-    	"avatar_visible": integer(0/1)				// 是否设置了头像（0代表没设置）
+    	"avatar_visible": integer(0/1)				// 0代表没设置头像
 	}
 }
 
@@ -1443,7 +1490,7 @@ Content-Type: application/json
             "id": integer,	
             "nackname" : string,						// 用户名
             "avatar": string(url),						// 头像
-            "avatar_visible": integer(0/1)				// 是否设置了头像（0代表没设置）
+            "avatar_visible": integer(0/1)				// 是0代表没设置头像
         },
         "created_at": “yyyy-mm-dd-hh-mm-ss”,
         "lauds" : integer,								// 动态的点赞数
@@ -1548,11 +1595,10 @@ Content-Type: application/json
 ```json
 {
     {
-    	"id":int,//对应的原曲id
+    	"id":int,	//对应的原曲selection_id
     	"song_name":string,	
     	"language":string,	
     	"style":string,
-    	"model":string,	//所属模块名，有限选项，索引用
 	}
 	...
 }
@@ -1568,7 +1614,9 @@ Content-Type: application/json
 {"message" : "服务端出错"}
 ```
 
-## 6.10 动态、评论删除
+# 管理员相关
+
+## 7.1 动态、评论删除
 
 仅管理员可用，现不妨将 userId 为 0-5 的账号预留，当管理员账号
 
