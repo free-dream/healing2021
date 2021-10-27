@@ -8,6 +8,9 @@ import (
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
 
+/*翻唱排序系统初始化的时候缓存一次，之后定期更新*/
+//用户信息在登录时缓存一次
+
 //缓存翻唱排序
 //request="流派or语言"+"排序要求"
 //例："日语综合"="japanese/composite"
@@ -138,13 +141,3 @@ func CachePrizes(lotteries []*statements.Lottery) {
 		redisDB.HMSet(key, temp)
 	}
 }
-
-// //sql缓存到redis
-// func (middle *Middle) Cache(table) {
-// 	redisCli := setting.RedisConn()
-// 	fmt.Println(redisCli)
-// 	// redisDb := setting.RedisClient()
-// 	// mysqlDb := setting.MysqlConn()
-
-// 	// mysqlDb.
-// }

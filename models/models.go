@@ -86,12 +86,12 @@ func AddFakeSelections() {
 		CreateFakeSelection(index, "测试歌曲")
 	}
 
-	//目前目录下的假用户有15个,每个用户生成15条点歌需求
-	for i := 0; i < 15; i++ {
-		for j := 0; j < 15; j++ {
-			CreateDummySelections(i)
-		}
-	}
+	// //目前目录下的假用户有15个,每个用户生成15条点歌需求
+	// for i := 0; i < 15; i++ {
+	// 	for j := 0; j < 15; j++ {
+	// 		CreateDummySelections(i)
+	// 	}
+	// }
 }
 
 //假翻唱

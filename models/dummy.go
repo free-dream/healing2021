@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -145,7 +144,6 @@ func dummyUser() *statements.User {
 		nickname = string(tools.GetRandomString(4))
 	}
 	//决定学校
-	fmt.Println("test")
 	school = SchoolPool[check2]
 	user := statements.User{
 		Openid:    string(tools.GetRandomString(10)),

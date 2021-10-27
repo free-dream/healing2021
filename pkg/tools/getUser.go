@@ -55,3 +55,11 @@ func GetOpenid(ctx *gin.Context) string {
 	openid := raw.(string)
 	return openid
 }
+
+//获取userid
+func GetUserid(ctx *gin.Context) int {
+	session := sessions.Default(ctx)
+	raw := session.Get("user_id")
+	userid := raw.(int)
+	return userid
+}
