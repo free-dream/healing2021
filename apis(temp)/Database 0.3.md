@@ -47,7 +47,7 @@ thumbnail可以通过url的变换来获取，但暂时保留thumbnail字段
 | ------------ | ------------ | -------- |
 | id           | int          | 自增主键 |
 | user_id           | int          |         |
-| likes        | int          |          |
+| like_num | int          |          |
 | content      | varchar(255) |          |
 | selection_id | int          |          |
 | song_name    | varchar(255) |          |

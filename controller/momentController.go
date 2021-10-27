@@ -75,10 +75,16 @@ func GetMomentList(ctx *gin.Context) {
 type MomentBase struct {
 	Content     string   `json:"content"`
 	Status      []string `json:"status"`
+
+	HaveSelection int `json:"have_selection"`
+	IsNormal int `json:"is_normal"`
+
 	SongName    string   `json:"song_name"`
-	SelectionId int      `json:"selection_id"`
 	Language    string   `json:"language"`
 	Style       string   `json:"style"`
+	Remark		string 	`json:"remark"`
+
+	ClassicId int      `json:"classic_id"`
 }
 
 func PostMoment(ctx *gin.Context) {
@@ -86,10 +92,25 @@ func PostMoment(ctx *gin.Context) {
 	var NewMoment MomentBase
 	ctx.ShouldBind(&NewMoment)
 
-	// 统计大家的状态
+	// 跳转点歌
+	if NewMoment.HaveSelection == 1{
+		if NewMoment.IsNormal ==0{
+
+		} else if NewMoment.IsNormal ==1{
+
+		} else {
+			ctx.JSON(403, e.ErrMsgResponse{Message: "非法参数"})
+		}
+	}
+
+	// 统计大家的状态、统计点歌情况
 	for _, state := range NewMoment.Status {
 		sandwich.PutInStates(state)
 	}
+
+
+
+	//
 
 	// 转换参数
 	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
@@ -98,12 +119,7 @@ func PostMoment(ctx *gin.Context) {
 		SongName:    NewMoment.SongName,
 		UserId:      int(UserId),
 		State:       tools.EncodeStrArr(NewMoment.Status),
-		SelectionId: NewMoment.SelectionId,
-	}
-
-	// 点歌去
-	if NewMoment.SelectionId != 0 && NewMoment.SongName != "" {
-
+		
 	}
 
 	// 存入数据库

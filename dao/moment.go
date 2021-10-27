@@ -7,11 +7,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-/**
- * @Description 获取指定的一页(十条)动态【查询没有加行锁的必要】
- * @Param 获取方式method string, 关键字keyword string，页码page int
- * @return 含有所有动态信息的切片AllMoment(按时间排序)，判断数据库操作是否成功的ok(true说明成功)
- **/
+// 获取指定的一页(十条)动态
 func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment, bool) {
 	MysqlDB := setting.MysqlConn()
 	var AllMoment []statements.Moment
@@ -27,7 +23,8 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 		}
 	} else {
 		// 模糊查找
-		if err := MysqlDB.Where("name LIKE ?", Keyword).Order("created_at DESC").Offset(Page * 10).Limit(10).Find(&AllMoment).Error; err != nil {
+		Fuzzy := "%" + Keyword + "%"
+		if err := MysqlDB.Where("content LIKE ? or song_name LIKE ? or states LIKE ?", Fuzzy).Order("created_at DESC").Offset(Page * 10).Limit(10).Find(&AllMoment).Error; err != nil {
 			return AllMoment, false
 		}
 	}
@@ -35,11 +32,7 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 	return AllMoment, true
 }
 
-/**
-* @description: 创建新动态
-* @param: Moment 结构体
-* @return: 操作是否成功 ok
- */
+//创建新动态
 func CreateMoment(Moment statements.Moment) bool {
 	MysqlDB := setting.MysqlConn()
 	if err := MysqlDB.Create(&Moment).Error; err != nil {
@@ -48,11 +41,7 @@ func CreateMoment(Moment statements.Moment) bool {
 	return true
 }
 
-/**
-* @description: 用动态 Id 找动态的记录
-* @param: 动态Id
-* @return: Moment 结构体
- */
+//用动态 Id 找动态的记录
 func GetMomentById(MomentId int) (statements.Moment, bool) {
 	MysqlDB := setting.MysqlConn()
 	Moment := statements.Moment{}
@@ -64,11 +53,7 @@ func GetMomentById(MomentId int) (statements.Moment, bool) {
 	return Moment, true
 }
 
-/**
-* @description: 通过动态的 Id 来统计动态被点赞数
-* @param: 动态 Id
-* @return: 点赞次数
- */
+//通过动态的 Id 来统计动态被点赞数
 func CountMLaudsById(MomentId int) int {
 	Moment, ok := GetMomentById(MomentId)
 	if !ok {
@@ -78,11 +63,7 @@ func CountMLaudsById(MomentId int) int {
 	return Moment.LikeNum
 }
 
-/**
-* @description: 通过动态的 Id 来判断当前用户是否点过赞
-* @param: 动态 Id
-* @return: 1 表示已经点过赞, -1 表示发生异常情况
- */
+//通过动态的 Id 来判断当前用户是否点过赞
 func HaveMLauded(UserId int, MomentId int) int {
 	MysqlDB := setting.MysqlConn()
 
@@ -95,11 +76,7 @@ func HaveMLauded(UserId int, MomentId int) int {
 	return 1
 }
 
-/**
-* @description: 通过动态的 Id 来统计评论总数
-* @param: 动态 Id
-* @return: 评论总数, 异常时返回-1
- */
+//通过动态的 Id 来统计评论总数
 func CountCommentsById(MomentId int) int {
 	MysqlDB := setting.MysqlConn()
 	// 用聚类函数
@@ -113,11 +90,7 @@ func CountCommentsById(MomentId int) int {
 	return Tot
 }
 
-/**
-* @description: 创建新评论
-* @param: Comment 结构体
-* @return: 操作是否成功 ok
- */
+//创建新评论
 func CreateComment(Comment statements.MomentComment) bool {
 	MysqlDB := setting.MysqlConn()
 	if err := MysqlDB.Create(&Comment).Error; err != nil {
@@ -126,11 +99,7 @@ func CreateComment(Comment statements.MomentComment) bool {
 	return true
 }
 
-/**
-* @description: 拉取一个动态下的评论列表
-* @param: 动态的Id int
-* @return: 操作是否成功 ok
- */
+//拉取一个动态下的评论列表
 func GetCommentsByMomentId(MomentId int) ([]statements.MomentComment, bool) {
 	MysqlDB := setting.MysqlConn()
 	var CommentList []statements.MomentComment
@@ -142,11 +111,7 @@ func GetCommentsByMomentId(MomentId int) ([]statements.MomentComment, bool) {
 	return CommentList, true
 }
 
-/**【未测试】
-* @description: 用评论 Id 找评论的记录
-* @param: 评论 Id
-* @return: Comment 结构体
- */
+//用评论 Id 找评论
 func GetCommentIdById(CommentId int) (statements.MomentComment, bool) {
 	MysqlDB := setting.MysqlConn()
 	var Comment statements.MomentComment
@@ -158,11 +123,7 @@ func GetCommentIdById(CommentId int) (statements.MomentComment, bool) {
 	return Comment, true
 }
 
-/**
-* @description: 通过评论的 Id 来统计动态被点赞数
-* @param: 评论 Id
-* @return: 点赞次数
- */
+//通过评论的 Id 来统计动态被点赞数
 func CountCLaudsById(CommentId int) int {
 	Comment, ok := GetCommentIdById(CommentId)
 	if !ok {
@@ -172,11 +133,7 @@ func CountCLaudsById(CommentId int) int {
 	return Comment.LikeNum
 }
 
-/**【未测试】
-* @description: 通过评论的 Id 来判断当前用户是否点过赞
-* @param: 评论 Id
-* @return: 1 表示已经点过赞
- */
+//通过评论的 Id 来判断当前用户是否点过赞
 func HaveCLauded(UserId int, CommentId int) int {
 	MysqlDB := setting.MysqlConn()
 
@@ -189,11 +146,7 @@ func HaveCLauded(UserId int, CommentId int) int {
 	return 1
 }
 
-/**【使用行锁】
-* @description: 通过评论的 Id 点赞
-* @param: 评论 Id
-* @return: ok 表示点过赞操作是否成功
- */
+//通过评论的 Id 点赞
 func CLaudedById(CommentId int, UserId int) error {
 	MysqlDB := setting.MysqlConn()
 	tx := MysqlDB.Begin()
@@ -246,11 +199,7 @@ func CLaudedById(CommentId int, UserId int) error {
 	return nil
 }
 
-/**【使用行锁】
-* @description: 通过动态的 Id 点赞
-* @param: 动态 Id
-* @return: ok 表示点过赞操作是否成功
- */
+//通过动态的 Id 点赞
 func MLaudedById(MomentId int, UserId int) error {
 	MysqlDB := setting.MysqlConn()
 	tx := MysqlDB.Begin()

@@ -1019,14 +1019,6 @@ Content-Type: application/json
 
 `{"message" : "列表不存在"}
 
-## 4.1.3 唱歌列表
-
-直接使用 3.1.2接口进行拉取，其中的要填写的参数说明如下：
-
-"style":童年
-"language":中文
-（童年歌曲点歌的格式）
-
 ## 4.2 原翻唱页相关接口
 
 ### 4.2.1 获取原唱相关信息
@@ -1422,8 +1414,8 @@ Content-Type: application/json
     "dynamics_id": integer,
     "content": string,								// 动态的内容
     "created_at": “yyyy-mm-dd-hh-mm-ss”,
-    "song" : string, //歌名
-    "selection_id" : string, //所点歌曲的id
+    "song" : string,								// 歌名
+    "selection_id" : string, 						// 点歌id
     "lauds" : integer,								// 动态的点赞数
     "lauded": integer(0/1),							// 当前用户是否点赞该动态
     "comments" : integer,							// 动态的评论数
@@ -1511,28 +1503,6 @@ HTTP/1.1 403 Forbidden
 Content-Type: application/json
 
 `{"message" : "该动态不存在!"}`
-
-## <span id="">6.6 给动态或评论点赞</span>（取消点赞）
-
-PUT  /laud/{type}/{id}  HTTP1.1
-
-其中 type 可取： "comment"/"dynamics"
-
-id 为对应的 动态/评论 的 id
-
-成功时：
-
-HTTP/1.1 200 OK
-
-失败时(例子)：
-
-HTTP/1.1 403 Forbidden
-
-Content-Type: application/json
-
-`{"message" : "点赞失败"}`
-
-`{"message" : "取消点赞失败"}`
 
 ## 6.7 动态热门搜索（最多十条）
 
@@ -1636,6 +1606,36 @@ Content-Type: application/json
 {
     "type" : int (1代表动态，2代表评论),
     "id" : int (对应动态、评论的Id)
+}
+```
+
+失败时(例子)：
+
+HTTP/1.1 500 Forbidden
+
+Content-Type: application/json
+
+```
+{"message" : "服务端出错"}
+```
+
+# 通用功能
+
+## 8.1点赞
+
+POST /praise HTTP1.1
+
+成功时：
+
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+```json
+{
+    "todo" : int, 	//1代表点赞，2代表取消点赞
+    "type" : int, 	//1代表动态，2代表评论,3代表翻唱
+    "id" : int 		//对应动态、评论、翻唱的Id
 }
 ```
 
