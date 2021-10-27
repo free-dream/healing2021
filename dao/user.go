@@ -71,7 +71,7 @@ func CreateUser(param *User) (int, error) {
 	value, err := json.Marshal(param.Hobby)
 	if err != nil {
 		panic(err)
-		return 0, err
+		// return 0, err
 	}
 	setting.RedisClient.HSet("hobby", strconv.Itoa(int(user.ID)), value)
 

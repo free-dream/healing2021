@@ -10,6 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//登录成功进行用户的数据缓存
+
 // 微信登录
 func Login() {
 	r := gin.Default()

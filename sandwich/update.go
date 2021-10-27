@@ -27,6 +27,7 @@ func init() {
 	Sandwich = new(MailBox)
 	Sandwich.PointBox = make(map[string]int)
 	Sandwich.TaskBox = make(map[string]int)
+	InitKVs()
 }
 
 func (box *MailBox) Update() {
@@ -68,7 +69,7 @@ func (box *MailBox) UpdatePoints() {
 
 	//取值并写回
 	var record, point int
-	for key, _ := range box.PointBox {
+	for key := range box.PointBox {
 		value := redisDb.HMGet(key, "record", "point").Val()
 		record = value[0].(int)
 		point = value[1].(int)
@@ -122,7 +123,7 @@ func (box *MailBox) UpdateTasks() {
 
 	//取值并写回
 	var process, check int
-	for key, _ := range box.TaskBox {
+	for key := range box.TaskBox {
 		value := redisDb.HMGet(key, "process", "check").Val()
 		process = value[0].(int)
 		check = value[1].(int)

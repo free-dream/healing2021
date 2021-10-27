@@ -6,6 +6,8 @@ import (
 	"strconv"
 
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
+	"git.100steps.top/100steps/healing2021_be/pkg/tools"
+	"github.com/gin-gonic/gin"
 )
 
 //liketype{0:cover;1:moment;comment:2}
@@ -26,7 +28,7 @@ func InitKVs() {
 //点赞，可直接调用
 func Likes(targetid int, liketype int) bool {
 	//此处应有读取用户userid的操作
-	var userid int = 0
+	userid := tools.GetUserid(new(gin.Context))
 	//
 	redisDb := setting.RedisConn()
 	var targettype string

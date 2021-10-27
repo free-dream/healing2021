@@ -25,12 +25,12 @@ func HealingPageFetcher(ctx *gin.Context) {
 	selectionId, err := strconv.Atoi(param)
 	if err != nil {
 		panic(err)
-		return
+		// return
 	}
 	resp, err := dao.GetHealingPage(selectionId)
 	if err != nil {
 		panic(err)
-		return
+		// return
 	}
 
 	ctx.JSON(200, gin.H{
@@ -43,7 +43,7 @@ func AdsPlayer(ctx *gin.Context) {
 	resp, err := dao.GetAds()
 	if err != nil {
 		panic(err)
-		return
+		// return
 	}
 	ctx.JSON(200, resp)
 
@@ -55,14 +55,14 @@ func Selector(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&param)
 	if err != nil {
 		panic(err)
-		return
+		// return
 	}
 	param.UserId = sessions.Default(ctx).Get("user_id").(int)
 	param.Module = 1
 	resp, err := dao.Select(param)
 	if err != nil {
 		panic(err)
-		return
+		// return
 	}
 	ctx.JSON(200, resp)
 }
@@ -80,7 +80,7 @@ func SelectionFetcher(ctx *gin.Context) {
 	resp, err := dao.GetSelections(tag)
 	if err != nil {
 		panic(err)
-		return
+		// return
 	}
 	ctx.JSON(200, resp)
 
@@ -97,7 +97,7 @@ func CoverFetcher(ctx *gin.Context) {
 	resp, err := dao.GetCovers(tag)
 	if err != nil {
 		panic(err)
-		return
+		// return
 	}
 	ctx.JSON(200, resp)
 
@@ -123,7 +123,8 @@ func Recorder(c *gin.Context) {
 		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
-	resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, int(userID))
+	// resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, int(userID))
+	resp, err := dao.CreateRecord(params.SelectionId, url, int(userID))
 	if err != nil {
 		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return

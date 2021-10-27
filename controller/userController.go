@@ -34,7 +34,7 @@ func Register(ctx *gin.Context) {
 	}
 	if err != nil {
 		panic(err)
-		return
+		// return
 	}
 	session.Set("user_id", id)
 	session.Save()
