@@ -101,12 +101,13 @@ func SetupRouter() *gin.Engine {
 	api.GET("/dynamics/detail/:id", controller.GetMomentDetail)
 	api.POST("/dynamics/comment", controller.PostComment)
 	api.GET("/dynamics/comment/:id", controller.GetCommentList)
-	api.PUT("/laud/:type/:id", controller.PriseOrNot)
 	api.GET("/dynamics/hot", controller.DynamicsSearchHot)
 	api.GET("/dynamics/states", controller.OursStates)
-
-	// 管理员操作
+	api.GET("/dynamics/song", controller.HotSong)
+	// 管理员操作 模块
 	api.POST("/administrators", controller.DeleteContent)
+	// 通用操作 模块
+	api.PUT("/like", controller.Like)
 
 	return r
 }

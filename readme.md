@@ -548,30 +548,9 @@ Content-Type: application/json
 
 ### 3.1.5 听歌点赞/取消点赞
 
-POST /healing/covers/like HTTP 1.1
+GET /like HTTP 1.1
 
-***注意到点赞的话对应的排行会更新，此处应该对缓存数据进行更新并决定是否持久化***
-
-query
-
-```json
-{
-    "covers_id":int,
-    "like":int, //0为取消点赞，1为点赞
-}
-```
-
-成功:
-
-HTTP/1.1 200 OK
-
-失败(例)：
-
-HTTP/1.1 403 Forbidden
-
-Content-Type: application/json
-
-`{"message" : "点赞失败惹~"}`
+统一使用通用模块的点赞操作，详见接口8.1
 
 ## 3.2 功能性接口(包括抽奖、排行榜、热榜)
 
@@ -1504,6 +1483,10 @@ Content-Type: application/json
 
 `{"message" : "该动态不存在!"}`
 
+## 6.6 动态、评论点赞
+
+使用 8.1 通用点赞接口进行点赞
+
 ## 6.7 动态热门搜索（最多十条）
 
 GET /dynamics/hot HTTP1.1
@@ -1558,7 +1541,7 @@ Content-Type: application/json
 
 ## 6.9 点歌页歌曲推荐(最多30条)
 
-GET //content HTTP1.1
+GET /dynamics/songt HTTP1.1
 
 成功时：
 
@@ -1569,7 +1552,6 @@ Content-Type: application/json
 ```json
 {
     {
-    	"id":int,	//对应的原曲selection_id
     	"song_name":string,	
     	"language":string,	
     	"style":string,
@@ -1633,7 +1615,7 @@ Content-Type: application/json
 
 ```json
 {
-    "todo" : int, 	//1代表点赞，2代表取消点赞
+    "todo" : int, 	//1代表点赞，-1代表取消点赞
     "type" : int, 	//1代表动态，2代表评论,3代表翻唱
     "id" : int 		//对应动态、评论、翻唱的Id
 }

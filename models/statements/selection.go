@@ -14,8 +14,8 @@ type Selection struct {
 	Language string `gorm:"default:''" json:"language"`
 	Style    string `gorm:"default:''" json:"style"`
 	UserId   int    `gorm:"default:0;index" json:"user_id"`
-	Avatar   string `gorm:"default:''" json:"avatar"`
 	Module   int    `gorm:"default:0" json:"module"`
+	// module == 1 为经典模式， module == 2 为童年模式
 }
 
 func SelectionInit() {

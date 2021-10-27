@@ -31,15 +31,19 @@ thumbnail可以通过url的变换来获取，但暂时保留thumbnail字段
 
 ### selection（点歌）
 
-| 字段值         | 字段类型     | 说明               |
-| -------------- | ------------ | ------------------ |
-| id             | int          | 主键，自增         |
-| song_name      | varchar(255) |                    |
-| remark         | varchar(255) | 备注               |
-| language       | varchar(255) |                    |
-| style          | varchar(255) |                    |
-| user_id        | int          | 点歌用户的id       |
-| module         | varchar(255) | 模块名             |
+| 字段值    | 字段类型     | 说明         |
+| --------- | ------------ | ------------ |
+| id        | int          | 主键，自增   |
+| song_name | varchar(255) |              |
+| remark    | varchar(255) | 备注         |
+| language  | varchar(255) |              |
+| style     | varchar(255) |              |
+| user_id   | int          | 点歌用户的id |
+| module    | int          | 模块名       |
+
+
+module == 1 为经典模式， module == 2 为童年模式
+
 
 ### moment（动态）
 
@@ -52,7 +56,6 @@ thumbnail可以通过url的变换来获取，但暂时保留thumbnail字段
 | selection_id | int          |          |
 | song_name    | varchar(255) |          |
 | states       | varchar(255) | 状态     |
-| picture      | varchar(255) | 图片url  |
 
 
 ### moment_comment（评论）

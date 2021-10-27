@@ -7,6 +7,7 @@ import (
 	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"git.100steps.top/100steps/healing2021_be/sandwich"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -46,7 +47,7 @@ func GetMomentList(ctx *gin.Context) {
 	// 获取和整理其他所需信息，装进 response
 	for _, OneMoment := range AllMoment {
 		User := statements.User{}
-		UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
+		UserId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
 		User, ok := dao.GetUserById(OneMoment.UserId)
 		if !ok {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
@@ -60,7 +61,7 @@ func GetMomentList(ctx *gin.Context) {
 			Song:        OneMoment.SongName,
 			SelectionId: OneMoment.SelectionId,
 			Lauds:       dao.CountMLaudsById(int(OneMoment.ID)),
-			Lauded:      dao.HaveMLauded(int(UserId), int(OneMoment.ID)),
+			Lauded:      dao.HaveMLauded(UserId, int(OneMoment.ID)),
 			Comments:    dao.CountCommentsById(int(OneMoment.ID)),
 			Status:      tools.DecodeStrArr(OneMoment.State),
 			Creator:     respModel.TransformUserInfo(User),
@@ -73,32 +74,59 @@ func GetMomentList(ctx *gin.Context) {
 
 // 发布动态
 type MomentBase struct {
-	Content     string   `json:"content"`
-	Status      []string `json:"status"`
+	Content string   `json:"content"`
+	Status  []string `json:"status"`
 
 	HaveSelection int `json:"have_selection"`
-	IsNormal int `json:"is_normal"`
+	IsNormal      int `json:"is_normal"`
 
-	SongName    string   `json:"song_name"`
-	Language    string   `json:"language"`
-	Style       string   `json:"style"`
-	Remark		string 	`json:"remark"`
+	SongName string `json:"song_name"`
+	Language string `json:"language"`
+	Style    string `json:"style"`
+	Remark   string `json:"remark"`
 
-	ClassicId int      `json:"classic_id"`
+	ClassicId int `json:"classic_id"`
 }
 
 func PostMoment(ctx *gin.Context) {
 	// 参数绑定
 	var NewMoment MomentBase
 	ctx.ShouldBind(&NewMoment)
+	var selectionId int
 
-	// 跳转点歌
-	if NewMoment.HaveSelection == 1{
-		if NewMoment.IsNormal ==0{
+	param := statements.Selection{}
+	param.UserId = sessions.Default(ctx).Get("user_id").(int)
 
-		} else if NewMoment.IsNormal ==1{
+	// 跳转点歌(修改和使用了接口3.3的点歌，相应做修改时这边要同步操作)
+	if NewMoment.HaveSelection == 1 {
+		if NewMoment.IsNormal == 0 { // 经典点歌
+			param.Module = 1
+			param.SongName = NewMoment.SongName
+			param.Language = NewMoment.Language
+			param.Remark = NewMoment.Remark
+			param.Style = NewMoment.Style
 
-		} else {
+			resp, err := dao.Select(param)
+			if err != nil {
+				ctx.JSON(500, e.ErrMsgResponse{Message: "点歌操作失败"})
+				return
+			}
+			selectionId = resp.ID
+		} else if NewMoment.IsNormal == 1 { // 童年点歌
+			param.Module = 2
+			momentResp, _ := dao.GetOriginInfo(NewMoment.ClassicId)
+			param.SongName = momentResp.SongName
+			param.Language = "中文"
+			param.Remark = ""
+			param.Style = "童年"
+
+			resp, err := dao.Select(param)
+			if err != nil {
+				ctx.JSON(500, e.ErrMsgResponse{Message: "点歌操作失败"})
+				return
+			}
+			selectionId = resp.ID
+		} else { // 出现错误
 			ctx.JSON(403, e.ErrMsgResponse{Message: "非法参数"})
 		}
 	}
@@ -107,19 +135,16 @@ func PostMoment(ctx *gin.Context) {
 	for _, state := range NewMoment.Status {
 		sandwich.PutInStates(state)
 	}
-
-
-
-	//
+	sandwich.PutInSearchWord(param.SongName)
 
 	// 转换参数
-	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
 	Moment := statements.Moment{
 		Content:     NewMoment.Content,
 		SongName:    NewMoment.SongName,
-		UserId:      int(UserId),
+		UserId:      param.UserId,
 		State:       tools.EncodeStrArr(NewMoment.Status),
-		
+		LikeNum:     0,
+		SelectionId: selectionId,
 	}
 
 	// 存入数据库
@@ -153,7 +178,7 @@ func GetMomentDetail(ctx *gin.Context) {
 	}
 
 	// 数据转换
-	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
+	UserId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
 	User, ok_ := dao.GetUserById(Moment.UserId)
 	if !ok_ {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
@@ -167,7 +192,7 @@ func GetMomentDetail(ctx *gin.Context) {
 		Song:        Moment.SongName,
 		SelectionId: Moment.SelectionId,
 		Lauds:       dao.CountMLaudsById(int(Moment.ID)),
-		Lauded:      dao.HaveMLauded(int(UserId), int(Moment.ID)),
+		Lauded:      dao.HaveMLauded(UserId, int(Moment.ID)),
 		Comments:    dao.CountCommentsById(int(Moment.ID)),
 		Status:      tools.DecodeStrArr(Moment.State),
 		Creator:     respModel.TransformUserInfo(User),
@@ -190,11 +215,11 @@ func PostComment(ctx *gin.Context) {
 	}
 
 	// 转换参数
-	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
+	UserId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
 	Comment := statements.MomentComment{
 		Comment:  NewComment.Content,
 		MomentId: NewComment.DynamicsId,
-		UserId:   int(UserId),
+		UserId:   UserId,
 	}
 
 	// 存入数据库
@@ -230,7 +255,7 @@ func GetCommentList(ctx *gin.Context) {
 	}
 
 	// 参数转换，填入响应
-	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
+	UserId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
 	for _, comment := range CommentsList {
 		User, ok := dao.GetUserById(comment.UserId)
 		if !ok {
@@ -241,7 +266,7 @@ func GetCommentList(ctx *gin.Context) {
 		Comment := respModel.CommentResp{
 			CommentId: int(comment.ID),
 			Content:   comment.Comment,
-			Lauded:    dao.HaveCLauded(int(UserId), int(comment.ID)),
+			Lauded:    dao.HaveCLauded(UserId, int(comment.ID)),
 			Lauds:     dao.CountCLaudsById(int(comment.ID)),
 			Creator:   respModel.TransformUserInfo(User),
 			CreatedAt: tools.DecodeTime(comment.CreatedAt),
@@ -252,37 +277,6 @@ func GetCommentList(ctx *gin.Context) {
 	ctx.JSON(200, CommentsResp)
 }
 
-// 给动态或评论点赞（取消点赞）
-func PriseOrNot(ctx *gin.Context) {
-	// url 参数获取
-	Types := ctx.Param("type")
-	Idstr := ctx.Param("id")
-	Id, err := strconv.Atoi(Idstr)
-	if err != nil {
-		ctx.JSON(403, e.ErrMsgResponse{Message: "id参数非法"})
-		return
-	}
-
-	UserId := tools.GetUser(ctx.Copy()).ID // 获取当前用户 id
-	// 分模式进行点赞处理
-	if Types == "comment" {
-		if err := dao.CLaudedById(Id, int(UserId)); err != nil {
-			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入失败"})
-			return
-		}
-	} else if Types == "moment" {
-		if err := dao.MLaudedById(Id, int(UserId)); err != nil {
-			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入失败"})
-			return
-		}
-	} else {
-		ctx.JSON(403, e.ErrMsgResponse{Message: "type参数有误"})
-		return
-	}
-
-	ctx.JSON(200, e.ErrMsgResponse{Message: "点赞或取消点赞成功"})
-}
-
 // 动态搜索推荐
 func DynamicsSearchHot(ctx *gin.Context) {
 	result := sandwich.GetSearchWord()
@@ -291,6 +285,12 @@ func DynamicsSearchHot(ctx *gin.Context) {
 
 // 大家的状态推荐
 func OursStates(ctx *gin.Context) {
+	result := sandwich.GetStates()
+	ctx.JSON(200, result)
+}
+
+// 点歌页热门歌曲推荐推荐
+func HotSong(ctx *gin.Context) {
 	result := sandwich.GetStates()
 	ctx.JSON(200, result)
 }
