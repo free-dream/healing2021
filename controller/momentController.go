@@ -289,7 +289,7 @@ func OursStates(ctx *gin.Context) {
 	ctx.JSON(200, result)
 }
 
-// 点歌页热门歌曲推荐推荐
+// 点歌页热门歌曲推荐推荐（还没实现
 func HotSong(ctx *gin.Context) {
 	result := sandwich.GetStates()
 	ctx.JSON(200, result)
