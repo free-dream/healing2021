@@ -168,17 +168,17 @@ func fakeLotteries(name string, possilbity float64) *statements.Lottery {
 
 //基于用户创建点歌
 func dummySelections(userid int, song string, language string, style string) (*statements.Selection, error) {
-	avatar, err := GetUserAvatar(userid)
-	if err != nil {
-		return nil, err
-	}
+	// avatar, err := GetUserAvatar(userid)
+	// if err != nil {
+	// 	return nil, err
+	// }
 	selection := statements.Selection{
 		SongName: song,
 		Remark:   string(tools.GetRandomString(20)),
 		Language: language,
 		UserId:   userid,
-		Avatar:   avatar,
-		Style:    style,
+		// Avatar:   avatar,
+		Style: style,
 	}
 	return &selection, nil
 }

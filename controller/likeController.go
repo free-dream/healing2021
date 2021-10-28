@@ -14,7 +14,7 @@ type LikeParams struct {
 }
 
 // 全局统一的点赞操作接口
-func Like(ctx *gin.Context)  {
+func Like(ctx *gin.Context) {
 	LikeParam := LikeParams{}
 	err := ctx.ShouldBind(&LikeParam)
 	if err != nil {
@@ -25,19 +25,19 @@ func Like(ctx *gin.Context)  {
 	// 参数准备
 	UserId := sessions.Default(ctx).Get("user_id").(int)
 	Type := ""
-	if LikeParam.Type == 1{
+	if LikeParam.Type == 1 {
 		Type = "moment"
 	} else if LikeParam.Type == 2 {
 		Type = "momentcomment"
 	} else if LikeParam.Type == 3 {
 		Type = "cover"
-	} else  {
+	} else {
 		ctx.JSON(403, e.ErrMsgResponse{Message: "参数非法"})
 		return
 	}
 
 	ok := dao.UpdateLikesByID(UserId, LikeParam.Id, LikeParam.Todo, Type)
-	if !ok {
+	if ok != nil {
 		ctx.JSON(403, e.ErrMsgResponse{Message: "参数非法"})
 		return
 	}

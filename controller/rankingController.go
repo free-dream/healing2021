@@ -2,6 +2,7 @@ package controller
 
 import (
 	"git.100steps.top/100steps/healing2021_be/dao"
+	"git.100steps.top/100steps/healing2021_be/pkg/e"
 	resp "git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"github.com/gin-gonic/gin"
 )
@@ -14,7 +15,9 @@ func GetRanking(ctx *gin.Context) {
 	rankresps := make([]resp.RankingResp, 10)
 	//提取数据
 	raws, err := dao.GetRankingBySchool(school)
-	errHandler(err)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+	}
 	for _, user := range raws {
 		temp := new(resp.RankingResp)
 		temp.Avatar = user.Avatar

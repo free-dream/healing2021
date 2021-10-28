@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 推荐歌曲，根据click数降序获取10项(大家都在听)
+// 推荐童年原唱歌曲，根据click数降序获取10项(大家都在听)
 func GetRank(ctx *gin.Context) {
 	RankResp, err := dao.GetTop10()
 	if err != nil {
@@ -16,7 +16,7 @@ func GetRank(ctx *gin.Context) {
 	ctx.JSON(200, RankResp)
 }
 
-// 获取歌曲列表
+// 获取童年原唱歌曲列表
 func GetList(ctx *gin.Context) {
 	ListResp, err := dao.GetLIst()
 	if err != nil {

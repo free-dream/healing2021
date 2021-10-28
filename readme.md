@@ -747,11 +747,46 @@ Content-Type: application/json
 
 ### 3.2.3 每日热榜
 
+#### 3.2.3.1 获取按日的热榜
+
 Get /healing/dailyrank/{date}
-***date的日期遵循统一格式 yyyy--mm--dd*** 
+***date的日期遵循统一格式 mm-dd*** 
 ***日期不早于上线当日***
 
 点赞调用 /healing/covers/like 接口
+
+成功:
+
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+```json
+[//列表长度为10
+    {
+        "avatar":string,	//用户头像url
+        "nickname":string,	//用户名
+        "post_time":string(datetime),	//时间
+        "likes":int,	//点赞数
+        "song_name":string	//歌曲名
+    }
+    ...
+]
+```
+
+失败(例)：
+
+HTTP/1.1 403 Forbidden
+
+Content-Type: application/json
+
+`{"message" : "加载排行榜失败"}`
+
+#### 3.2.3.2 总体热榜
+
+Get /healing/dailyrank/{date}
+
+**全部时间获赞数最多的翻唱**
 
 成功:
 

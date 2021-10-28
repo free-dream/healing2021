@@ -28,7 +28,6 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 			return AllMoment, false
 		}
 	}
-
 	return AllMoment, true
 }
 
@@ -45,11 +44,9 @@ func CreateMoment(Moment statements.Moment) bool {
 func GetMomentById(MomentId int) (statements.Moment, bool) {
 	MysqlDB := setting.MysqlConn()
 	Moment := statements.Moment{}
-
 	if err := MysqlDB.Where("id=?", MomentId).First(&Moment).Error; err != nil {
 		return Moment, false
 	}
-
 	return Moment, true
 }
 
@@ -59,14 +56,12 @@ func CountMLaudsById(MomentId int) int {
 	if !ok {
 		return -1
 	}
-
 	return Moment.LikeNum
 }
 
 //通过动态的 Id 来判断当前用户是否点过赞
 func HaveMLauded(UserId int, MomentId int) int {
 	MysqlDB := setting.MysqlConn()
-
 	err := MysqlDB.Where("user_id=? and moment_id=?", UserId, MomentId).First(&statements.Praise{}).Error
 	if gorm.IsRecordNotFoundError(err) {
 		return 0
@@ -79,9 +74,9 @@ func HaveMLauded(UserId int, MomentId int) int {
 //通过动态的 Id 来统计评论总数
 func CountCommentsById(MomentId int) int {
 	MysqlDB := setting.MysqlConn()
-	// 用聚类函数
 	var Tot = 0
-	fmt.Println("here")
+
+	// 用聚类函数来操作
 	err := MysqlDB.Model(&statements.MomentComment{}).Where("moment_id=?", MomentId).Count(&Tot).Error
 	fmt.Println(err)
 	if err != nil {
@@ -103,11 +98,11 @@ func CreateComment(Comment statements.MomentComment) bool {
 func GetCommentsByMomentId(MomentId int) ([]statements.MomentComment, bool) {
 	MysqlDB := setting.MysqlConn()
 	var CommentList []statements.MomentComment
+
 	err := MysqlDB.Where("moment_id=?", MomentId).Find(&CommentList).Error
 	if err != nil {
 		return CommentList, false
 	}
-
 	return CommentList, true
 }
 
@@ -119,7 +114,6 @@ func GetCommentIdById(CommentId int) (statements.MomentComment, bool) {
 	if err := MysqlDB.Where("id=?", CommentId).First(&Comment).Error; err != nil {
 		return Comment, false
 	}
-
 	return Comment, true
 }
 
@@ -129,7 +123,6 @@ func CountCLaudsById(CommentId int) int {
 	if !ok {
 		return -1
 	}
-
 	return Comment.LikeNum
 }
 
@@ -146,108 +139,3 @@ func HaveCLauded(UserId int, CommentId int) int {
 	return 1
 }
 
-//通过评论的 Id 点赞
-func CLaudedById(CommentId int, UserId int) error {
-	MysqlDB := setting.MysqlConn()
-	tx := MysqlDB.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
-	if err := tx.Error; err != nil {
-		return err
-	}
-
-	Comment := statements.MomentComment{}
-
-	// 锁住指定 id 的 Comment 记录
-	if err := tx.Set("gorm:query_option", "FOR UPDATE").First(&Comment, CommentId).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	// 判断是点赞还是取消点赞,并进行更新
-	Praise := statements.Praise{
-		UserId:          UserId,
-		MomentCommentId: CommentId,
-	}
-	if HaveCLauded(UserId, CommentId) == 1 {
-		// 取消点赞，删除一条点赞记录
-		if err := tx.Delete(&Praise).Error; err != nil {
-			return err
-		}
-		if err := tx.Model(&statements.MomentComment{}).Where("id = ? ", CommentId).Update("like_num", gorm.Expr("like_num- ?", 1)).Error; err != nil {
-			return err
-		}
-	} else {
-		// 点赞，新增一条点赞记录
-		if err := tx.Create(&Praise).Error; err != nil {
-			return err
-		}
-		if err := tx.Model(&statements.MomentComment{}).Where("id = ? ", CommentId).Update("like_num", gorm.Expr("like_num+ ?", 1)).Error; err != nil {
-			return err
-		}
-	}
-
-	// commit事务，释放锁
-	if err := tx.Commit().Error; err != nil {
-		return err
-	}
-
-	return nil
-}
-
-//通过动态的 Id 点赞
-func MLaudedById(MomentId int, UserId int) error {
-	MysqlDB := setting.MysqlConn()
-	tx := MysqlDB.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
-	if err := tx.Error; err != nil {
-		return err
-	}
-
-	Moment := statements.Moment{}
-
-	// 锁住指定 id 的 Comment 记录
-	if err := tx.Set("gorm:query_option", "FOR UPDATE").First(&Moment, MomentId).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	// 判断是点赞还是取消点赞,并进行更新
-	Praise := statements.Praise{
-		UserId:   UserId,
-		MomentId: MomentId,
-	}
-	if HaveMLauded(UserId, MomentId) == 1 {
-		// 取消点赞，删除一条点赞记录
-		if err := tx.Delete(&Praise).Error; err != nil {
-			return err
-		}
-		if err := tx.Model(&statements.Moment{}).Where("id = ? ", MomentId).Update("like_num", gorm.Expr("like_num- ?", 1)).Error; err != nil {
-			return err
-		}
-	} else {
-		// 点赞，新增一条点赞记录
-		if err := tx.Create(&Praise).Error; err != nil {
-			return err
-		}
-		if err := tx.Model(&statements.Moment{}).Where("id = ? ", MomentId).Update("like_num", gorm.Expr("like_num+ ?", 1)).Error; err != nil {
-			return err
-		}
-	}
-
-	// commit事务，释放锁
-	if err := tx.Commit().Error; err != nil {
-		return err
-	}
-
-	return nil
-}

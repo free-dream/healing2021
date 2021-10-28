@@ -68,7 +68,7 @@ func CacheSelections(records []*statements.Selection, request string) {
 }
 
 //缓存用户数据，尤其是点歌用的积分
-func CacheUser(record *statements.User, userid int) {
+func CacheUser(record *statements.User) {
 	redisDB := setting.RedisConn()
 	temp := make(map[string]interface{})
 	st := reflect.TypeOf(record)
@@ -76,7 +76,7 @@ func CacheUser(record *statements.User, userid int) {
 	for i := 0; i < st.NumField(); i++ {
 		field := st.Field(i)
 		if tag, ok := field.Tag.Lookup("json"); ok {
-			tempkey := strconv.Itoa(userid) + "points"
+			tempkey := strconv.Itoa(int(record.ID)) + "points"
 			if tag == "" {
 				continue
 			} else if tag == "points" {
@@ -89,7 +89,7 @@ func CacheUser(record *statements.User, userid int) {
 		} else {
 			continue
 		}
-		key := "user" + strconv.Itoa(userid)
+		key := "user" + strconv.Itoa(int(record.ID))
 		redisDB.HMSet(key, temp)
 	}
 }

@@ -6,8 +6,6 @@ import (
 	"strconv"
 
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
-	"git.100steps.top/100steps/healing2021_be/pkg/tools"
-	"github.com/gin-gonic/gin"
 )
 
 //liketype{0:cover;1:moment;comment:2}
@@ -26,10 +24,7 @@ func InitKVs() {
 }
 
 //点赞，可直接调用
-func Likes(targetid int, liketype int) bool {
-	//此处应有读取用户userid的操作
-	userid := tools.GetUserid(new(gin.Context))
-	//
+func Likes(targetid int, liketype int, userid int) bool {
 	redisDb := setting.RedisConn()
 	var targettype string
 	switch liketype {
@@ -52,10 +47,7 @@ func Likes(targetid int, liketype int) bool {
 }
 
 //修改用户点数
-func Changepoints(point float64) bool {
-	//此处应有读取用户userid的操作
-	var userid int = 0
-	//
+func Changepoints(point float64, userid int) bool {
 	redisDb := setting.RedisConn()
 	tempkey := strconv.Itoa(userid) + "/point"
 
@@ -69,9 +61,7 @@ func Changepoints(point float64) bool {
 }
 
 //用户任务进度更新,若任务已完成，return true
-func HandleTask(process int, tasktableid int) bool {
-	//此处应有读取用户userid的操作
-	var userid int = 0
+func HandleTask(process int, tasktableid int, userid int) bool {
 
 	redisDb := setting.RedisConn()
 	tempkey := strconv.Itoa(userid) + "/task/" + strconv.Itoa(tasktableid)

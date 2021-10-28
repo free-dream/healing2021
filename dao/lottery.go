@@ -10,16 +10,6 @@ var (
 	MysqlDb = db.MysqlConn()
 )
 
-//获取用户id
-func GetUserid(openid string) (int, error) {
-	var user tables.User
-	err := MysqlDb.Where("OpenId = ?", openid).First(&user).Error
-	if err != nil {
-		return -1, err
-	}
-	return int(user.ID), nil
-}
-
 //获取用户的nickname
 func GetUserNickname(userid int) (string, error) {
 	var user tables.User
@@ -59,15 +49,6 @@ func GetPrizesById(userid int) ([]tables.Lottery, error) {
 	}
 	return prizes, nil
 }
-
-//已实现于points
-/*func UpdateUserPoints() bool {
-	//获取当前用户
-	//-->redis里搜索/更新，成功则尚需要持久化
-	//-->mysql里搜索/更新，若上述行不通
-	//更新成功/失败把结果抛给调用者
-	return true
-}*/
 
 //我的回合，抽卡！
 func Draw(id int) (tables.Lottery, error) {

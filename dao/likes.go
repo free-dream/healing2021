@@ -6,8 +6,47 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-//基于redis更新mysql
-func UpdateLikesByID(user int, target int, likes int, kind string) bool {
+//基于直接点赞更新mysql，加锁
+func UpdateLikesByID(user int, target int, likes int, kind string) error {
+	mysqlDb := db.MysqlConn()
+	var (
+		err  error
+		like tables.Praise
+	)
+	//加行锁
+	lock := mysqlDb.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			lock.Rollback()
+		}
+	}()
+	if err = lock.Error; err != nil {
+		return err
+	}
+	//更新数据库
+	if kind == "cover" {
+		err = lock.Model(&like).Where("CoverId = ? AND UserId = ?", target, user).UpdateColumn("IsLiked", gorm.Expr("IsLiked + ?", likes)).Error
+	} else if kind == "moment" {
+		err = lock.Model(&like).Where("MomentId = ? AND UserId = ?", target, user).UpdateColumn("IsLiked", gorm.Expr("IsLiked + ?", likes)).Error
+	} else if kind == "momentcomment" {
+		err = lock.Model(&like).Where("MomentCommentId = ? AND UserId = ?", target, user).UpdateColumn("IsLiked", gorm.Expr("IsLiked + ?", likes)).Error
+	} else {
+		panic("wrong type")
+	}
+	//更新失败就回滚
+	if err != nil {
+		lock.Rollback()
+		return err
+	}
+	//提交事务
+	if err = lock.Commit().Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+//备选方案，基于redis的更新，直接在goroutine加锁
+func RUpdateLikesByID(user int, target int, likes int, kind string) bool {
 	mysqlDb := db.MysqlConn()
 	var like tables.Praise
 	var err error
