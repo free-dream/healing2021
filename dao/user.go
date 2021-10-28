@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"git.100steps.top/100steps/healing2021_be/pkg/tools"
+	"math/rand"
 	"strconv"
 
 	"git.100steps.top/100steps/healing2021_be/models/statements"
@@ -62,7 +64,6 @@ func CreateUser(param *User) (int, error) {
 		Sex:         param.Sex,
 		School:      param.School,
 	}
-
 	setting.DB.Table("user").Where("nickname=?", user.Nickname).Count(&count)
 	if count != 0 {
 		return 0, errors.New("error")
@@ -78,19 +79,30 @@ func CreateUser(param *User) (int, error) {
 	return int(user.ID), nil
 
 }
-func UpdateUser(user *User, openid string) error {
+
+func UpdateUser(user *User, id int, avatar string) (string, error) {
+	other := statements.User{}
+	setting.DB.Table("user").Where("nickname=?", user.Nickname).Scan(&other)
+	if int(other.ID) != id && other.ID != 0 {
+
+		return "", errors.New("error")
+	}
 	message := make(map[string]interface{})
-	message["avatar"] = user.Avatar
 	message["nickname"] = user.Nickname
 	message["avatar_visible"] = user.AvatarVisible
+	if user.AvatarVisible == 1 {
+		avatar = tools.GetAvatarUrl(rand.Intn(2))
+	}
+	message["avatar"] = avatar
 	message["phone_search"] = user.PhoneSearch
 	message["real_name_search"] = user.RealNameSearch
 	message["signature"] = user.Signature
-	err := setting.DB.Table("user").Where("openid=?", openid).Update(message).Error
+	err := setting.DB.Table("user").Select("nickname,signature,avatar_visible,phone_search,real_name_search ").Where("id=?", id).Update(message).Error
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+
+	return avatar, nil
 }
 
 type UserMsg struct {
@@ -121,10 +133,10 @@ type MomentMsg struct {
 	Content   string `json:"content"`
 }
 
-func GetUser(openid string) interface{} {
+func GetUser(id int) interface{} {
 	user := UserMsg{}
 	resp := make(map[string]interface{})
-	setting.DB.Table("user").Select("id,avatar,nickname,school,signature").Where("openid=?", openid).Scan(&user)
+	setting.DB.Table("user").Select("id,avatar,nickname,school,signature").Where("id=?", id).Scan(&user)
 	resp["message"] = user
 	resp["mySelections"] = getSelections(user.ID, "selection", "user_id=?")
 	resp["mySongs"] = getCovers(user.ID, "cover", "user_id=?")

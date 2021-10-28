@@ -17,11 +17,20 @@ func Register(ctx *gin.Context) {
 
 	user := dao.User{}
 	err := ctx.ShouldBindJSON(&user)
-	user.Openid = openid
-	//user.Avatar = headImgUrl
 	if err != nil {
 		ctx.JSON(401, gin.H{
 			"message": "error param",
+		})
+		return
+	}
+	user.Openid = openid
+	//user.Avatar = headImgUrl
+	head, err := strconv.Atoi(user.PhoneNumber[0:3])
+	length := len(user.PhoneNumber)
+	if err != nil || head < 130 || head >= 200 || length != 11 {
+
+		ctx.JSON(403, gin.H{
+			"message": "手机号格式错误",
 		})
 		return
 	}
@@ -32,19 +41,22 @@ func Register(ctx *gin.Context) {
 		})
 		return
 	}
+	session.Set("user_id", id)
+	err = session.Save()
 	if err != nil {
 		panic(err)
-		// return
+
 	}
-	session.Set("user_id", id)
-	session.Save()
-	ctx.JSON(200, "OK")
+	ctx.JSON(200, gin.H{
+		"user_id": id,
+	})
 
 }
 func Updater(ctx *gin.Context) {
 	//用户更新
 	session := sessions.Default(ctx)
-	openid := session.Get("openid").(string)
+	id := session.Get("user_id").(int)
+	avatar := session.Get("avatar").(string)
 	user := dao.User{}
 	err := ctx.ShouldBind(&user)
 	if err != nil {
@@ -54,7 +66,8 @@ func Updater(ctx *gin.Context) {
 		})
 		return
 	}
-	err = dao.UpdateUser(&user, openid)
+
+	avatar, err = dao.UpdateUser(&user, id, avatar)
 	if err != nil {
 		ctx.JSON(403, gin.H{
 			"message": "修改失败",
@@ -63,14 +76,17 @@ func Updater(ctx *gin.Context) {
 		return
 
 	}
+	ctx.JSON(200, gin.H{
+		"avatar": avatar,
+	})
 
 }
 
 //获取用户信息
 func Fetcher(ctx *gin.Context) {
 	session := sessions.Default(ctx)
-	openid := session.Get("openid").(string)
-	user := dao.GetUser(openid)
+	id := session.Get("id").(int)
+	user := dao.GetUser(id)
 	ctx.JSON(200, user)
 
 }
@@ -101,9 +117,8 @@ func Refresher(ctx *gin.Context) {
 
 }
 func GetOther(ctx *gin.Context) {
-	param, bool := ctx.GetQuery("calleeId")
-
-	if !bool {
+	param, bl := ctx.GetQuery("calleeId")
+	if !bl {
 		ctx.JSON(401, gin.H{
 			"message": "error param",
 		})

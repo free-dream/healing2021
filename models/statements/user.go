@@ -2,8 +2,6 @@ package statements
 
 import (
 	"fmt"
-	"time"
-
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"github.com/jinzhu/gorm"
 )
@@ -24,7 +22,6 @@ type User struct {
 	AvatarVisible  int    `gorm:"default:0" json:"avatar_visible"`
 	PhoneSearch    int    `gorm:"default:0" json:"phone_search"`
 	RealNameSearch int    `gorm:"default:0" json:"real_name_search"`
-	LoginTime      time.Time
 }
 
 func UserInit() {

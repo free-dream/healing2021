@@ -1,13 +1,11 @@
 package models
 
 import (
-	"strconv"
-	"time"
-
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
+	"strconv"
 )
 
 //测试学校名
@@ -151,7 +149,6 @@ func dummyUser() *statements.User {
 		RealName:  string(tools.GetRandomString(6)),
 		Signature: string(tools.GetRandomString(20)),
 		School:    school,
-		LoginTime: time.Now(),
 	}
 
 	return &user

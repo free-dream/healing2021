@@ -56,9 +56,9 @@ func SetupRouter() *gin.Engine {
 	})
 	//授权路由
 	if tools.IsDebug() {
-		r.GET(test_prefix+"/auth", controller.FakeLogin)
+		r.GET(test_prefix+"/wx/jump", controller.FakeLogin)
 	} else {
-		r.GET(test_prefix+"/auth", controller.WechatUser)
+		r.GET(test_prefix+"/wx/jump", controller.WechatUser)
 	}
 
 	// 业务路由
@@ -105,6 +105,5 @@ func SetupRouter() *gin.Engine {
 	api.POST("/administrators", controller.DeleteContent)
 	// 通用操作 模块
 	api.PUT("/like", controller.Like)
-
 	return r
 }

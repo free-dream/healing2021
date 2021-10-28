@@ -29,9 +29,8 @@ func TableInit() {
 // 假用户
 func CreateFakeUser(nickname string, openid string, time time.Time) { /*hobby map[string]string) */
 	User := statements.User{
-		Openid:    openid,
-		Nickname:  nickname,
-		LoginTime: time,
+		Openid:   openid,
+		Nickname: nickname,
 	}
 
 	db := setting.DB
