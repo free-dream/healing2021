@@ -1431,6 +1431,7 @@ Content-Type: application/json
     "created_at": “yyyy-mm-dd-hh-mm-ss”,
     "song" : string,								// 歌名
     "selection_id" : string, 						// 点歌id
+    "module" : int									// 1为经典，2为童年
     "lauds" : integer,								// 动态的点赞数
     "lauded": integer(0/1),							// 当前用户是否点赞该动态
     "comments" : integer,							// 动态的评论数
