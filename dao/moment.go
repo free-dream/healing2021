@@ -138,4 +138,3 @@ func HaveCLauded(UserId int, CommentId int) int {
 	}
 	return 1
 }
-
