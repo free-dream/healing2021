@@ -37,7 +37,7 @@ func Like(ctx *gin.Context) {
 	}
 
 	ok := dao.UpdateLikesByID(UserId, LikeParam.Id, LikeParam.Todo, Type)
-	if !ok {
+	if ok != nil {
 		ctx.JSON(403, e.ErrMsgResponse{Message: "参数非法"})
 		return
 	}
