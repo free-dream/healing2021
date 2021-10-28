@@ -137,11 +137,7 @@ func PostMoment(ctx *gin.Context) {
 		sandwich.PutInStates(state)
 	}
 	if NewMoment.HaveSelection == 1 {
-<<<<<<< HEAD
 		sandwich.PutInHotSong(tools.EncodeSong(tools.HotSong{
-=======
-		sandwich.PutInHotSong(tools.EncodeSong(respModel.HotSong{
->>>>>>> 896d33ddad249960d2dcd7481045f1686dac5d1e
 			SongName: param.SongName,
 			Language: param.Language,
 			Style:    param.Style,
