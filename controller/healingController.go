@@ -123,10 +123,9 @@ func Recorder(c *gin.Context) {
 		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
-<<<<<<< HEAD
+
 	// resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, int(userID))
-=======
->>>>>>> 28d8f334d2bcf6edc161101bb4a045ad50a0424e
+
 	resp, err := dao.CreateRecord(params.SelectionId, url, int(userID))
 	if err != nil {
 		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})

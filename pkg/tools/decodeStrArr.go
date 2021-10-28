@@ -1,12 +1,17 @@
 package tools
 
 import (
-	resp "git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"strings"
 	"time"
 )
 
 const gap = "#$%%$#"
+
+type HotSong struct {
+	SongName string `json:"song_name"`
+	Language string `json:"language"`
+	Style    string `json:"style"`
+}
 
 // 通过加入特定界符来编码字符串数组
 func EncodeStrArr(input []string) string {
@@ -34,17 +39,17 @@ func DecodeTime(input time.Time) string {
 }
 
 // 通过加入特定界符来编码点歌信息
-func EncodeSong(input resp.HotSong) string {
+func EncodeSong(input HotSong) string {
 	ret := input.SongName + gap + input.Language + gap + input.Style
 	return ret
 }
 
 // 将编码的字符串解码
-func DecodeSong(input string) resp.HotSong {
+func DecodeSong(input string) HotSong {
 	retStr := strings.Split(input, gap)
-	return resp.HotSong{
+	return HotSong{
 		SongName: retStr[0],
 		Language: retStr[1],
-		Style: retStr[2],
+		Style:    retStr[2],
 	}
 }

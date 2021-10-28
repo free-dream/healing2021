@@ -135,11 +135,11 @@ func PostMoment(ctx *gin.Context) {
 	for _, state := range NewMoment.Status {
 		sandwich.PutInStates(state)
 	}
-	if NewMoment.HaveSelection == 1{
-		sandwich.PutInHotSong(tools.EncodeSong(respModel.HotSong{
+	if NewMoment.HaveSelection == 1 {
+		sandwich.PutInHotSong(tools.EncodeSong(tools.HotSong{
 			SongName: param.SongName,
 			Language: param.Language,
-			Style: param.Style,
+			Style:    param.Style,
 		}))
 	}
 
@@ -299,7 +299,7 @@ func OursStates(ctx *gin.Context) {
 func HotSong(ctx *gin.Context) {
 	result := sandwich.GetHotSong()
 
-	var hotSongResp []respModel.HotSong
+	var hotSongResp []tools.HotSong
 	for _, hotSong := range result {
 		hotSongResp = append(hotSongResp, tools.DecodeSong(hotSong))
 	}
