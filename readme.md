@@ -1089,9 +1089,9 @@ Content-Type: application/json
 [
     {
         "cover_id":int,			// 用于进入歌曲页
-        "nickname": string,
-        "avatar": text(url),   //用户头像
-        "post_time": datetime,	//“2006-01-02 15:04:05”
+        "nickname": string,		// 用户昵称
+        "avatar": text(url),   	// 用户头像
+        "post_time": datetime,	// “2006-01-02 15:04:05”
     }
     ...
 ]
@@ -1131,12 +1131,12 @@ HTTP/1.1 200 OK
 
 Content-Type: application/json
 
-```
+```json
 {
-	"cover_id":int，
+	"cover_id":int,
 	"file":  url,		//歌曲录音的
 	"name":string,		//歌曲名
-	"nickname":string	//翻唱者
+	"nickname":string,	//翻唱者
     "icon":text(url),	//歌曲图标
     "work_name":string	//作品名
 }
@@ -1151,6 +1151,7 @@ POST /healing/covers/jump
     "jump":integer,		//0为上一首,1为下一首
     "check":integer,	//0为经典治愈，1为童年
     "cover_id":integer	//若jump=2，则传回对应的翻唱id
+    
     // 分享，直接拿着"classic_id"参数去发布动态的接口即可
 }
 ```
@@ -1178,7 +1179,7 @@ Content-Type: application/json
     "file":string,			//翻唱文件url
     "name":string,			//歌曲名
     "icon":string,			//头像大图url
-    "nickname":string		//翻唱者
+    "nickname":string,		//翻唱者
     "work_name":string(空串) //作品名
 }
 ```
@@ -1437,6 +1438,7 @@ Content-Type: application/json
     "lauded": integer(0/1),							// 当前用户是否点赞该动态
     "comments" : integer,							// 动态的评论数
     "status" : ["status1", "status2" ...],			// 状态列表
+
     "creator": {
         "id": integer,	
         "nackname" : string,						// 用户名
@@ -1499,15 +1501,16 @@ Content-Type: application/json
     {
         "comment_id": integer,
         "content": string,
+        "created_at": “2006-01-02 15:04:05”,
+        "lauds" : integer,								// 动态的点赞数
+    	"lauded": integer(0/1),							// 当前用户是否点赞
+    
         "creator": {
             "id": integer,	
             "nackname" : string,						// 用户名
             "avatar": string(url),						// 头像
             "avatar_visible": integer(0/1)				// 是0代表没设置头像
-        },
-        "created_at": “2006-01-02 15:04:05”,
-        "lauds" : integer,								// 动态的点赞数
-    	"lauded": integer(0/1)							// 当前用户是否点赞该动态
+        }
     },
     ...
 ]
@@ -1624,8 +1627,8 @@ Content-Type: application/json
 
 ```json
 {
-    "type" : int (1代表动态，2代表评论),
-    "id" : int (对应动态、评论的Id)
+    "type" : int,	//1代表动态，2代表评论
+    "id" : int,		//对应动态、评论的Id
 }
 ```
 
