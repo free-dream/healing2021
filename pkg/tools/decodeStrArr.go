@@ -7,6 +7,7 @@ import (
 
 const gap = "#$%%$#"
 
+// 推荐歌曲的信息
 type HotSong struct {
 	SongName string `json:"song_name"`
 	Language string `json:"language"`
