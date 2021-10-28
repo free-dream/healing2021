@@ -1,6 +1,7 @@
 package tools
 
 import (
+	resp "git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"strings"
 	"time"
 )
@@ -30,4 +31,20 @@ func DecodeStrArr(input string) []string {
 // 将时间转化为合适的字符串
 func DecodeTime(input time.Time) string {
 	return input.Format("2006-01-02 15:04:05")
+}
+
+// 通过加入特定界符来编码点歌信息
+func EncodeSong(input resp.HotSong) string {
+	ret := input.SongName + gap + input.Language + gap + input.Style
+	return ret
+}
+
+// 将编码的字符串解码
+func DecodeSong(input string) resp.HotSong {
+	retStr := strings.Split(input, gap)
+	return resp.HotSong{
+		SongName: retStr[0],
+		Language: retStr[1],
+		Style: retStr[2],
+	}
 }

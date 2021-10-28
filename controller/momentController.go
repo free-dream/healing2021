@@ -135,7 +135,13 @@ func PostMoment(ctx *gin.Context) {
 	for _, state := range NewMoment.Status {
 		sandwich.PutInStates(state)
 	}
-	sandwich.PutInSearchWord(param.SongName)
+	if NewMoment.HaveSelection == 1{
+		sandwich.PutInHotSong(tools.EncodeSong(respModel.HotSong{
+			SongName: param.SongName,
+			Language: param.Language,
+			Style: param.Style,
+		}))
+	}
 
 	// 转换参数
 	Moment := statements.Moment{
@@ -289,8 +295,14 @@ func OursStates(ctx *gin.Context) {
 	ctx.JSON(200, result)
 }
 
-// 点歌页热门歌曲推荐推荐（还没实现
+// 点歌页热门歌曲推荐推荐
 func HotSong(ctx *gin.Context) {
-	result := sandwich.GetStates()
+	result := sandwich.GetHotSong()
+
+	var hotSongResp []respModel.HotSong
+	for _, hotSong := range result {
+		hotSongResp = append(hotSongResp, tools.DecodeSong(hotSong))
+	}
+
 	ctx.JSON(200, result)
 }
