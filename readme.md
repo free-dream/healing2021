@@ -196,7 +196,7 @@ Content-Type: application/json
   "mySelections": {
       index:{
     "song_name": "string",
-    "created_at": "string", //“yyyy-mm-dd-hh-mm-ss”
+    "created_at": "string", //“2006-01-02 15:04:05”
     "anonymous": int, //1:匿名 2:不匿名
       }
   },
@@ -279,7 +279,7 @@ Content-Type: application/json
   "selectionId": int,
   "name": "string",//点歌用户名
   "style": "string",//风格
-  "created_at": "string", //“yyyy-mm-dd-hh-mm-ss”
+  "created_at": "string", //“2006-01-02 15:04:05”
   "remark": "string" //30字以内
 }
   "singers": {
@@ -333,7 +333,7 @@ Content-Type: application/json
       index:{
     "model": "string", //模块名 治愈或是投递箱
     "song_name": "string",
-    "created_at": "string", //“yyyy-mm-dd-hh-mm-ss”
+    "created_at": "string", //“2006-01-02 15:04:05”
       },
   },
   "mySongs": {
@@ -443,7 +443,7 @@ Content-Type: application/json
         "id":int,//对应点歌id
         "song_name":string,
         "user_id":integer,	//点歌用户的id
-        "created_at":string(datetime),	//“yyyy-mm-dd-hh-mm-ss”
+        "created_at":string(datetime),	//“2006-01-02 15:04:05”
         "avatar":string
 	}
     ...
@@ -491,7 +491,7 @@ Content-Type: application/json
         "id":int,//对应翻唱歌id
         "song_name":string,
         "user_id":integer,	//翻唱用户的id
-        "created_at":string(datetime),	//“yyyy-mm-dd-hh-mm-ss”
+        "created_at":string(datetime),	//“2006-01-02 15:04:05”
         "avatar":string,
         "file":string//歌曲url
     }
@@ -527,7 +527,7 @@ POST /healing/cover
     "id":int,//对应翻唱歌id
     "song_name":string,
     "user_id":integer,	//翻唱用户的id
-    "created_at":string(datetime),	//“yyyy-mm-dd-hh-mm-ss”
+    "created_at":string(datetime),	//“2006-01-02 15:04:05”
     "avatar":string,
     "file":string//歌曲url
 }
@@ -1091,7 +1091,7 @@ Content-Type: application/json
         "cover_id":int,			// 用于进入歌曲页
         "nickname": string,
         "avatar": text(url),   //用户头像
-        "post_time": datetime,	//“yyyy-mm-dd-hh-mm-ss”
+        "post_time": datetime,	//“2006-01-02 15:04:05”
     }
     ...
 ]
@@ -1258,7 +1258,7 @@ Content-Type: application/json
 			"avatar": text(url) 		// 用户头像
         }, 
         "content":text,					// 信息的内容
-        "time":datatime,				// 信息的时间“yyyy-mm-dd-hh-mm-ss”
+        "time":datatime,				// 信息的时间“2006-01-02 15:04:05”
         "type":integer,  				// 消息类型 0:普通消息 1:系统消息
     },
     ...
@@ -1352,7 +1352,7 @@ Content-Type: application/json
     {
         "dynamics_id": integer,
         "content": string,								// 动态的内容
-        "created_at": “yyyy-mm-dd-hh-mm-ss”,
+        "created_at": “2006-01-02 15:04:05”,
         "song" : string,								// 要点的歌名
         "lauds" : integer,								// 动态的点赞数
         "lauded": integer(0/1),						// 当前用户是否点赞该动态
@@ -1428,7 +1428,8 @@ Content-Type: application/json
 {
     "dynamics_id": integer,
     "content": string,								// 动态的内容
-    "created_at": “yyyy-mm-dd-hh-mm-ss”,
+    "created_at": “2006-01-02 15:04:05”,
+    
     "song" : string,								// 歌名
     "selection_id" : string, 						// 点歌id
     "module" : int									// 1为经典，2为童年
@@ -1504,7 +1505,7 @@ Content-Type: application/json
             "avatar": string(url),						// 头像
             "avatar_visible": integer(0/1)				// 是0代表没设置头像
         },
-        "created_at": “yyyy-mm-dd-hh-mm-ss”,
+        "created_at": “2006-01-02 15:04:05”,
         "lauds" : integer,								// 动态的点赞数
     	"lauded": integer(0/1)							// 当前用户是否点赞该动态
     },
