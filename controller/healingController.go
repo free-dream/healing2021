@@ -77,12 +77,24 @@ func SelectionFetcher(ctx *gin.Context) {
 		})
 		return
 	}
-	resp, err := dao.GetSelections(tag)
-	if err != nil {
-		panic(err)
-		// return
+	id := sessions.Default(ctx).Get("user_id").(int)
+	if tag.Page == 1 {
+
+		resp, err := dao.GetSelections(strconv.Itoa(1), id, tag)
+		if err != nil {
+			panic(err)
+
+		}
+		ctx.JSON(200, resp)
+
+	} else {
+		resp, err := dao.Pager("home"+strconv.Itoa(id), tag.Page)
+		if err != nil {
+			panic(err)
+
+		}
+		ctx.JSON(200, resp)
 	}
-	ctx.JSON(200, resp)
 
 }
 func CoverFetcher(ctx *gin.Context) {
@@ -94,12 +106,23 @@ func CoverFetcher(ctx *gin.Context) {
 		})
 		return
 	}
-	resp, err := dao.GetCovers(tag)
-	if err != nil {
-		panic(err)
-		// return
+	id := sessions.Default(ctx).Get("user_id").(int)
+	if tag.Page == 1 {
+		resp, err := dao.GetCovers(strconv.Itoa(1), id, tag)
+		if err != nil {
+			panic(err)
+			// return
+		}
+		ctx.JSON(200, resp)
+
+	} else {
+		resp, err := dao.Pager("home"+strconv.Itoa(id), tag.Page)
+		if err != nil {
+			panic(err)
+			// return
+		}
+		ctx.JSON(200, resp)
 	}
-	ctx.JSON(200, resp)
 
 }
 
@@ -123,37 +146,12 @@ func Recorder(c *gin.Context) {
 		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
-<<<<<<< HEAD
-	// resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, int(userID))
-=======
->>>>>>> 28d8f334d2bcf6edc161101bb4a045ad50a0424e
-	resp, err := dao.CreateRecord(params.SelectionId, url, int(userID))
+
+	resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, int(userID))
 	if err != nil {
 		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
 
 	c.JSON(200, resp)
-}
-
-//对经典治愈系的录音点赞
-func LikePoster(ctx *gin.Context) {
-	id, verify := ctx.GetQuery("covers_id")
-	if !verify {
-		ctx.JSON(401, gin.H{
-			"message": "error param",
-		})
-		return
-	}
-	coverId, err := strconv.Atoi(id)
-	if err != nil {
-		panic(err)
-		// ctx.JSON(401, gin.H{
-		// 	"message": "error param",
-		// })
-		// return
-	}
-	session := sessions.Default(ctx)
-	openid := session.Get("openid").(string)
-	err = dao.Like(coverId, openid)
 }

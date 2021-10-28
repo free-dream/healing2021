@@ -5,6 +5,7 @@ go 1.15
 require (
 	git.100steps.top/100steps/ginwechat v0.0.0-20210528152916-b9a382e4f5a8
 	github.com/fvbock/endless v0.0.0-20170109170031-447134032cb6
+	github.com/garyburd/redigo v1.6.2
 	github.com/gin-contrib/sessions v0.0.3
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-redis/redis v6.15.9+incompatible

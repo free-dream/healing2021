@@ -425,7 +425,8 @@ GET /healing/selections/list HTTP 1.1
 {
 label:string //recommend all 或对应风格，语言
 "rankWay":int //1综合排序，2最新binding:"required"`
-"page":int//页数
+"page":int//页数,当获取个数小于10时，页数不再加一
+//用户第一次到页面为1，后每次上拉逐次加一
 }
 ```
 
