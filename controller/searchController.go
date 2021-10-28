@@ -63,7 +63,7 @@ func Search(ctx *gin.Context) {
 	respLen.LenSelection = lenselec
 	for _, selection := range rawSelections {
 		temp := new(respModel.SelectionResp)
-		temp.Avatar = selection.Avatar
+		// temp.Avatar = selection.Avatar
 		temp.Selectionid = int(selection.ID)
 		nickname, err := dao.GetUserNickname(selection.UserId)
 		errHandler(err)
