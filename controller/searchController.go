@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"git.100steps.top/100steps/healing2021_be/dao"
+	"git.100steps.top/100steps/healing2021_be/pkg/e"
 	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"github.com/gin-gonic/gin"
 )
@@ -37,6 +38,8 @@ func Search(ctx *gin.Context) {
 	respSelections := make([]respModel.SelectionResp, 5)
 	respUsers := make([]respModel.UserResp, 5)
 	respLen := new(respModel.SumResp)
+
+	//提取关键字
 	if err := ctx.ShouldBind(&key); err != nil {
 		panic(err)
 	}
@@ -44,45 +47,58 @@ func Search(ctx *gin.Context) {
 
 	//查询翻唱
 	rawCovers, lencover, err := dao.SearchCoverByKeyword(keyword)
-	errHandler(err)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+	}
 	respLen.LenCover = lencover
+
 	for _, cover := range rawCovers {
-		temp := new(respModel.CoversResp)
-		temp.Avatar = cover.Avatar
-		temp.Coverid = int(cover.ID)
 		nickname, err := dao.GetUserNickname(cover.UserId)
-		errHandler(err)
-		temp.Nickname = nickname
-		temp.Posttime = cover.CreatedAt
-		respCovers = append(respCovers, *temp)
+		if err != nil {
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+		}
+		temp := respModel.CoversResp{
+			Avatar:   cover.Avatar,
+			Coverid:  int(cover.ID),
+			Nickname: nickname,
+			Posttime: cover.CreatedAt,
+		}
+		respCovers = append(respCovers, temp)
 	}
 
 	//查询点歌
 	rawSelections, lenselec, err := dao.SearchSelectionByKeyword(keyword)
-	errHandler(err)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+	}
 	respLen.LenSelection = lenselec
 	for _, selection := range rawSelections {
-		temp := new(respModel.SelectionResp)
-		// temp.Avatar = selection.Avatar
-		temp.Selectionid = int(selection.ID)
 		nickname, err := dao.GetUserNickname(selection.UserId)
-		errHandler(err)
-		temp.Nickname = nickname
-		temp.Posttime = selection.CreatedAt
-		respSelections = append(respSelections, *temp)
+		if err != nil {
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+		}
+		temp := respModel.SelectionResp{
+			Selectionid: int(selection.ID),
+			Nickname:    nickname,
+			Posttime:    selection.CreatedAt,
+		}
+		respSelections = append(respSelections, temp)
 	}
 
 	//查询用户
 	rawUsers, lenuser, err := dao.SearchUserByKeyword(keyword)
-	errHandler(err)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+	}
 	respLen.LenUser = lenuser
 	for _, user := range rawUsers {
-		temp := new(respModel.UserResp)
-		temp.Avatar = user.Avatar
-		temp.Userid = int(user.ID)
-		temp.Nickname = user.Nickname
-		temp.Slogan = user.Signature
-		respUsers = append(respUsers, *temp)
+		temp := respModel.UserResp{
+			Avatar:   user.Avatar,
+			Userid:   int(user.ID),
+			Nickname: user.Nickname,
+			Slogan:   user.Signature,
+		}
+		respUsers = append(respUsers, temp)
 	}
 
 	respAll = append(respAll, respLen, respSelections, respCovers)

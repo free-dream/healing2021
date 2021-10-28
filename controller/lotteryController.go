@@ -9,41 +9,39 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//错误码补全
-
 const (
 	PRIZES = 100 //暂定
 	DRAW   = 200 //抽奖的代价
 
+	//设计奖项概率
+	PRIZE1 = 0.01
+	PRIZE2 = 0.04
+	PRIZE3 = 0.1
 )
 
-func errHandler(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
-//抽奖算法
-//在等奖品的安排和可能性
+//抽奖算法，落到最后分区直接没中
 func methods(possibilities ...float64) int {
 	base := 0
-	phase := make([]int, 10)
+	phase := make([]int, 5)
+	phase = append(phase, 0)
 	for _, possibility := range possibilities {
-		base += int(possibility * 1000)
+		base += int(possibility * 500)
 		phase = append(phase, base)
 	}
-	phase = append(phase, 1000)
-	draw := tools.GetRandomNumbers(1000)
+	phase = append(phase, 500)
+	draw := tools.GetRandomNumbers(500) + 1
 	var i int = 1
 	for ; i < len(phase); i++ {
-		if draw < phase[i] && phase[i-1] < draw {
+		if draw <= phase[i] && phase[i-1] < draw {
 			break
 		}
 	}
-	switch i {
-
+	//落到最后一个分区就是不中，其它的直接返回对应id,另行确认奖品归属
+	if i == len(phase)-1 {
+		return -1
+	} else {
+		return draw
 	}
-	return -1
 }
 
 /*
@@ -77,7 +75,9 @@ func Draw(ctx *gin.Context) {
 	//获取userid和points
 	userid := sessions.Default(ctx).Get("user_id").(int)
 	points, err := dao.GetPoints(userid)
-	errHandler(err)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+	}
 	//判断是否可抽
 	if points < DRAW {
 		drawResp.Check = 2
@@ -105,8 +105,7 @@ func Draw(ctx *gin.Context) {
 //同理，先写mysql版本的防爆
 func GetPrizes(ctx *gin.Context) {
 	prizes := make([]resp.PrizesResp, 10)
-	//获取openid和userid
-	// openid := tools.GetOpenid(ctx)
+	//获取userid
 	userid := sessions.Default(ctx).Get("user_id").(int)
 	//获取中奖数据
 	raws, err := dao.GetPrizesById(userid)
@@ -138,7 +137,9 @@ func GetTasktable(ctx *gin.Context) {
 		//获取对应task
 		taskid := table.TaskId
 		task, err := dao.GetTasks(taskid)
-		errHandler(err)
+		if err != nil {
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+		}
 		//生成任务返回
 		taskresp := resp.TaskResp{
 			ID:     taskid,

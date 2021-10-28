@@ -17,7 +17,6 @@ func Login() {
 	r := gin.Default()
 	file, _ := os.Create("log")
 	gin.DefaultWriter = io.MultiWriter(file)
-	//
 	ginwechat.UpdateEngine(r, &ginwechat.Config{
 		Appid:     "wx293bc6f4ee88d87d",
 		Appsecret: "",
@@ -50,7 +49,7 @@ func Login() {
 			return session.Save()
 		},
 	})
-
+	//增加一个登录时缓存用户的步骤
 }
 
 //向前端返回用户微信昵称

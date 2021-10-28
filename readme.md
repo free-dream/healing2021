@@ -749,7 +749,7 @@ Content-Type: application/json
 #### 3.2.3.1 获取按日的热榜
 
 Get /healing/dailyrank/{date}
-***date的日期遵循统一格式 mm.dd*** 
+***date的日期遵循统一格式 mm-dd*** 
 ***日期不早于上线当日***
 
 点赞调用 /healing/covers/like 接口
