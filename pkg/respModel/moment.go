@@ -15,6 +15,7 @@ type MomentResp struct {
 	CreatedAt   string   `json:"created_at"`
 	Song        string   `json:"song"`
 	SelectionId int      `json:"selection_id"`
+	Module string
 	Lauds       int      `json:"lauds"`
 	Lauded      int      `json:"lauded"`
 	Comments    int      `json:"comments"`

@@ -1353,17 +1353,20 @@ Content-Type: application/json
     {
         "dynamics_id": integer,
         "content": string,								// 动态的内容
-        "created_at": “2006-01-02 15:04:05”,
+        "created_at": "2006-01-02 15:04:05",
+        
         "song" : string,								// 要点的歌名
+        "module" : int,									// 1为经典，2为童年
         "lauds" : integer,								// 动态的点赞数
-        "lauded": integer(0/1),						// 当前用户是否点赞该动态
+        "lauded": integer(0/1),							// 当前用户是否点赞
         "comments" : integer,							// 动态的评论数
         "status" : ["status1", "status2" ...],			// 状态列表
+
         "creator": {
             "id": integer,	
             "nackname" : string,						// 用户名
             "avatar": string(url),						// 头像
-            "avatar_visible": integer(0/1)				// 是否设置了头像（0代表没设置）
+            "avatar_visible": integer(0/1)				// 0代表没设置头像
         }
     },
     ...
@@ -1429,11 +1432,11 @@ Content-Type: application/json
 {
     "dynamics_id": integer,
     "content": string,								// 动态的内容
-    "created_at": “2006-01-02 15:04:05”,
+    "created_at": "2006-01-02 15:04:05",
     
     "song" : string,								// 歌名
     "selection_id" : string, 						// 点歌id
-    "module" : int									// 1为经典，2为童年
+    "module" : int,									// 1为经典，2为童年
     "lauds" : integer,								// 动态的点赞数
     "lauded": integer(0/1),							// 当前用户是否点赞该动态
     "comments" : integer,							// 动态的评论数
@@ -1501,7 +1504,7 @@ Content-Type: application/json
     {
         "comment_id": integer,
         "content": string,
-        "created_at": “2006-01-02 15:04:05”,
+        "created_at": "2006-01-02 15:04:05",
         "lauds" : integer,								// 动态的点赞数
     	"lauded": integer(0/1),							// 当前用户是否点赞
     
