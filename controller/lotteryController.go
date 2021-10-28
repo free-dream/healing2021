@@ -7,11 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//大部分错误还没处理，目前先panic
+//错误码补全
 
 const (
 	PRIZES = 100 //暂定
 	DRAW   = 200 //抽奖的代价
+
 )
 
 var (
@@ -68,7 +69,7 @@ func GetLotteries(ctx *gin.Context) {
 }
 
 //GET /healing/lotterybox/draw
-//先写mysql的版本,防爆,暂时没有写回mysql
+//先写mysql的版本,防爆,暂时没有redis
 func Draw(ctx *gin.Context) {
 	//返回格式
 	drawResp := new(resp.DrawResp)
