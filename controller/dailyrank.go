@@ -7,6 +7,32 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GET /healing/dailyrank/all
+func GetAllrank(ctx *gin.Context) {
+	date := ctx.Param("date")
+	raws, err := dao.GetCoversByDate(date)
+	respCovers := make([]resp.HotResp, 10)
+	// errHandler(err)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+	}
+	for _, cover := range raws {
+		nickname, err := dao.GetUserNickname(cover.UserId)
+		if err != nil {
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+		}
+		respCover := resp.HotResp{
+			Avatar:   cover.Avatar,
+			Likes:    cover.Likes,
+			Nickname: nickname,
+			Posttime: cover.CreatedAt,
+			Songname: cover.SongName,
+		}
+		respCovers = append(respCovers, respCover)
+	}
+	ctx.JSON(200, respCovers)
+}
+
 // GET /healing/dailyrank/:date
 func GetDailyrank(ctx *gin.Context) {
 	date := ctx.Param("date")
@@ -18,14 +44,17 @@ func GetDailyrank(ctx *gin.Context) {
 	}
 	for _, cover := range raws {
 		nickname, err := dao.GetUserNickname(cover.UserId)
-		errHandler(err)
-		respCover := new(resp.HotResp)
-		respCover.Avatar = cover.Avatar
-		respCover.Likes = cover.Likes
-		respCover.Nickname = nickname
-		respCover.Posttime = cover.CreatedAt
-		respCover.Songname = cover.SongName
-		respCovers = append(respCovers, *respCover)
+		if err != nil {
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+		}
+		respCover := resp.HotResp{
+			Avatar:   cover.Avatar,
+			Likes:    cover.Likes,
+			Nickname: nickname,
+			Posttime: cover.CreatedAt,
+			Songname: cover.SongName,
+		}
+		respCovers = append(respCovers, respCover)
 	}
 	ctx.JSON(200, respCovers)
 }

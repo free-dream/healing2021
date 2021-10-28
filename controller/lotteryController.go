@@ -2,8 +2,10 @@ package controller
 
 import (
 	"git.100steps.top/100steps/healing2021_be/dao"
+	"git.100steps.top/100steps/healing2021_be/pkg/e"
 	resp "git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,10 +15,6 @@ const (
 	PRIZES = 100 //暂定
 	DRAW   = 200 //抽奖的代价
 
-)
-
-var (
-	openid string = "test"
 )
 
 func errHandler(err error) {
@@ -57,13 +55,16 @@ func GetLotteries(ctx *gin.Context) {
 	//从数据库里调，redis爆炸的备选方案
 	lotteries := make([]resp.LotteryResp, 10)
 	raws, err := dao.GetAllLotteries()
-	errHandler(err)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+	}
 	for _, raw := range raws {
-		lottery := new(resp.LotteryResp)
-		lottery.Name = raw.Name
-		lottery.Picture = raw.Picture
-		lottery.Possibility = int(raw.Possibility)
-		lotteries = append(lotteries, *lottery)
+		lottery := resp.LotteryResp{
+			Name:        raw.Name,
+			Picture:     raw.Picture,
+			Possibility: int(raw.Possibility),
+		}
+		lotteries = append(lotteries, lottery)
 	}
 	ctx.JSON(200, lotteries)
 }
@@ -72,11 +73,9 @@ func GetLotteries(ctx *gin.Context) {
 //先写mysql的版本,防爆,暂时没有redis
 func Draw(ctx *gin.Context) {
 	//返回格式
-	drawResp := new(resp.DrawResp)
-	//获取openid和userid和points
-	openid := tools.GetOpenid(ctx)
-	userid, err := dao.GetUserid(openid)
-	errHandler(err)
+	drawResp := resp.DrawResp{}
+	//获取userid和points
+	userid := sessions.Default(ctx).Get("user_id").(int)
 	points, err := dao.GetPoints(userid)
 	errHandler(err)
 	//判断是否可抽
@@ -91,10 +90,11 @@ func Draw(ctx *gin.Context) {
 	if prizeid < 0 {
 		drawResp.Check = 0
 		ctx.JSON(200, drawResp)
+		return
 	}
 	//中
 	result, err := dao.Draw(prizeid)
-	errHandler(err)
+	ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 	drawResp.Check = 1
 	drawResp.Name = result.Name
 	drawResp.Picture = result.Picture
@@ -106,12 +106,13 @@ func Draw(ctx *gin.Context) {
 func GetPrizes(ctx *gin.Context) {
 	prizes := make([]resp.PrizesResp, 10)
 	//获取openid和userid
-	openid := tools.GetOpenid(ctx)
-	userid, err := dao.GetUserid(openid)
-	errHandler(err)
+	// openid := tools.GetOpenid(ctx)
+	userid := sessions.Default(ctx).Get("user_id").(int)
 	//获取中奖数据
 	raws, err := dao.GetPrizesById(userid)
-	errHandler(err)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+	}
 	for _, prize := range raws {
 		res := new(resp.PrizesResp)
 		res.Name = prize.Name
@@ -125,13 +126,13 @@ func GetPrizes(ctx *gin.Context) {
 func GetTasktable(ctx *gin.Context) {
 	//返回结构体
 	respTasks := make([]resp.TaskTableResp, 10)
-	//获取openid和userid
-	openid := tools.GetOpenid(ctx)
-	userid, err := dao.GetUserid(openid)
-	errHandler(err)
+	//userid
+	userid := sessions.Default(ctx).Get("user_id").(int)
 	//获取任务表
 	task_table, err := dao.GetTasktables(userid)
-	errHandler(err)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+	}
 	//读取任务信息并拼合成对应数据体系
 	for _, table := range task_table {
 		//获取对应task
@@ -139,16 +140,19 @@ func GetTasktable(ctx *gin.Context) {
 		task, err := dao.GetTasks(taskid)
 		errHandler(err)
 		//生成任务返回
-		taskresp := new(resp.TaskResp)
-		taskresp.ID = taskid
-		taskresp.Target = task.Target
-		taskresp.Text = task.Text
+		taskresp := resp.TaskResp{
+			ID:     taskid,
+			Target: task.Target,
+			Text:   task.Text,
+		}
 		//生成任务返回表
-		tasktableresp := new(resp.TaskTableResp)
-		tasktableresp.Check = table.Check
-		tasktableresp.Counter = table.Counter
-		tasktableresp.Task = *taskresp
-		respTasks = append(respTasks, *tasktableresp)
+		tasktableresp := resp.TaskTableResp{
+			Check:   table.Check,
+			Counter: table.Counter,
+			Task:    taskresp,
+		}
+
+		respTasks = append(respTasks, tasktableresp)
 	}
 	ctx.JSON(200, respTasks)
 }
