@@ -73,6 +73,7 @@ func CreateFakeSelection(uid int, name string) {
 	selection := statements.Selection{
 		UserId:   uid,
 		SongName: name,
+		Module:   tools.GetRandomNumbers(2) + 1,
 	}
 
 	db := setting.MysqlConn()
@@ -156,6 +157,34 @@ func AddFakeComments() {
 	CreateFakeComment(1, 1, "第wu条假评论", 3)
 }
 
+// 假童年原唱
+func CreateFakeClassic(remark string, songName string, icon string, singer string, workName string, click int, file string) {
+	Comment := statements.Classic{
+		Remark:   remark,
+		SongName: songName,
+		Icon:     icon,
+		Singer:   singer,
+		WorkName: workName,
+		Click:    click,
+		File:     file,
+	}
+
+	db := setting.MysqlConn()
+	db.Create(&Comment)
+}
+func AddFakeClassic() {
+	for i := 0; i < 15; i++ {
+		remark := "fake remark " + strconv.Itoa(i)
+		songName := "songName" + strconv.Itoa(i)
+		icon := "icon" + strconv.Itoa(i)
+		singer := "singer" + strconv.Itoa(i)
+		workName := "workName" + strconv.Itoa(i)
+		click := 10 + i
+		file := "file" + strconv.Itoa(i)
+		CreateFakeClassic(remark , songName , icon , singer , workName , click , file)
+	}
+}
+
 // 造点测试用的假数据
 func FakeData() {
 	TableInit()
@@ -164,4 +193,5 @@ func FakeData() {
 	AddFakeMoments()
 	AddFakeComments()
 	AddFakeSelections()
+	AddFakeClassic()
 }

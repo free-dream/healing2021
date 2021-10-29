@@ -1133,7 +1133,7 @@ Content-Type: application/json
 
 ### 4.3.1 点赞接口
 
-调用 POST /healing/covers/like 接口
+调用 8.1 通用点赞接口
 
 ### 4.3.2 当前歌曲的信息获取
 
@@ -1168,9 +1168,9 @@ POST /healing/covers/jump
 
 ```json
 {
-    "jump":integer,		//0为上一首,1为下一首
-    "check":integer,	//0为经典治愈，1为童年
-    "cover_id":integer	//若jump=2，则传回对应的翻唱id
+    "jump":integer,		// 0为上一首,1为下一首
+    "check":integer,	// 0为经典治愈，1为童年
+    "cover_id":integer	// 当前的翻唱 id
     
     // 分享，直接拿着"classic_id"参数去发布动态的接口即可
 }
@@ -1553,7 +1553,7 @@ Content-Type: application/json
 
 ## 6.7 动态热门搜索（最多十条）
 
-GET /dynamics/hot HTTP1.1
+GET /dynamics/hotsearch HTTP1.1
 
 成功时：
 
@@ -1579,7 +1579,7 @@ Content-Type: application/json
 
 ## 6.8 大家的状态（最多十八条）
 
-GET /dynamics/states HTTP1.1
+GET /dynamics/ourstates HTTP1.1
 
 成功时：
 
@@ -1605,7 +1605,7 @@ Content-Type: application/json
 
 ## 6.9 点歌页歌曲推荐(最多30条)
 
-GET /dynamics/songt HTTP1.1
+GET /dynamics/hotsong HTTP1.1
 
 成功时：
 
@@ -1669,7 +1669,7 @@ Content-Type: application/json
 
 ## 8.1点赞
 
-POST /praise HTTP1.1
+PUT/praise HTTP1.1
 
 成功时：
 

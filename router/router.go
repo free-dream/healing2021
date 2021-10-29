@@ -72,6 +72,7 @@ func SetupRouter() *gin.Engine {
 	//中间件验证
 	if tools.IsDebug() {
 		r.POST(test_prefix+"/user", controller.FakeLogin)
+		r.POST(test_prefix+"/userEasy", controller.FakeLoinEasy)
 	} else {
 		r.Use(middleware.IdentityCheck())
 	}
@@ -103,7 +104,7 @@ func SetupRouter() *gin.Engine {
 	api.GET("/childhood/rank", controller.GetRank)
 	api.GET("/childhood/list", controller.GetList)
 	api.GET("/childhood/original/info", controller.GetOriginalInfo)
-	api.GET("/childhood/original/cover", controller.GetOriginalSingerList)
+	api.GET("/childhood/original/covers", controller.GetOriginalSingerList)
 	api.GET("/healing/covers/player", controller.GetPlayer)
 	api.POST("/healing/covers/jump", controller.JumpSongs)
 	// 广场 模块
@@ -112,9 +113,9 @@ func SetupRouter() *gin.Engine {
 	api.GET("/dynamics/detail/:id", controller.GetMomentDetail)
 	api.POST("/dynamics/comment", controller.PostComment)
 	api.GET("/dynamics/comment/:id", controller.GetCommentList)
-	api.GET("/dynamics/hot", controller.DynamicsSearchHot)
-	api.GET("/dynamics/states", controller.OursStates)
-	api.GET("/dynamics/song", controller.HotSong)
+	api.GET("/dynamics/hotsearch", controller.DynamicsSearchHot)
+	api.GET("/dynamics/ourstates", controller.OursStates)
+	api.GET("/dynamics/hotsong", controller.HotSong)
 	// 管理员操作 模块
 	api.POST("/administrators", controller.DeleteContent)
 	// 通用操作 模块

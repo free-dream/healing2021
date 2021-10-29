@@ -33,3 +33,12 @@ func FakeLogin(ctx *gin.Context) {
 	session.Save()
 	ctx.JSON(200, "OK")
 }
+
+func FakeLoinEasy(ctx *gin.Context)  {
+	session := sessions.Default(ctx)
+	session.Set("avatar", "我的头像 url")
+	session.Set("openid", 123456)
+	session.Set("user_id", 1)
+	session.Save()
+	ctx.JSON(200, "OK")
+}
