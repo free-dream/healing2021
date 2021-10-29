@@ -95,20 +95,29 @@ func AddFakeSelections() {
 }
 
 //假翻唱
-func CreateFakeCovers(uid int, name string, cid int) {
+func CreateFakeCovers(uid int, name string, cid int, classicId int, module int) {
 	cover := statements.Cover{
 		UserId:      uid,
 		SongName:    name,
 		SelectionId: strconv.Itoa(cid),
+		Module: module,
+		ClassicId: classicId,
 	}
 
 	db := setting.MysqlConn()
 	db.Create(&cover)
 }
-
 func AddFakeCovers() {
+	// 经典翻唱
 	for index := 1; index < 6; index++ {
-		CreateFakeCovers(index+2, "测试歌曲", index+1)
+		CreateFakeCovers(index+2, "测试歌曲", index+1, 0, 1)
+	}
+
+	// 童年翻唱
+	for index := 1; index < 14; index++ {
+		CreateFakeCovers(index+2, "测试歌曲", index+1, index, 2)
+		CreateFakeCovers(index+2, "测试歌曲", index+1, index, 2)
+		CreateFakeCovers(index+2, "测试歌曲", index+1, index, 2)
 	}
 }
 

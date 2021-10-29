@@ -15,7 +15,7 @@ type PlayerParam struct {
 
 // 当前播放歌曲的信息获取
 func GetPlayer(ctx *gin.Context) {
-	CoverIdStr := ctx.Param("classic_id")
+	CoverIdStr := ctx.Query("cover_id")
 	CoverId, err := strconv.Atoi(CoverIdStr)
 	if err != nil {
 		ctx.JSON(403, e.ErrMsgResponse{Message: "传入参数非法"})
@@ -33,7 +33,7 @@ func GetPlayer(ctx *gin.Context) {
 
 // 加载歌曲(翻唱),歌曲页
 func JumpSongs(ctx *gin.Context) {
-	var Param PlayerParam
+	Param := PlayerParam{}
 	err := ctx.ShouldBind(&Param)
 	if err != nil {
 		ctx.JSON(403, e.ErrMsgResponse{Message: "参数不完整"})

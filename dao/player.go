@@ -18,7 +18,7 @@ func GetPlayerInfo(CoverId int) (respModel.PlayerResp, error) {
 
 	// 找到作品名
 	Classic := statements.Classic{}
-	err = MysqlDB.Where("song_ame=?", Cover.SongName).First(&Classic).Error
+	err = MysqlDB.Where("song_name=?", Cover.SongName).First(&Classic).Error
 	if err != nil {
 		return respModel.PlayerResp{}, err
 	}
