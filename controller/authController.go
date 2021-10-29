@@ -27,6 +27,7 @@ func FakeLogin(ctx *gin.Context) {
 		return
 	}
 	session := sessions.Default(ctx)
+	session.Set("avatar", user.Avatar)
 	session.Set("openid", user.Openid)
 	session.Set("user_id", id)
 	session.Save()
