@@ -78,32 +78,6 @@ Content-Type application/json
 失败:
 
 `可能遇到401,用户未登录强制重定向进行授权登录`
-## 1.2 jssdk的接口
-
-GET /api/wxconfig HTTP/1.1
-
-成功：
-
-HTTP/1.1 200 OK
-
-```json
-{
-    "appId": "string",
-    "timestamp": timestamp,
-    "nonceStr": "string",
-    "signature": "string"
-}
-```
-
-失败：
-
-HTTP/1.1 500 Internal Server Error
-
-Content-Type: application/json
-
-```json
-{"message" : "ip is not in whitelist"}
-```
 
 #  -----下面的接口都要带上前缀"/api"-----
 
@@ -117,18 +91,23 @@ POST /user HTTP/1.1
 
 Content-Type: application/json
 
-200 OK3
+```json
+{
+"nickname": "string",  
+"real_name": "string", //选填
+"phone_number": "string", //选填
+"sex": int,// 1:男 2:女 3:其他
+"school": "string" //可以传缩写过来 scut
+"hobby":[]string
+
+}
+```
+
+200 OK
 
 ```json
 {
- 
-  "nickname": "string",  
-  "real_name": "string", //选填
-  "phone_number": "string", //选填
-  "sex": int,// 1:男 2:女 3:其他
-  "school": "string" //可以传缩写过来 scut
-   "hobby":[]string
-
+  "user_id": int
 }
 ```
 失败：
@@ -164,7 +143,11 @@ Content-Type: application/json
 }
 ```
 失败:
-
+```json
+{
+  "avatar": string
+}
+```
 403 Forbidden
 
 Content-Type: application/json
@@ -405,7 +388,7 @@ Content-Type: application/json
         "address":text(url),	//对应的链接，广告外链或者翻唱界面
         "weight":int,//权重
     }
-	...
+	
 ]
 ```
 
