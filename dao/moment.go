@@ -52,17 +52,20 @@ func GetMomentById(MomentId int) (statements.Moment, bool) {
 
 //通过动态的 Id 来统计动态被点赞数
 func CountMLaudsById(MomentId int) int {
-	Moment, ok := GetMomentById(MomentId)
-	if !ok {
-		return -1
+	MysqlDB := setting.MysqlConn()
+	var Lauds int
+	err := MysqlDB.Model(&statements.Praise{}).Where("is_liked=? and moment_id=?", 1, MomentId).Count(&Lauds).Error
+	if err != nil {
+		fmt.Println(err)
+		return 0
 	}
-	return Moment.LikeNum
+	return Lauds
 }
 
 //通过动态的 Id 来判断当前用户是否点过赞
 func HaveMLauded(UserId int, MomentId int) int {
 	MysqlDB := setting.MysqlConn()
-	err := MysqlDB.Where("user_id=? and moment_id=?", UserId, MomentId).First(&statements.Praise{}).Error
+	err := MysqlDB.Where("user_id=? and moment_id=? and is_liked=?", UserId, MomentId,1).First(&statements.Praise{}).Error
 	if gorm.IsRecordNotFoundError(err) {
 		return 0
 	} else if err != nil {
@@ -130,7 +133,7 @@ func CountCLaudsById(CommentId int) int {
 func HaveCLauded(UserId int, CommentId int) int {
 	MysqlDB := setting.MysqlConn()
 
-	err := MysqlDB.Where("user_id=? and moment_comment_id=?", UserId, CommentId).First(&statements.Praise{}).Error
+	err := MysqlDB.Where("user_id=? and moment_comment_id=? and is_liked=?", UserId, CommentId, 1).First(&statements.Praise{}).Error
 	if gorm.IsRecordNotFoundError(err) {
 		return 0
 	} else if err != nil {

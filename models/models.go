@@ -108,16 +108,16 @@ func CreateFakeCovers(uid int, name string, cid int, classicId int, module int) 
 	db.Create(&cover)
 }
 func AddFakeCovers() {
-	// 经典翻唱
+	// 经典翻唱 5
 	for index := 1; index < 6; index++ {
-		CreateFakeCovers(index+2, "测试歌曲", index+1, 0, 1)
+		CreateFakeCovers(index+2, "songName" + strconv.Itoa(index), index+1, 0, 1)
 	}
 
-	// 童年翻唱
+	// 童年翻唱 3x13=39
 	for index := 1; index < 14; index++ {
-		CreateFakeCovers(index+2, "测试歌曲", index+1, index, 2)
-		CreateFakeCovers(index+2, "测试歌曲", index+1, index, 2)
-		CreateFakeCovers(index+2, "测试歌曲", index+1, index, 2)
+		CreateFakeCovers(index+2, "songName" + strconv.Itoa(index), index+1, index, 2)
+		CreateFakeCovers(index+2, "songName" + strconv.Itoa(index), index+1, index, 2)
+		CreateFakeCovers(index+2, "songName" + strconv.Itoa(index), index+1, index, 2)
 	}
 }
 
@@ -166,7 +166,7 @@ func AddFakeComments() {
 	CreateFakeComment(1, 1, "第wu条假评论", 3)
 }
 
-// 假童年原唱
+// 假童年原唱(名字对不上假翻唱
 func CreateFakeClassic(remark string, songName string, icon string, singer string, workName string, click int, file string) {
 	Comment := statements.Classic{
 		Remark:   remark,

@@ -2,6 +2,7 @@ package dao
 
 import (
 	"errors"
+	"fmt"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
@@ -13,13 +14,17 @@ func GetPlayerInfo(CoverId int) (respModel.PlayerResp, error) {
 	Cover := statements.Cover{}
 	err := MysqlDB.Where("id=?", CoverId).First(&Cover).Error
 	if err != nil {
+		fmt.Println(err)
 		return respModel.PlayerResp{}, err
 	}
+
+	fmt.Println("-----")
 
 	// 找到作品名
 	Classic := statements.Classic{}
 	err = MysqlDB.Where("song_name=?", Cover.SongName).First(&Classic).Error
 	if err != nil {
+		fmt.Println(err)
 		return respModel.PlayerResp{}, err
 	}
 
@@ -40,12 +45,12 @@ func GetPlayerChild(Jump int, CoverId int) (respModel.PlayerResp, error) {
 	Cover := statements.Cover{}
 
 	if Jump == 0 {
-		err := MysqlDB.Where("id<? and module=2", CoverId).Order("id desc").First(&Cover).Error
+		err := MysqlDB.Where("id<? and module=?", CoverId, 2).Order("id desc").First(&Cover).Error
 		if err != nil {
 			return respModel.PlayerResp{}, errors.New("已经是第一首")
 		}
 	} else if Jump == 1 {
-		err := MysqlDB.Where("id>? and module=2", CoverId).Order("id desc").First(&Cover).Error
+		err := MysqlDB.Where("id>? and module=?", CoverId, 2).Order("id desc").First(&Cover).Error
 		if err != nil {
 			return respModel.PlayerResp{}, errors.New("已经是最后一首")
 		}
@@ -76,12 +81,12 @@ func GetPlayerNormal(Jump int, CoverId int) (respModel.PlayerResp, error) {
 	Cover := statements.Cover{}
 
 	if Jump == 0 {
-		err := MysqlDB.Where("id<? and module=1", CoverId).Order("id desc").First(&Cover).Error
+		err := MysqlDB.Where("id<? and module=?", CoverId, 1).Order("id desc").First(&Cover).Error
 		if err != nil {
 			return respModel.PlayerResp{}, errors.New("已经是第一首")
 		}
 	} else if Jump == 1 {
-		err := MysqlDB.Where("id>? and module=1", CoverId).Order("id desc").First(&Cover).Error
+		err := MysqlDB.Where("id>? and module=?", CoverId, 1).Order("id desc").First(&Cover).Error
 		if err != nil {
 			return respModel.PlayerResp{}, errors.New("已经是最后一首")
 		}
