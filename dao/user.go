@@ -7,6 +7,7 @@ import (
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"math/rand"
 	"strconv"
+	"time"
 
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
@@ -44,13 +45,12 @@ type User struct {
 	Hobby          []string `json:"hobby"`
 }
 
-func FakeCreateUser(user *statements.User) (string, error) {
-	err := setting.DB.Table("user").Create(&user).Error
+func FakeCreateUser(user *statements.User) (int, error) {
+	err := setting.DB.Table("user").Where("nickname=?", user.Nickname).Scan(&user).Error
 	if err != nil {
-		return "", err
+		return 0, err
 	}
-	openid := user.Nickname
-	return openid, nil
+	return int(user.ID), nil
 
 }
 
@@ -115,21 +115,41 @@ type SelectionMsg struct {
 	SongName  string `json:"song_name"`
 	CreatedAt string `json:"created_at"`
 }
+type SelectionMsgV2 struct {
+	SongName  string    `json:"song_name"`
+	CreatedAt time.Time `json:"created_at"`
+}
 type CoverMsg struct {
 	SongName  string `json:"song_name"`
 	CreatedAt string `json:"created_at"`
+}
+type CoverMsgV2 struct {
+	SongName  string    `json:"song_name"`
+	CreatedAt time.Time `json:"created_at"`
 }
 type PraiseMsg struct {
 	SongName  string `json:"song_name"`
 	CreatedAt string `json:"created_at"`
 	ID        int    `json:"id"`
 }
+type PraiseMsgV2 struct {
+	SongName  string    `json:"song_name"`
+	CreatedAt time.Time `json:"created_at"`
+	ID        int       `json:"id"`
+}
 type MomentMsg struct {
-	SongName  string `json:"song_name"`
-	CreatedAt string `json:"created_at"`
-	ID        int    `json:"id"`
-	State     string `json:"state"`
-	Content   string `json:"content"`
+	SongName  string   `json:"song_name"`
+	CreatedAt string   `json:"created_at"`
+	ID        int      `json:"id"`
+	State     []string `json:"state"`
+	Content   string   `json:"content"`
+}
+type MomentMsgV2 struct {
+	SongName  string    `json:"song_name"`
+	CreatedAt time.Time `json:"created_at"`
+	ID        int       `json:"id"`
+	State     string    `json:"state"`
+	Content   string    `json:"content"`
 }
 
 func GetUser(id int) interface{} {
@@ -167,7 +187,8 @@ func GetCallee(id int) interface{} {
 //返回所有信息采用扫描行的方式
 
 func getPraises(value interface{}, tableName string, condition string) interface{} {
-	obj := PraiseMsg{}
+	obj := PraiseMsgV2{}
+	resp := PraiseMsg{}
 	rows, err := setting.DB.Table(tableName).Joins("left join cover on cover.id=praise.cover_id").Where(condition, value).Rows()
 	index := 0
 	content := make(map[int]interface{})
@@ -180,13 +201,16 @@ func getPraises(value interface{}, tableName string, condition string) interface
 		if err != nil {
 			panic(err)
 		}
+		resp.ID = obj.ID
+		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		content[index] = obj
 		index++
 	}
 	return content
 }
 func getCovers(value interface{}, tableName string, condition string) interface{} {
-	obj := CoverMsg{}
+	obj := CoverMsgV2{}
+	resp := CoverMsg{}
 	rows, err := setting.DB.Table(tableName).Where(condition, value).Rows()
 	index := 0
 	content := make(map[int]interface{})
@@ -199,13 +223,16 @@ func getCovers(value interface{}, tableName string, condition string) interface{
 		if err != nil {
 			panic(err)
 		}
-		content[index] = obj
+		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
+		resp.SongName = obj.SongName
+		content[index] = resp
 		index++
 	}
 	return content
 }
 func getSelections(value interface{}, tableName string, condition string) interface{} {
-	obj := SelectionMsg{}
+	obj := SelectionMsgV2{}
+	resp := SelectionMsg{}
 	rows, err := setting.DB.Table(tableName).Where(condition, value).Rows()
 	index := 0
 	content := make(map[int]interface{})
@@ -218,22 +245,17 @@ func getSelections(value interface{}, tableName string, condition string) interf
 		if err != nil {
 			panic(err)
 		}
-		content[index] = obj
+		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
+		resp.SongName = obj.SongName
+		content[index] = resp
 		index++
 	}
 	return content
 }
 
-type MomentMsgV2 struct {
-	SongName  string   `json:"song_name"`
-	CreatedAt string   `json:"created_at"`
-	ID        int      `json:"id"`
-	State     []string `json:"state"`
-	Content   string   `json:"content"`
-}
-
 func getMoments(value interface{}, tableName string, condition string) interface{} {
-	obj := MomentMsg{}
+	obj := MomentMsgV2{}
+	resp := MomentMsg{}
 	rows, err := setting.DB.Table(tableName).Where(condition, value).Rows()
 	index := 0
 	content := make(map[int]interface{})
@@ -243,11 +265,15 @@ func getMoments(value interface{}, tableName string, condition string) interface
 	defer rows.Close()
 	for rows.Next() {
 		err = setting.DB.ScanRows(rows, &obj)
-		tools.DecodeStrArr(obj.State)
+		resp.State = tools.DecodeStrArr(obj.State)
+		resp.ID = int(obj.ID)
+		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
+		resp.SongName = obj.SongName
+		resp.Content = obj.Content
 		if err != nil {
 			panic(err)
 		}
-		content[index] = obj
+		content[index] = resp
 		index++
 	}
 	return content
