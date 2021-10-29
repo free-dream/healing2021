@@ -46,7 +46,7 @@ func Likes(targetid int, liketype int, userid int) bool {
 	return !check
 }
 
-//修改用户点数
+//修改用户点数,这是考虑抽奖的结果
 func Changepoints(point float64, userid int) bool {
 	redisDb := setting.RedisConn()
 	tempkey := strconv.Itoa(userid) + "/point"
