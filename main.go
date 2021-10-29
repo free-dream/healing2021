@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"git.100steps.top/100steps/healing2021_be/controller"
 	"io/ioutil"
 	"log"
 	"syscall"
@@ -31,7 +30,6 @@ func main() {
 
 	models.TableInit()
 	routers := router.SetupRouter()
-	controller.Login()
 	defer setting.DB.Close()
 	defer setting.RedisClient.Close()
 	var port string

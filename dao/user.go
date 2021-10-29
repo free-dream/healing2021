@@ -223,6 +223,15 @@ func getSelections(value interface{}, tableName string, condition string) interf
 	}
 	return content
 }
+
+type MomentMsgV2 struct {
+	SongName  string   `json:"song_name"`
+	CreatedAt string   `json:"created_at"`
+	ID        int      `json:"id"`
+	State     []string `json:"state"`
+	Content   string   `json:"content"`
+}
+
 func getMoments(value interface{}, tableName string, condition string) interface{} {
 	obj := MomentMsg{}
 	rows, err := setting.DB.Table(tableName).Where(condition, value).Rows()
@@ -234,6 +243,7 @@ func getMoments(value interface{}, tableName string, condition string) interface
 	defer rows.Close()
 	for rows.Next() {
 		err = setting.DB.ScanRows(rows, &obj)
+		tools.DecodeStrArr(obj.State)
 		if err != nil {
 			panic(err)
 		}
