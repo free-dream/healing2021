@@ -44,8 +44,7 @@ type User struct {
 	Hobby          []string `json:"hobby"`
 }
 
-func FakeCreateUser(user *User) (string, error) {
-
+func FakeCreateUser(user *statements.User) (string, error) {
 	err := setting.DB.Table("user").Create(&user).Error
 	if err != nil {
 		return "", err

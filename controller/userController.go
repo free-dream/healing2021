@@ -85,7 +85,8 @@ func Updater(ctx *gin.Context) {
 //获取用户信息
 func Fetcher(ctx *gin.Context) {
 	session := sessions.Default(ctx)
-	id := session.Get("id").(int)
+	id := session.Get("user_id").(int)
+
 	user := dao.GetUser(id)
 	ctx.JSON(200, user)
 

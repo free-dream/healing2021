@@ -2,6 +2,8 @@ package router
 
 import (
 	"encoding/gob"
+	"git.100steps.top/100steps/ginwechat"
+	"git.100steps.top/100steps/healing2021_be/models"
 	"io"
 	"log"
 	"os"
@@ -24,7 +26,7 @@ func SetupRouter() *gin.Engine {
 
 	if tools.IsDebug() {
 		test_prefix = "/test"
-		//		models.FakeData()
+		models.FakeData()
 	} else {
 		test_prefix = ""
 	}
@@ -44,28 +46,40 @@ func SetupRouter() *gin.Engine {
 		log.Panicln(err.Error())
 	}
 	r.Use(sessions.Sessions("healing2021_session", store))
-
-	if tools.IsDebug() {
-		r.Use(middleware.IdentityCheck())
-	}
+	ginwechat.UpdateEngine(r, &ginwechat.Config{
+		Appid:     "wx293bc6f4ee88d87d",
+		Appsecret: "",
+		BaseUrl:   "https://healing2021.100steps.top",
+		StoreSession: func(ctx *gin.Context, wechatUser *ginwechat.WechatUser) error {
+			session := sessions.Default(ctx)
+			session.Set("openid", wechatUser.OpenID)
+			session.Set("headImgUrl", wechatUser.HeadImgUrl)
+			session.Set("nickname", wechatUser.Nickname)
+			ctx.JSON(200, gin.H{
+				"nickname": wechatUser.Nickname,
+			})
+			//登录任务
+			return session.Save()
+		},
+	})
 
 	// ping 测试
 	r.GET(test_prefix+"/ping", func(ctx *gin.Context) {
 		ctx.JSON(200, e.ErrMsgResponse{Message: "pong"})
 		return
 	})
-	//授权路由
-	if tools.IsDebug() {
-		r.GET(test_prefix+"/wx/jump", controller.FakeLogin)
-	} else {
-		r.GET(test_prefix+"/wx/jump", controller.WechatUser)
-	}
 
+	//中间件验证
+	if tools.IsDebug() {
+		r.POST(test_prefix+"/user", controller.FakeLogin)
+	} else {
+		r.Use(middleware.IdentityCheck())
+	}
 	// 业务路由
 	api := r.Group(test_prefix + "/api")
-	//中间件验证
 
 	//user 模块
+
 	api.POST("/user", controller.Register)
 	api.PUT("/user", controller.Updater)
 	api.GET("/user", controller.Fetcher)
