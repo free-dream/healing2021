@@ -23,6 +23,8 @@ func TableInit() {
 	go statements.TaskInit()
 	go statements.TaskTableInit()
 	go statements.UserInit()
+    go statements.UsrmsgInit()
+    go statements.SysmsgInit()
 	time.Sleep(time.Second * 2)
 }
 
