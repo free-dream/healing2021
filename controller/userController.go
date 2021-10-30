@@ -18,7 +18,7 @@ func Register(ctx *gin.Context) {
 	user := dao.User{}
 	err := ctx.ShouldBindJSON(&user)
 	if err != nil {
-		ctx.JSON(401, gin.H{
+		ctx.JSON(400, gin.H{
 			"message": "error param",
 		})
 		return
@@ -60,7 +60,7 @@ func Updater(ctx *gin.Context) {
 	user := dao.User{}
 	err := ctx.ShouldBind(&user)
 	if err != nil {
-		ctx.JSON(401, gin.H{
+		ctx.JSON(400, gin.H{
 			"message": "修改失败",
 			"error":   err,
 		})
@@ -120,14 +120,14 @@ func Refresher(ctx *gin.Context) {
 func GetOther(ctx *gin.Context) {
 	param, bl := ctx.GetQuery("calleeId")
 	if !bl {
-		ctx.JSON(401, gin.H{
+		ctx.JSON(400, gin.H{
 			"message": "error param",
 		})
 		return
 	}
 	calleeId, err := strconv.Atoi(param)
 	if err != nil {
-		ctx.JSON(401, gin.H{
+		ctx.JSON(400, gin.H{
 			"message": "error param",
 		})
 		panic(err)
