@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"git.100steps.top/100steps/healing2021_be/controller"
+	"git.100steps.top/100steps/healing2021_be/controller/ws"
 	"git.100steps.top/100steps/healing2021_be/controller/middleware"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
@@ -78,6 +79,10 @@ func SetupRouter() *gin.Engine {
 	}
 	// 业务路由
 	api := r.Group(test_prefix + "/api")
+
+    // ws
+    api.GET("/ws", ws.WsHandler)
+    api.GET("/ws/history", ws.WsData)
 
 	//user 模块
 

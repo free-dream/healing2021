@@ -18,4 +18,6 @@ func TableClean() {
 	db.Exec("truncate table task")
 	db.Exec("truncate table task_table")
 	db.Exec("truncate table user")
+	db.Exec("truncate table sysmsg")
+	db.Exec("truncate table usrmsg")
 }
