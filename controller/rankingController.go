@@ -4,6 +4,8 @@ import (
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
 	resp "git.100steps.top/100steps/healing2021_be/pkg/respModel"
+	"git.100steps.top/100steps/healing2021_be/sandwich"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,10 +30,24 @@ func GetRanking(ctx *gin.Context) {
 }
 
 //GET /healing/rank/user
-//获取用户当前排名
 func GetMyRank(ctx *gin.Context) {
-	//获取openid和userid
-	// openid := tools.GetOpenid(ctx)
-	// userid, err := dao.GetUserid(openid)
-	// errHandler(err)
+	//获取userid
+	ruresp := resp.RankingUResp{}
+	userid := sessions.Default(ctx).Get("user_id").(int)
+	test := sandwich.GetCURanking(userid)
+	if test == "" {
+		rank, err := dao.GetRankByCUserId(userid)
+		if err != nil {
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+		}
+		err = sandwich.CacheCURanking(userid, rank)
+		if err != nil {
+			ctx.JSON(500, e.ErrMsgResponse{Message: "redis操作出错"})
+		}
+		ruresp.Rank = rank
+		ctx.JSON(200, ruresp)
+		return
+	}
+	ruresp.Rank = test
+	ctx.JSON(200, ruresp)
 }

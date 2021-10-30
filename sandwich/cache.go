@@ -3,10 +3,29 @@ package sandwich
 import (
 	"reflect"
 	"strconv"
+	"time"
 
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
+
+//缓存当前用户排名,设置了8小时的有效期
+func CacheCURanking(userid int, rank string) error {
+	db := setting.RedisConn()
+	key := strconv.Itoa(userid) + "rank"
+	err := db.Set(key, rank, time.Hour*8).Err()
+	return err
+}
+
+//获取当前用户排名
+func GetCURanking(userid int) string {
+	db := setting.RedisConn()
+	key := strconv.Itoa(userid) + "rank"
+	data := db.Get(key).Val()
+	return data
+}
+
+//下述接口暂时废案
 
 /*翻唱排序系统初始化的时候缓存一次，之后定期更新*/
 //用户信息在登录时缓存一次

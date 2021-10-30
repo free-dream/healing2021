@@ -8,6 +8,11 @@ type RankingResp struct {
 	Nickname string `json:"nickname"`
 }
 
+//当前用户的返回结构
+type RankingUResp struct {
+	Rank string `json:"rank"`
+}
+
 //每日热榜返回值
 type HotResp struct {
 	Avatar   string    `json:"avatar"`

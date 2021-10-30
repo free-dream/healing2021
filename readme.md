@@ -804,7 +804,7 @@ Content-Type: application/json
 
 #### 3.2.3.2 总体热榜
 
-Get /healing/dailyrank/{date}
+Get /healing/dailyrank/all
 
 **全部时间获赞数最多的翻唱**
 
