@@ -3,6 +3,7 @@ package dao
 import (
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	db "git.100steps.top/100steps/healing2021_be/pkg/setting"
+	"git.100steps.top/100steps/healing2021_be/sandwich"
 	"github.com/jinzhu/gorm"
 )
 
@@ -24,8 +25,17 @@ func UpdateLikesByID(user int, target int, likes int, kind string) error {
 		return err
 	}
 
-	// TODO:检查原本是否已经点赞、取消点赞
-	// TODO:[bug]用户第一次进行点赞时没有记录能进行 update
+	// 检查原本是否已经点赞、取消点赞
+	// 用户第一次进行点赞时没有记录能进行 update
+	// 若为取消点赞，应检查是否存有当前用户id,若为点赞，则反之
+	check := sandwich.Check(target, kind, user)
+	if likes == -1 && !check {
+		err := sandwich.CancelLike(target, kind, user)
+		return err
+	} else if likes == 1 && check {
+		err := sandwich.AddLike(target, kind, user)
+		return err
+	}
 
 	//更新数据库
 	if kind == "cover" {
@@ -49,6 +59,7 @@ func UpdateLikesByID(user int, target int, likes int, kind string) error {
 	return nil
 }
 
+//废案
 //备选方案，基于redis的更新，直接在goroutine加锁
 func RUpdateLikesByID(user int, target int, likes int, kind string) bool {
 	mysqlDb := db.MysqlConn()

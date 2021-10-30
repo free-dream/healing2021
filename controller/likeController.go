@@ -42,6 +42,6 @@ func Like(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, e.ErrMsgResponse{Message: "点赞成功"})
+	ctx.JSON(200, e.ErrMsgResponse{Message: "操作成功"})
 	return
 }
