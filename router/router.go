@@ -3,7 +3,6 @@ package router
 import (
 	"encoding/gob"
 	"git.100steps.top/100steps/ginwechat"
-	"git.100steps.top/100steps/healing2021_be/models"
 	"io"
 	"log"
 	"os"
@@ -22,14 +21,8 @@ var store redis.Store
 
 func SetupRouter() *gin.Engine {
 
-	var test_prefix string
 
-	if tools.IsDebug() {
-		test_prefix = "/test"
-		models.FakeData()
-	} else {
-		test_prefix = ""
-	}
+
 	r := gin.Default()
 
 	f, _ := os.Create(tools.GetConfig("log", "location"))
@@ -64,20 +57,20 @@ func SetupRouter() *gin.Engine {
 	})
 
 	// ping 测试
-	r.GET(test_prefix+"/ping", func(ctx *gin.Context) {
+	r.GET("/ping", func(ctx *gin.Context) {
 		ctx.JSON(200, e.ErrMsgResponse{Message: "pong"})
 		return
 	})
 
 	//中间件验证
 	if tools.IsDebug() {
-		r.POST(test_prefix+"/user", controller.FakeLogin)
-		r.POST(test_prefix+"/userEasy", controller.FakeLoinEasy)
+		r.POST("/user", controller.FakeLogin)
+		r.POST("/userEasy", controller.FakeLoinEasy)
 	} else {
 		r.Use(middleware.IdentityCheck())
 	}
 	// 业务路由
-	api := r.Group(test_prefix + "/api")
+	api := r.Group("/api")
 
 	//user 模块
 
