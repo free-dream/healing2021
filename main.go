@@ -30,6 +30,7 @@ func main() {
 
 	models.TableInit()
 	routers := router.SetupRouter()
+	models.FakeData()
 	defer setting.DB.Close()
 	defer setting.RedisClient.Close()
 	var port string
