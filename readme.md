@@ -1638,9 +1638,11 @@ Content-Type: application/json
 
 ## 7.1 动态、评论删除
 
-仅管理员可用，现不妨将 userId 为 0-5 的账号预留，当管理员账号
+POST /administrators/content/?id= HTTP1.1
 
-POST /administrators/content HTTP1.1
+query
+
+id
 
 成功时：
 
@@ -1648,21 +1650,14 @@ HTTP/1.1 200 OK
 
 Content-Type: application/json
 
-```json
-{
-    "type" : int,	//1代表动态，2代表评论
-    "id" : int,		//对应动态、评论的Id
-}
-```
-
 失败时(例子)：
 
-HTTP/1.1 500 Forbidden
+HTTP/1.1 403 Forbidden
 
 Content-Type: application/json
 
 ```
-{"message" : "服务端出错"}
+{"message" : "无权限"}
 ```
 
 # 通用功能

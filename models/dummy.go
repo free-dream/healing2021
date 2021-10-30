@@ -5,6 +5,7 @@ import (
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
+	"math/rand"
 	"strconv"
 )
 
@@ -142,9 +143,12 @@ func dummyUser() *statements.User {
 		nickname = string(tools.GetRandomString(4))
 	}
 	//决定学校
+
+	avatar, _ := GetUserAvatar(rand.Intn(2))
 	school = SchoolPool[check2]
 	user := statements.User{
 		Openid:    string(tools.GetRandomString(10)),
+		Avatar:    avatar,
 		Nickname:  nickname,
 		RealName:  string(tools.GetRandomString(6)),
 		Signature: string(tools.GetRandomString(20)),

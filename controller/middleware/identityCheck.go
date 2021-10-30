@@ -9,41 +9,38 @@ import (
 )
 
 func IdentityCheck() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		rUrl := c.Request.URL.Path
-		session := sessions.Default(c)
+	return func(ctx *gin.Context) {
+		rUrl := ctx.Request.URL.Path
+		session := sessions.Default(ctx)
 		openid := session.Get("openid")
-
-		if startWith(rUrl, "/auth") || startWith(rUrl, "/wx") || startWith(rUrl, "/api/broadcast") {
-			c.Next()
+		if startWith(rUrl, "/auth") || startWith(rUrl, "/wx") {
+			ctx.Next()
 			return
 		}
 		if openid == nil {
 			if startWith(rUrl, "/api") {
-				c.JSON(401, e.ErrMsgResponse{Message: "fail to authenticate"})
-				c.Abort()
+				ctx.JSON(401, e.ErrMsgResponse{Message: "fail to authenticate"})
+				ctx.Abort()
 				return
 			} else {
-				redirect := c.Query("redirect")
+				redirect := ctx.Query("redirect")
 				var url string
 				if tools.IsDebug() {
 					url = "https://healing2020.100steps.top/test/wx/jump2wechat?redirect=" + redirect
 				} else {
 					url = "https://healing2020.100steps.top/wx/jump2wechat?redirect=" + redirect
 				}
-				c.Redirect(302, url)
-				c.Abort()
+				ctx.Redirect(302, url)
+				ctx.Abort()
 				return
 			}
 		}
-		c.Next()
+
+		ctx.Next()
 	}
 }
 
 func startWith(rUrl string, uri string) bool {
-	if tools.IsDebug() {
-		uri = "/test" + uri
-	}
 	if len(uri) > len(rUrl) {
 		return false
 	}

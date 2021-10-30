@@ -2,9 +2,7 @@ package tools
 
 import (
 	"fmt"
-
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
-
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"

@@ -1,12 +1,10 @@
 package models
 
 import (
-	"strconv"
-	"time"
-
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
+	"strconv"
 )
 
 func TableInit() {
@@ -28,10 +26,11 @@ func TableInit() {
 }
 
 // 假用户
-func CreateFakeUser(nickname string, openid string, time time.Time) { /*hobby map[string]string) */
+func CreateFakeUser(nickname string, openid string, avatar string) { /*hobby map[string]string) */
 	User := statements.User{
 		Openid:   openid,
 		Nickname: nickname,
+		Avatar:   avatar,
 	}
 
 	db := setting.DB
@@ -46,11 +45,10 @@ func CreateDummyUser(model *statements.User) {
 
 //生成假用户
 func AddFakeUsers() {
-	CreateFakeUser("heng1", "123456", time.Now())
-	CreateFakeUser("heng2", "123456321", time.Date(2002, 12, 11, 10, 16, 55, 05, time.Local))
-	CreateFakeUser("heng3", "1231", time.Date(2021, 10, 20, 10, 16, 55, 05, time.Local))
-	CreateFakeUser("heng4", "99999", time.Now())
-	CreateFakeUser("juryo", "juryo", time.Now())
+	CreateFakeUser("heng1", "123456", "测试头像")
+	CreateFakeUser("heng2", "123456321", "测试头像")
+	CreateFakeUser("heng3", "1231", "测试头像")
+	CreateFakeUser("heng4", "99999", "测试头像")
 	for i := 0; i < 10; i++ {
 		CreateDummyUser(dummyUser())
 	}

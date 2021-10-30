@@ -9,10 +9,11 @@ import (
 
 type MomentComment struct {
 	gorm.Model
-	UserId   int    `gorm:"default:0;index"`
-	MomentId int    `gorm:"default:0;index"`
-	Comment  string `gorm:"default:''"`
-	LikeNum  int    `gorm:"default:0"`
+	UserId    int    `gorm:"default:0;index"`
+	MomentId  int    `gorm:"default:0;index"`
+	Comment   string `gorm:"default:''"`
+	LikeNum   int    `gorm:"default:0"`
+	IsDeleted int    `gorm:"default：0"`
 }
 
 func MomentCommentInit() {

@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"git.100steps.top/100steps/healing2021_be/controller"
-	"git.100steps.top/100steps/healing2021_be/controller/ws"
 	"git.100steps.top/100steps/healing2021_be/controller/middleware"
+	"git.100steps.top/100steps/healing2021_be/controller/ws"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"github.com/gin-contrib/sessions"
@@ -21,8 +21,6 @@ import (
 var store redis.Store
 
 func SetupRouter() *gin.Engine {
-
-
 
 	r := gin.Default()
 
@@ -63,19 +61,19 @@ func SetupRouter() *gin.Engine {
 		return
 	})
 
-	//中间件验证
+	//假登录
+
 	if tools.IsDebug() {
 		r.POST("/user", controller.FakeLogin)
 		r.POST("/userEasy", controller.FakeLoinEasy)
-	} else {
-		r.Use(middleware.IdentityCheck())
 	}
+	r.Use(middleware.IdentityCheck())
 	// 业务路由
 	api := r.Group("/api")
 
-    // ws
-    api.GET("/ws", ws.WsHandler)
-    api.GET("/ws/history", ws.WsData)
+	// ws
+	api.GET("/ws", ws.WsHandler)
+	api.GET("/ws/history", ws.WsData)
 
 	//user 模块
 
@@ -114,9 +112,12 @@ func SetupRouter() *gin.Engine {
 	api.GET("/dynamics/hotsearch", controller.DynamicsSearchHot)
 	api.GET("/dynamics/ourstates", controller.OursStates)
 	api.GET("/dynamics/hotsong", controller.HotSong)
-	// 管理员操作 模块
-	api.POST("/administrators", controller.DeleteContent)
-	// 通用操作 模块
+
+	//通用操作 模块
 	api.PUT("/like", controller.Like)
+	// 管理员操作 模块
+	api.Use(middleware.Authentication())
+	api.POST("/administrators", controller.DeleteContent)
+
 	return r
 }

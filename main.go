@@ -37,9 +37,9 @@ func main() {
 	if tools.IsDebug() {
 		//controller.LoadTestData()
 
-		port = ":8003"
+		port = ":8008"
 	} else {
-		port = ":8001"
+		port = ":8005"
 	}
 
 	c := cron.CronInit()
