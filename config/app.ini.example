@@ -1,0 +1,22 @@
+    # go-ini中文文档 https://www.bookstack.cn/read/go-ini-zh/store-go-ini-zh-intro-getting_started.md
+    # 2021/10/14 从2020healingbe移植并尝试重构数据库 ——voloroloq 16点51分
+
+    [log]
+    location = "./healing.log"
+
+    [mysql]
+    dbName = "healing2021"
+    user = "root"
+    password = ""
+    port = "127.0.0.1:3306"
+
+    # redis待设置
+    [redis]
+    addr = "127.0.0.1:6379"
+    db = "??"
+
+    ; [start]
+    ; port = ":10087"
+
+    [debug]
+    debug = "true"

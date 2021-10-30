@@ -17,7 +17,7 @@ func HealingPageFetcher(ctx *gin.Context) {
 	param, verify := ctx.GetQuery("selectionId")
 	//resp:=make(map[string]interface{})
 	if !verify {
-		ctx.JSON(401, gin.H{
+		ctx.JSON(400, gin.H{
 			"message": "error param",
 		})
 		return
@@ -72,7 +72,7 @@ func SelectionFetcher(ctx *gin.Context) {
 	tag := dao.Tags{}
 	err := ctx.ShouldBindJSON(&tag)
 	if err != nil {
-		ctx.JSON(401, gin.H{
+		ctx.JSON(400, gin.H{
 			"message": "error param",
 		})
 		return
@@ -101,7 +101,7 @@ func CoverFetcher(ctx *gin.Context) {
 	tag := dao.Tags{}
 	err := ctx.ShouldBindJSON(&tag)
 	if err != nil {
-		ctx.JSON(401, gin.H{
+		ctx.JSON(400, gin.H{
 			"message": "error param",
 		})
 		return
