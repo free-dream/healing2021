@@ -23,6 +23,8 @@ func TableInit() {
 	statements.TaskInit()
 	statements.TaskTableInit()
 	statements.UserInit()
+	statements.SysmsgInit()
+	statements.UsrmsgInit()
 }
 
 // 假用户
@@ -99,8 +101,8 @@ func CreateFakeCovers(uid int, name string, cid int, classicId int, module int) 
 		UserId:      uid,
 		SongName:    name,
 		SelectionId: strconv.Itoa(cid),
-		Module: module,
-		ClassicId: classicId,
+		Module:      module,
+		ClassicId:   classicId,
 	}
 
 	db := setting.MysqlConn()
@@ -109,14 +111,14 @@ func CreateFakeCovers(uid int, name string, cid int, classicId int, module int) 
 func AddFakeCovers() {
 	// 经典翻唱 5
 	for index := 1; index < 6; index++ {
-		CreateFakeCovers(index+2, "songName" + strconv.Itoa(index), index+1, 0, 1)
+		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, 0, 1)
 	}
 
 	// 童年翻唱 3x13=39
 	for index := 1; index < 14; index++ {
-		CreateFakeCovers(index+2, "songName" + strconv.Itoa(index), index+1, index, 2)
-		CreateFakeCovers(index+2, "songName" + strconv.Itoa(index), index+1, index, 2)
-		CreateFakeCovers(index+2, "songName" + strconv.Itoa(index), index+1, index, 2)
+		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, index, 2)
+		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, index, 2)
+		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, index, 2)
 	}
 }
 
@@ -189,13 +191,12 @@ func AddFakeClassic() {
 		workName := "workName" + strconv.Itoa(i)
 		click := 10 + i
 		file := "file" + strconv.Itoa(i)
-		CreateFakeClassic(remark , songName , icon , singer , workName , click , file)
+		CreateFakeClassic(remark, songName, icon, singer, workName, click, file)
 	}
 }
 
 // 造点测试用的假数据
 func FakeData() {
-	TableInit()
 	AddFakeCovers()
 	AddFakeUsers()
 	AddFakeMoments()
