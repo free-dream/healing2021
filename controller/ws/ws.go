@@ -36,9 +36,7 @@ func wsInit(w http.ResponseWriter, r *http.Request, wsConn *websocket.Conn, uid 
         Conn.Close()
         return false
     }
-    //uid := strconv.Itoa(TestUid)
-    //TestUid++ 
-    //fmt.Printf("uid:%v\n",uid)
+
     Conn.storage(uid)
     return true
 }
@@ -56,6 +54,11 @@ func WsHandler(ctx *gin.Context) {
     // get uid
     session := sessions.Default(ctx)
     uid := session.Get("user_id").(string)
+    // fake uid
+    //uid := strconv.Itoa(TestUid)
+    //TestUid++ 
+    //fmt.Printf("uid:%v\n",uid)
+
     if isInit:=wsInit(ctx.Writer,ctx.Request,wsConn,uid); isInit!=true {
         return
     }

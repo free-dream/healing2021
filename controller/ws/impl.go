@@ -1,7 +1,7 @@
 package ws
 
 import (
-    "fmt"
+    //"fmt"
     "time"
     "sync"
     "errors"
@@ -37,8 +37,8 @@ var (
 
 type DataBuffer struct {
     Type string
-    Sysmsg SysMsg
-    Usrmsg UsrMsg
+    Sysmsg respModel.SysMsg
+    Usrmsg respModel.UsrMsg
     FrontNode *DataBuffer
     NextNode *DataBuffer
 }
@@ -70,7 +70,7 @@ func appendNode(uid string, bufType string, msg interface{}) {
     newBuf := DataBuffer{}
     if bufType == "sys" {
         newBuf.Type = bufType
-        newBuf.Sysmsg = msg.(SysMsg)
+        newBuf.Sysmsg = msg.(respModel.SysMsg)
         if bufCache.NextNode != nil {
             newBuf.NextNode = bufCache.NextNode
             MsgBuffer.m[uid].NextNode.FrontNode = &newBuf
@@ -80,7 +80,7 @@ func appendNode(uid string, bufType string, msg interface{}) {
     }
     if bufType == "usr" {
         newBuf.Type = bufType
-        newBuf.Usrmsg = msg.(UsrMsg)
+        newBuf.Usrmsg = msg.(respModel.UsrMsg)
         if bufCache.NextNode != nil {
             newBuf.NextNode = bufCache.NextNode
             MsgBuffer.m[uid].NextNode.FrontNode = &newBuf
@@ -131,8 +131,8 @@ func initConnection(wsConn *websocket.Conn)(conn *Connection, err error) {
 func (conn *Connection)storage(uid string) {
     ConnMap.Store(uid, conn)
     uBufferInit(uid)
-    fmt.Println(ConnMap)
-    fmt.Printf("buffer:%v\n",MsgBuffer)
+    //fmt.Println(ConnMap)
+    //fmt.Printf("buffer:%v\n",MsgBuffer)
 }
 
 func getNewConn(uid string) (*Connection, bool){
@@ -149,7 +149,7 @@ func (conn *Connection)readMessage()(data []byte, err error) {
     case <- conn.closeChan:
         err = errors.New("connection is closed")
     }
-    fmt.Printf("read:%v\n",data)
+    //fmt.Printf("read:%v\n",data)
     return
 }
 
@@ -226,7 +226,7 @@ func (conn *Connection)chatWatcher(data []byte, uid string) {
             conn.writeMessage([]byte("error format"))
             return
         }
-        if uint2str(newUsrMsg.ToUser) != uid {
+        if uint2str(newUsrMsg.FromUser) != uid {
             conn.writeMessage([]byte("error format"))
             return
         }
@@ -238,10 +238,13 @@ func (conn *Connection)chatWatcher(data []byte, uid string) {
         newConn, isConn := getNewConn(uint2str(newUsrMsg.ToUser))
         if !isConn {
             if bErr:=dao.UsrBackUp(newUsrMsg, 2);bErr!=nil {
+                //conn.writeMessage([]byte(bErr.Error()))
                 conn.writeMessage([]byte("Fail to storage data"))
                 return 
             }
             appendNode(uint2str(newUsrMsg.ToUser), "usr", newUsrMsg)
+            conn.writeMessage([]byte("ok"))
+            return
         }
         if bErr:=dao.UsrBackUp(newUsrMsg, 1);bErr!=nil {
             conn.writeMessage([]byte("Fail to storage data"))
