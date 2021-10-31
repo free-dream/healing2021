@@ -90,7 +90,7 @@ Content-Type application/json
 `可能遇到401,用户未登录强制重定向进行授权登录`
 ## 1.2 假登录
 
-POST /wechatUser  HTTP/1.1
+POST /user  HTTP/1.1
 ```json
 {
 "nickname": "string",
