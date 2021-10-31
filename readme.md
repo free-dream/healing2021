@@ -217,22 +217,24 @@ Content-Type: application/json
       index:{
     "song_name": "string",
     "created_at": "string", //“2006-01-02 15:04:05”
-    "anonymous": int, //1:匿名 2:不匿名
       }
   },
   "mySongs": {
       index:{
-
+	"id":int,
+    "likes":int,
     "created_at": "string",
     "song_name": "string",
       }
   },
   "myLikes": {
       index:{
+    "cover_id":int,
+    "likes":int,
     "created_at": "string",
     "song_name": "string",
     "id": int, //对应点赞的id
-    "likeNum": int //对应点赞数
+    "likes": int //对应点赞数
       }
   },
   "moments": {
@@ -242,7 +244,7 @@ Content-Type: application/json
     "content": "string", //动态内容
     "id": int, //对应动态的id
     "song_name": string, //分享的歌曲名
-    "likeNum": int 
+    "likes": int 
       }
   }
 }
@@ -308,6 +310,7 @@ Content-Type: application/json
     "songId": int,
     "likeId":int,
     "song": "string" //歌曲url
+    "likes":int
   }
   }
 }
@@ -343,45 +346,45 @@ Content-Type: application/json
 
 ```json
 {
-    message：{
+   "message":{
   "avatar": "string",
   "nickname": "string",
   "school": "string",
   "signature": "string",
-}
+},
   "mySelections": {
       index:{
-    "model": "string", //模块名 治愈或是投递箱
     "song_name": "string",
     "created_at": "string", //“2006-01-02 15:04:05”
-      },
+      }
   },
   "mySongs": {
-      index：{
-    "model": "string",//模块名 治愈或是投递箱
+      index:{
+	"id":int,
+    "likes":int,
     "created_at": "string",
     "song_name": "string",
-    "likeNum": int,
-    "songId": int, //受访者所唱歌曲的id
-  },
+     "likes":int
+      }
   },
   "myLikes": {
       index:{
-    "model": "string",
+    "cover_id":int,
+    "likes":int,
     "created_at": "string",
     "song_name": "string",
-    "likeId": int, //对应点赞的id
-    "likeNum": int //对应点赞数
+    "id": int, //对应点赞的id
+    "likes": int //对应点赞数
       }
   },
   "moments": {
       index:{
     "created_at": "string",
-    "state": "[]string", //状态:摸鱼
+    "state": "string", //状态:摸鱼
     "content": "string", //动态内容
-    "momentId": int, //对应动态的id
+    "id": int, //对应动态的id
     "song_name": string, //分享的歌曲名
-    "likeNum": int 
+    "likes": int 
       }
   }
 }

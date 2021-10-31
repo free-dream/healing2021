@@ -22,6 +22,7 @@ type UsrMsg struct {
 	Nickname  string `json:"nickname"`
 }
 type CovMsg struct {
+	ID       int    `json:"id"`
 	UserId   int    `json:"user_id"`
 	Likes    int    `json:"likes"`
 	Nickname string `json:"nickname"`
@@ -38,7 +39,7 @@ func GetHealingPage(selectionId int) (interface{}, error) {
 		panic(err)
 		return nil, err
 	}*/
-	rows, err := setting.DB.Table("cover").Select("cover.user_id,cover.likes,user.nickname").Joins("left join user on user.id=cover.user_id").Where("cover.selection_id=?", selectionId).Rows()
+	rows, err := setting.DB.Table("cover").Select("cover.user_id,user.nickname,cover.id").Joins("left join user on user.id=cover.user_id").Where("cover.selection_id=?", selectionId).Rows()
 	if err != nil {
 		return nil, err
 	}
@@ -48,6 +49,7 @@ func GetHealingPage(selectionId int) (interface{}, error) {
 	content := make(map[int]interface{})
 	for rows.Next() {
 		err = setting.DB.ScanRows(rows, &obj)
+		setting.DB.Table("praise").Where("cover_id=? and is_liked", obj.ID, 0).Count(&obj.Likes)
 		if err != nil {
 			return nil, err
 		}
@@ -222,6 +224,7 @@ type CoverDetails struct {
 	CreatedAt string `json:"created_at"`
 	Avatar    string `json:"avatar"`
 	File      string `json:"file"`
+	Likes     int    `json:"likes"`
 }
 
 func GetCovers(module string, id int, tag Tags) (interface{}, error) {
@@ -267,11 +270,17 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			rand.Seed(time.Now().Unix())
 			//采用rand.Shuffle，将切片随机化处理后返回
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
+			for i, _ := range resp {
+				setting.DB.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
+			}
 			return resp, err
 		} else {
 			sort.Slice(resp, func(i, j int) bool {
 				return resp[i].CreatedAt > resp[j].CreatedAt
 			})
+			for i, _ := range resp {
+				setting.DB.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
+			}
 			return resp, nil
 		}
 	} else {
@@ -295,11 +304,17 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			rand.Seed(time.Now().Unix())
 			//采用rand.Shuffle，将切片随机化处理后返回
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
+			for i, _ := range resp {
+				setting.DB.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
+			}
 			return resp, err
 		} else {
 			sort.Slice(resp, func(i, j int) bool {
 				return resp[i].CreatedAt > resp[j].CreatedAt
 			})
+			for i, _ := range resp {
+				setting.DB.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
+			}
 			return resp, err
 		}
 
