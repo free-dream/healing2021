@@ -29,7 +29,6 @@ func GetAllrank(ctx *gin.Context) {
 		}
 		respCover := resp.HotResp{
 			Avatar:   cover.Avatar,
-			Likes:    cover.Likes,
 			Nickname: nickname,
 			Posttime: cover.CreatedAt,
 			Songname: cover.SongName,
@@ -55,7 +54,6 @@ func GetDailyrank(ctx *gin.Context) {
 		}
 		respCover := resp.HotResp{
 			Avatar:   cover.Avatar,
-			Likes:    cover.Likes,
 			Nickname: nickname,
 			Posttime: cover.CreatedAt,
 			Songname: cover.SongName,

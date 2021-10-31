@@ -337,7 +337,6 @@ func CreateRecord(module int, id string, file string, uid int) (CoverDetails, er
 	cover.SelectionId = strconv.Itoa(selectionId)
 	cover.UserId = userId
 	cover.SongName = selection.SongName
-	cover.Likes = 0
 	cover.File = file
 	cover.Style = selection.Style
 	cover.Language = selection.Language
