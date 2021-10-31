@@ -65,7 +65,7 @@ func CountMLaudsById(MomentId int) int {
 // 通过动态的 Id 来判断当前用户是否点过赞
 func HaveMLauded(UserId int, MomentId int) int {
 	MysqlDB := setting.MysqlConn()
-	err := MysqlDB.Where("user_id=? and moment_id=? and is_liked=?", UserId, MomentId,1).First(&statements.Praise{}).Error
+	err := MysqlDB.Where("user_id=? and moment_id=? and is_liked=?", UserId, MomentId, 1).First(&statements.Praise{}).Error
 	if gorm.IsRecordNotFoundError(err) {
 		return 0
 	} else if err != nil {
@@ -120,7 +120,13 @@ func GetCommentIdById(CommentId int) (statements.MomentComment, bool) {
 	return Comment, true
 }
 
+<<<<<<< HEAD
 // 通过评论的 Id 来统计评论被点赞数
+=======
+//通过评论的 Id 来统计动态被点赞数
+/*
+todo：删除点赞数后的bug
+>>>>>>> 7a42568cc257a5d14dc8b5d573931282cef8243f
 func CountCLaudsById(CommentId int) int {
 	MysqlDB := setting.MysqlConn()
 	var Lauds int
@@ -131,7 +137,7 @@ func CountCLaudsById(CommentId int) int {
 	}
 	return Lauds
 }
-
+*/
 //通过评论的 Id 来判断当前用户是否点过赞
 func HaveCLauded(UserId int, CommentId int) int {
 	MysqlDB := setting.MysqlConn()

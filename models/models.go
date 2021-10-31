@@ -128,7 +128,6 @@ func CreateFakeMoment(id int, likes int, content string, songName string, select
 		SongName:    songName,
 		SelectionId: selectId,
 		State:       states,
-		LikeNum:     likes,
 	}
 
 	db := setting.MysqlConn()
@@ -151,7 +150,6 @@ func CreateFakeComment(uid int, mid int, comment string, likes int) {
 		UserId:   uid,
 		MomentId: mid,
 		Comment:  comment,
-		LikeNum:  likes,
 	}
 
 	db := setting.MysqlConn()

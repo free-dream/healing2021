@@ -294,7 +294,6 @@ func GetCommentList(ctx *gin.Context) {
 			CommentId: int(comment.ID),
 			Content:   comment.Comment,
 			Lauded:    dao.HaveCLauded(UserId, int(comment.ID)),
-			Lauds:     dao.CountCLaudsById(int(comment.ID)),
 			Creator:   dao.TransformUserInfo(User),
 			CreatedAt: tools.DecodeTime(comment.CreatedAt),
 		}
