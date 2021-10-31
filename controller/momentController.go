@@ -326,5 +326,5 @@ func HotSong(ctx *gin.Context) {
 		hotSongResp = append(hotSongResp, tools.DecodeSong(hotSong))
 	}
 
-	ctx.JSON(200, result)
+	ctx.JSON(200, hotSongResp)
 }
