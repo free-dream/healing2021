@@ -613,7 +613,13 @@ Content-Type: application/json
 
 #### 3.2.1.2 抽奖
 
-GET /healing/lotterybox/draw HTTP 1.1
+POST  /healing/lotterybox/draw HTTP 1.1
+
+```json
+{
+    "tel":string
+}
+```
 
 成功:
 
@@ -623,9 +629,7 @@ Content-Type: application/json
 
 ```json
 {
-    "check":int,	//1或0或2，对应中或者没中或者积分不足一抽，前端设置对应文案
-    "name":string,	//奖品名,default=null
-    "picture":string(url)	//奖品图片，或者没中的话指向一些默认图片url
+    "msg":string	//显示抽奖资格确认
 }
 ```
 
@@ -637,7 +641,7 @@ Content-Type: application/json
 
 `{"message" : "抽奖失败"}`
 
-#### 3.2.1.3 拉取用户中奖记录
+#### 3.2.1.3 拉取用户中奖记录(废案)
 
 GET /healing/lotterybox/prizes
 
@@ -682,9 +686,9 @@ Content-Type: application/json
         "task": {
             "id": integer,	
             "text" : string,	// 任务描述					
-            "target": integer	//目标次数				
+            "max": integer	//上限积分				
         },
-        "counter":integer	//已经进行的次数，交付前端表示进度
+        "counter":integer	//已经获得的积分，交付前端表示进度
     },
     ...
 ]
@@ -698,7 +702,29 @@ Content-Type: application/json
 
 `{"message" : "加载任务列表失败"}`
 
-#### 3.2.1.5 任务更新/领取积分
+#### 3.2.1.5 获取当前用户的积分
+
+GET /healing/lotterybox/points
+
+成功:
+
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+```json
+{
+    "points":integer， //当前用户的积分
+}
+```
+
+失败(例)：
+
+HTTP/1.1 403 Forbidden
+
+Content-Type: application/json
+
+`{"message" : "获取当前用户积分失败"}`
 
 ### 3.2.2 排行榜
 
@@ -721,6 +747,7 @@ Content-Type: application/json
 ```json
 [//列表长度为10
     {
+        “userid”:integer, 	//userid
         "avatar":string,	//用户头像url
         "nickname":string,	//用户名
     }
@@ -910,7 +937,7 @@ Content-Type: application/json
 
 `{"message" : "搜索失败"}`
 
-#### 3.2.4.2 搜索历史 (保留，可选，视前端需求)
+#### 3.2.4.2 搜索历史 (废案)
 
 GET /healing/search/history
 
