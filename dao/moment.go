@@ -24,7 +24,7 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 	} else {
 		// 模糊查找
 		Fuzzy := "%" + Keyword + "%"
-		if err := MysqlDB.Where("content LIKE ? or song_name LIKE ? or states LIKE ?", Fuzzy).Order("created_at DESC").Offset(Page * 10).Limit(10).Find(&AllMoment).Error; err != nil {
+		if err := MysqlDB.Where("content LIKE ? or song_name LIKE ? or state LIKE ?", Fuzzy, Fuzzy, Fuzzy).Order("created_at DESC").Offset(Page * 10).Limit(10).Find(&AllMoment).Error; err != nil {
 			return AllMoment, false
 		}
 	}
