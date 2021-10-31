@@ -121,7 +121,13 @@ func GetCommentIdById(CommentId int) (statements.MomentComment, bool) {
 	return Comment, true
 }
 
+<<<<<<< HEAD
 // 通过评论的 Id 来统计评论被点赞数
+=======
+//通过评论的 Id 来统计动态被点赞数
+/*
+todo：删除点赞数后的bug
+>>>>>>> a0ebc5bc6fa197f267f2084a4187595fbed56fac
 func CountCLaudsById(CommentId int) int {
 	MysqlDB := setting.MysqlConn()
 	var Lauds int
