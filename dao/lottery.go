@@ -11,26 +11,6 @@ var (
 	MysqlDb = db.MysqlConn()
 )
 
-//获取用户的nickname
-func GetUserNickname(userid int) (string, error) {
-	var user tables.User
-	err := MysqlDb.Where("Id = ?", userid).First(&user).Error
-	if err != nil {
-		return "", err
-	}
-	return user.Nickname, nil
-}
-
-//获取用户的avatar
-func GetUserAvatar(userid int) (string, error) {
-	var user tables.User
-	err := MysqlDb.Where("Id = ?", userid).First(&user).Error
-	if err != nil {
-		return "", err
-	}
-	return user.Avatar, nil
-}
-
 //获取所有奖品，不展示奖品归属
 func GetAllLotteries() ([]tables.Lottery, error) {
 	var lotteries []tables.Lottery
@@ -51,7 +31,10 @@ func GetPrizesById(userid int) ([]tables.Lottery, error) {
 	return prizes, nil
 }
 
-//我的回合，抽卡！
+//抽奖确认
+func DrawCheck(userid int) {}
+
+//我的回合，抽卡！#废案#
 func Draw(id int) (tables.Lottery, error) {
 	var target tables.Lottery
 	err := MysqlDb.Where("Id = ?", id).Find(target).Error

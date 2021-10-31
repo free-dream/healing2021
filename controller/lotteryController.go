@@ -47,8 +47,8 @@ func methods(possibilities ...float64) int {
 /*
 索引时按概率大小排序,小--大
 先在redis里找，没有再索引数据库
-GET /healing/lotterybox/lotteries
 */
+//GET /healing/lotterybox/lotteries
 func GetLotteries(ctx *gin.Context) {
 	//从数据库里调，redis爆炸的备选方案
 	lotteries := make([]resp.LotteryResp, 10)
@@ -67,9 +67,20 @@ func GetLotteries(ctx *gin.Context) {
 	ctx.JSON(200, lotteries)
 }
 
-//GET /healing/lotterybox/draw
-//先写mysql的版本,防爆,暂时没有redis
+type draws struct {
+	tel string `json:"tel"`
+}
+
+//POST /healing/lotterybox/draw
 func Draw(ctx *gin.Context) {
+	ret := new(draws)
+	userid := sessions.Default(ctx).Get("user_id").(int)
+	ctx.ShouldBindJSON(ret)
+
+}
+
+//线上抽奖，废案
+func draw(ctx *gin.Context) {
 	//返回格式
 	drawResp := resp.DrawResp{}
 	//获取userid和points
@@ -142,9 +153,9 @@ func GetTasktable(ctx *gin.Context) {
 		}
 		//生成任务返回
 		taskresp := resp.TaskResp{
-			ID:     taskid,
-			Target: task.Target,
-			Text:   task.Text,
+			ID:   taskid,
+			Max:  task.Max,
+			Text: task.Text,
 		}
 		//生成任务返回表
 		tasktableresp := resp.TaskTableResp{
