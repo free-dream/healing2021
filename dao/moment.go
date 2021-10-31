@@ -80,7 +80,7 @@ func CountCommentsById(MomentId int) int {
 	var Tot = 0
 
 	// 用聚类函数来操作
-	err := MysqlDB.Model(&statements.MomentComment{}).Where("moment_id=?", MomentId).Count(&Tot).Error
+	err := MysqlDB.Model(&statements.MomentComment{}).Where("moment_id=? and is_deleted=?", MomentId, 0).Count(&Tot).Error
 	fmt.Println(err)
 	if err != nil {
 		return -1
@@ -102,7 +102,7 @@ func GetCommentsByMomentId(MomentId int) ([]statements.MomentComment, bool) {
 	MysqlDB := setting.MysqlConn()
 	var CommentList []statements.MomentComment
 
-	err := MysqlDB.Where("moment_id=?", MomentId).Find(&CommentList).Error
+	err := MysqlDB.Where("moment_id=? and is_deleted=?", MomentId, 0).Find(&CommentList).Error
 	if err != nil {
 		return CommentList, false
 	}
