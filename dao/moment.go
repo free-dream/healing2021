@@ -31,7 +31,7 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 	return AllMoment, true
 }
 
-//创建新动态
+// 创建新动态
 func CreateMoment(Moment statements.Moment) bool {
 	MysqlDB := setting.MysqlConn()
 	if err := MysqlDB.Create(&Moment).Error; err != nil {
@@ -40,7 +40,7 @@ func CreateMoment(Moment statements.Moment) bool {
 	return true
 }
 
-//用动态 Id 找动态的记录
+// 用动态 Id 找动态的记录
 func GetMomentById(MomentId int) (statements.Moment, bool) {
 	MysqlDB := setting.MysqlConn()
 	Moment := statements.Moment{}
@@ -50,7 +50,7 @@ func GetMomentById(MomentId int) (statements.Moment, bool) {
 	return Moment, true
 }
 
-//通过动态的 Id 来统计动态被点赞数
+// 通过动态的 Id 来统计动态被点赞数
 func CountMLaudsById(MomentId int) int {
 	MysqlDB := setting.MysqlConn()
 	var Lauds int
@@ -62,7 +62,7 @@ func CountMLaudsById(MomentId int) int {
 	return Lauds
 }
 
-//通过动态的 Id 来判断当前用户是否点过赞
+// 通过动态的 Id 来判断当前用户是否点过赞
 func HaveMLauded(UserId int, MomentId int) int {
 	MysqlDB := setting.MysqlConn()
 	err := MysqlDB.Where("user_id=? and moment_id=? and is_liked=?", UserId, MomentId,1).First(&statements.Praise{}).Error
@@ -74,7 +74,7 @@ func HaveMLauded(UserId int, MomentId int) int {
 	return 1
 }
 
-//通过动态的 Id 来统计评论总数
+// 通过动态的 Id 来统计评论总数
 func CountCommentsById(MomentId int) int {
 	MysqlDB := setting.MysqlConn()
 	var Tot = 0
@@ -88,7 +88,7 @@ func CountCommentsById(MomentId int) int {
 	return Tot
 }
 
-//创建新评论
+// 创建新评论
 func CreateComment(Comment statements.MomentComment) bool {
 	MysqlDB := setting.MysqlConn()
 	if err := MysqlDB.Create(&Comment).Error; err != nil {
@@ -97,7 +97,7 @@ func CreateComment(Comment statements.MomentComment) bool {
 	return true
 }
 
-//拉取一个动态下的评论列表
+// 拉取一个动态下的评论列表
 func GetCommentsByMomentId(MomentId int) ([]statements.MomentComment, bool) {
 	MysqlDB := setting.MysqlConn()
 	var CommentList []statements.MomentComment
@@ -109,7 +109,7 @@ func GetCommentsByMomentId(MomentId int) ([]statements.MomentComment, bool) {
 	return CommentList, true
 }
 
-//用评论 Id 找评论
+// 用评论 Id 找评论
 func GetCommentIdById(CommentId int) (statements.MomentComment, bool) {
 	MysqlDB := setting.MysqlConn()
 	var Comment statements.MomentComment
@@ -120,13 +120,16 @@ func GetCommentIdById(CommentId int) (statements.MomentComment, bool) {
 	return Comment, true
 }
 
-//通过评论的 Id 来统计动态被点赞数
+// 通过评论的 Id 来统计评论被点赞数
 func CountCLaudsById(CommentId int) int {
-	Comment, ok := GetCommentIdById(CommentId)
-	if !ok {
-		return -1
+	MysqlDB := setting.MysqlConn()
+	var Lauds int
+	err := MysqlDB.Model(&statements.Praise{}).Where("is_liked=? and moment_comment_id=?", 1, CommentId).Count(&Lauds).Error
+	if err != nil {
+		fmt.Println(err)
+		return 0
 	}
-	return Comment.LikeNum
+	return Lauds
 }
 
 //通过评论的 Id 来判断当前用户是否点过赞

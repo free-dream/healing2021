@@ -147,7 +147,7 @@ func PostMoment(ctx *gin.Context) {
 	for _, state := range NewMoment.Status {
 		sandwich.PutInStates(state)
 	}
-	if NewMoment.HaveSelection == 1 {
+	if NewMoment.HaveSelection == 1 && NewMoment.IsNormal == 0{
 		sandwich.PutInHotSong(tools.EncodeSong(tools.HotSong{
 			SongName: param.SongName,
 			Language: param.Language,
@@ -161,7 +161,6 @@ func PostMoment(ctx *gin.Context) {
 		SongName:    NewMoment.SongName,
 		UserId:      param.UserId,
 		State:       tools.EncodeStrArr(NewMoment.Status),
-		LikeNum:     0,
 		SelectionId: selectionId,
 	}
 
