@@ -73,7 +73,18 @@ func Draw(ctx *gin.Context) {
 	ctx.JSON(200, msg)
 }
 
-//同理，先写mysql版本的防爆
+//未注册
+//GET /healing/lotterybox/points
+func GetUserPoints(ctx *gin.Context) {
+	points := resp.PointsResp{}
+	userid := sessions.Default(ctx).Get("user_id").(int)
+	data, err := dao.GetUserPoints(userid)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+	}
+	points.Points = data
+	ctx.JSON(200, points)
+}
 
 //GET /healing/lotterybox/tasktable
 func GetTasktable(ctx *gin.Context) {
@@ -102,7 +113,6 @@ func GetTasktable(ctx *gin.Context) {
 		}
 		//生成任务返回表
 		tasktableresp := resp.TaskTableResp{
-
 			Counter: table.Counter,
 			Task:    taskresp,
 		}

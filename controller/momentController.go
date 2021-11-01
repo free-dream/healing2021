@@ -9,6 +9,7 @@ import (
 	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"git.100steps.top/100steps/healing2021_be/sandwich"
+	"git.100steps.top/100steps/healing2021_be/task"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -85,6 +86,7 @@ func GetMomentList(ctx *gin.Context) {
 }
 
 // 发布动态
+// @@@@@@@任务模块已植入此接口函数@@@@@@@
 type MomentBase struct {
 	Content string   `json:"content"`
 	Status  []string `json:"status"`
@@ -107,8 +109,10 @@ func PostMoment(ctx *gin.Context) {
 	var selectionId int
 
 	param := statements.Selection{}
-	param.UserId = sessions.Default(ctx).Get("user_id").(int)
-
+	//把userid拿出来用于任务---voloroloq 2021.11.1
+	userid := sessions.Default(ctx).Get("user_id").(int)
+	param.UserId = userid
+	//
 	// 跳转点歌(修改和使用了接口3.3的点歌，相应做修改时这边要同步操作)
 	if NewMoment.HaveSelection == 1 {
 		if NewMoment.IsNormal == 0 { // 经典点歌
@@ -140,6 +144,9 @@ func PostMoment(ctx *gin.Context) {
 			selectionId = resp.ID
 		} else { // 出现错误
 			ctx.JSON(403, e.ErrMsgResponse{Message: "非法参数"})
+			//为了保证后面任务在接口使用时顺利进行---voloroloq 2021.11.1
+			return
+			//
 		}
 	}
 
@@ -147,7 +154,7 @@ func PostMoment(ctx *gin.Context) {
 	for _, state := range NewMoment.Status {
 		sandwich.PutInStates(state)
 	}
-	if NewMoment.HaveSelection == 1 && NewMoment.IsNormal == 0{
+	if NewMoment.HaveSelection == 1 && NewMoment.IsNormal == 0 {
 		sandwich.PutInHotSong(tools.EncodeSong(tools.HotSong{
 			SongName: param.SongName,
 			Language: param.Language,
@@ -169,7 +176,10 @@ func PostMoment(ctx *gin.Context) {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入失败"})
 		return
 	}
-
+	//任务模块植入 2021.11.1
+	thistask := task.HT
+	thistask.AddRecord(userid)
+	//
 	ctx.JSON(200, e.ErrMsgResponse{Message: "动态发布成功"})
 }
 

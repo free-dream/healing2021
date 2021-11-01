@@ -9,7 +9,6 @@ type TaskResp struct {
 
 //抽奖返回
 type TaskTableResp struct {
-	Check   int `json:"check"`
 	Task    TaskResp
 	Counter int `json:"counter"`
 }

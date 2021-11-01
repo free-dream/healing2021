@@ -24,6 +24,11 @@ type PrizesResp struct {
 	Picture string `json:"string"`
 }
 
+//用户积分
+type PointsResp struct {
+	Points int `json:"points"`
+}
+
 // //在线抽奖返回，废案
 // type DrawResp struct {
 // 	Check   int    `json:"check"`

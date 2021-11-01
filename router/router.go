@@ -90,8 +90,8 @@ func SetupRouter() *gin.Engine {
 	api.GET("/healing/bulletin", controller.AdsPlayer)
 	api.GET("/healing/selections/list", controller.SelectionFetcher)
 	api.GET("/healing/covers/list", controller.CoverFetcher)
-	api.POST("/healing/cover", controller.Recorder)
-	api.POST("/healing/selection", controller.Selector)
+	api.POST("/healing/cover", controller.Recorder)     //植入任务 2021.11.1
+	api.POST("/healing/selection", controller.Selector) //植入任务 2021.11.1
 	//经典治愈——抽奖箱
 	// api.GET("healing/lotterybox/prizes", controller.GetPrizes)
 	api.GET("/healing/lotterybox/draw", controller.Draw)
@@ -106,7 +106,7 @@ func SetupRouter() *gin.Engine {
 	api.POST("/healing/covers/jump", controller.JumpSongs)
 	// 广场 模块
 	api.GET("/dynamics/list/:method", controller.GetMomentList)
-	api.POST("/dynamics/send", controller.PostMoment)
+	api.POST("/dynamics/send", controller.PostMoment) //植入任务 2021.11.1
 	api.GET("/dynamics/detail/:id", controller.GetMomentDetail)
 	api.POST("/dynamics/comment", controller.PostComment)
 	api.GET("/dynamics/comment/:id", controller.GetCommentList)

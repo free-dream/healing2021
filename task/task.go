@@ -7,10 +7,26 @@ import (
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
 
-//具体任务参数
-//本次任务目前都是一次性的，没有计数要求
+//本次任务目前都是一次性的，没有计数要求 2021.11.1
 
-//常量：积分和积分上限要求
+//任务注册和初始化
+var (
+	ST SelectionTask
+	MT MomentTask
+	HT HealingTask
+)
+
+func init() {
+	ST = SelectionTask{
+		TID: STID,
+	}
+	MT = MomentTask{
+		TID: MTID,
+	}
+	HT = HealingTask{
+		TID: HTID,
+	}
+}
 
 //理论上任务有需求都可以在此处扩展,需要实现接口里的主要方法
 //一次性任务
