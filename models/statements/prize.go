@@ -2,7 +2,6 @@ package statements
 
 import (
 	"fmt"
-	"time"
 
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"github.com/jinzhu/gorm"
@@ -10,9 +9,9 @@ import (
 
 type Prize struct {
 	gorm.Model
-	UserId int       `gorm:"default:0;index" json:"user_id"`
-	Prize  int       `gorm:"default:0" json:"prize"`
-	Date   time.Time `gorm:"default:null" json:"date"`
+	UserId int    `gorm:"default:0;index" json:"user_id"`
+	Tel    string `gorm:"default:0" json:"tel"`
+	// Date   time.Time `gorm:"default:null" json:"date"`
 }
 
 func PrizeInit() {

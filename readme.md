@@ -679,10 +679,11 @@ HTTP/1.1 200 OK
 
 Content-Type: application/json
 
+**前端的任务上限确认由前端自行完成,只要用max和counter进行比较，若max<=counter,则任务已完成**
+
 ```json
 [
     {
-        "check": integer,	//0未完成，1已完成	
         "task": {
             "id": integer,	
             "text" : string,	// 任务描述					

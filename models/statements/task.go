@@ -2,14 +2,15 @@ package statements
 
 import (
 	"fmt"
+
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"github.com/jinzhu/gorm"
 )
 
 type Task struct {
 	gorm.Model
-	Text   string `gorm:"default:''"`
-	Target int    `gorm:"default:0"`
+	Text string `gorm:"default:''"`
+	Max  int    `gorm:"default:0"`
 }
 
 func TaskInit() {

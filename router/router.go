@@ -2,11 +2,12 @@ package router
 
 import (
 	"encoding/gob"
-	"git.100steps.top/100steps/ginwechat"
 	"io"
 	"log"
 	"os"
 	"time"
+
+	"git.100steps.top/100steps/ginwechat"
 
 	"git.100steps.top/100steps/healing2021_be/controller"
 	"git.100steps.top/100steps/healing2021_be/controller/middleware"
@@ -65,7 +66,7 @@ func SetupRouter() *gin.Engine {
 
 	if tools.IsDebug() {
 		r.POST("/user", controller.FakeLogin)
-		r.POST("/userEasy", controller.FakeLoinEasy)
+		r.GET("/userEasy", controller.FakeLoginEasy)
 	}
 	r.Use(middleware.IdentityCheck())
 	// 业务路由
@@ -89,10 +90,10 @@ func SetupRouter() *gin.Engine {
 	api.GET("/healing/bulletin", controller.AdsPlayer)
 	api.GET("/healing/selections/list", controller.SelectionFetcher)
 	api.GET("/healing/covers/list", controller.CoverFetcher)
-	api.POST("/healing/cover", controller.Recorder)
-	api.POST("/healing/selection", controller.Selector)
+	api.POST("/healing/cover", controller.Recorder)     //植入任务 2021.11.1
+	api.POST("/healing/selection", controller.Selector) //植入任务 2021.11.1
 	//经典治愈——抽奖箱
-	api.GET("healing/lotterybox/prizes", controller.GetPrizes)
+	// api.GET("healing/lotterybox/prizes", controller.GetPrizes)
 	api.GET("/healing/lotterybox/draw", controller.Draw)
 	api.GET("/healing/lotterybox/lotteries", controller.GetLotteries)
 	api.GET("/healing/lotterybox/tasktable", controller.GetTasktable)
@@ -105,7 +106,7 @@ func SetupRouter() *gin.Engine {
 	api.POST("/healing/covers/jump", controller.JumpSongs)
 	// 广场 模块
 	api.GET("/dynamics/list/:method", controller.GetMomentList)
-	api.POST("/dynamics/send", controller.PostMoment)
+	api.POST("/dynamics/send", controller.PostMoment) //植入任务 2021.11.1
 	api.GET("/dynamics/detail/:id", controller.GetMomentDetail)
 	api.POST("/dynamics/comment", controller.PostComment)
 	api.GET("/dynamics/comment/:id", controller.GetCommentList)
