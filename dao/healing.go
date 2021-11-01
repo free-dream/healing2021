@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"git.100steps.top/100steps/healing2021_be/models/statements"
-	"git.100steps.top/100steps/healing2021_be/pkg/setting"
-	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"math/rand"
 	"sort"
 	"strconv"
 	"time"
+
+	"git.100steps.top/100steps/healing2021_be/models/statements"
+	"git.100steps.top/100steps/healing2021_be/pkg/setting"
+	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 )
 
 type UsrMsg struct {

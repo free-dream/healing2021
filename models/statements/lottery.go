@@ -9,7 +9,6 @@ import (
 
 type Lottery struct {
 	gorm.Model
-	UserId      int     `gorm:"default:-1;index"`
 	Name        string  `gorm:"default:''" json:"name"`
 	Picture     string  `gorm:"default:''" json:"picture"`
 	Possibility float64 `gorm:"default:0" json:"possibility"`

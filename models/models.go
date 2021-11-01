@@ -1,10 +1,11 @@
 package models
 
 import (
+	"strconv"
+
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
-	"strconv"
 )
 
 func TableInit() {
@@ -86,15 +87,35 @@ func AddFakeSelections() {
 		CreateFakeSelection(index, "测试歌曲")
 	}
 
-	// //目前目录下的假用户有15个,每个用户生成15条点歌需求
-	// for i := 0; i < 15; i++ {
-	// 	for j := 0; j < 15; j++ {
-	// 		CreateDummySelections(i)
-	// 	}
-	// }
+	//目前目录下的假用户有15个,每个用户生成15条点歌需求
+	for i := 1; i < 15; i++ {
+		for j := 0; j < 15; j++ {
+			CreateDummySelections(i)
+		}
+	}
 }
 
-//假翻唱
+//假翻唱,随机取
+func CreateDummyCovers() {
+	//随机选20首歌(可复选)生成10个翻唱，用户随机取
+	for i := 1; i < 20; i++ {
+		rand1 := tools.GetRandomNumbers(215)
+		if rand1 == 0 {
+			rand1 = 1
+		}
+		rand2 := tools.GetRandomNumbers(14)
+		if rand2 == 0 {
+			rand2 = 1
+		}
+
+		temp, err := dummyCovers(rand2, rand1, -1)
+		if err != nil {
+			panic(err)
+		}
+		db := setting.MysqlConn()
+		db.Create(temp)
+	}
+}
 func CreateFakeCovers(uid int, name string, cid int, classicId int, module int) {
 	cover := statements.Cover{
 		UserId:      uid,
@@ -119,6 +140,7 @@ func AddFakeCovers() {
 		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, index, 2)
 		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, index, 2)
 	}
+	CreateDummyCovers()
 }
 
 //假动态
@@ -194,10 +216,10 @@ func AddFakeClassic() {
 
 // 造点测试用的假数据
 func FakeData() {
-	AddFakeCovers()
 	AddFakeUsers()
 	AddFakeMoments()
 	AddFakeComments()
 	AddFakeSelections()
+	AddFakeCovers()
 	AddFakeClassic()
 }
