@@ -52,34 +52,28 @@ func Draw(ctx *gin.Context) {
 	ret := new(draws)
 	userid := sessions.Default(ctx).Get("user_id").(int)
 	ctx.ShouldBindJSON(ret)
-	check := dao.DrawCheck(userid)
-	if check == 0 {
-		msg := resp.DrawResp{
-			Msg: resp.Msg0,
-		}
-		ctx.JSON(200, msg)
-	}
-}
-
-//GET /healing/lotterybox/prizes
-//同理，先写mysql版本的防爆
-func GetPrizes(ctx *gin.Context) {
-	prizes := make([]resp.PrizesResp, 10)
-	//获取userid
-	userid := sessions.Default(ctx).Get("user_id").(int)
-	//获取中奖数据
-	raws, err := dao.GetPrizesById(userid)
+	check, err := dao.DrawCheck(userid)
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 	}
-	for _, prize := range raws {
-		res := new(resp.PrizesResp)
-		res.Name = prize.Name
-		res.Picture = prize.Picture
-		prizes = append(prizes, *res)
+	var msg resp.DrawResp
+	if check == 0 {
+		msg = resp.DrawResp{
+			Msg: resp.Msg0,
+		}
+	} else if check == 1 {
+		msg = resp.DrawResp{
+			Msg: resp.Msg1,
+		}
+	} else {
+		msg = resp.DrawResp{
+			Msg: resp.Msg2,
+		}
 	}
-	ctx.JSON(200, prizes)
+	ctx.JSON(200, msg)
 }
+
+//同理，先写mysql版本的防爆
 
 //GET /healing/lotterybox/tasktable
 func GetTasktable(ctx *gin.Context) {
@@ -117,6 +111,25 @@ func GetTasktable(ctx *gin.Context) {
 	}
 	ctx.JSON(200, respTasks)
 }
+
+// //GET /healing/lotterybox/prizes
+// func GetPrizes(ctx *gin.Context) {
+// 	prizes := make([]resp.PrizesResp, 10)
+// 	//获取userid
+// 	userid := sessions.Default(ctx).Get("user_id").(int)
+// 	//获取中奖数据
+// 	raws, err := dao.GetPrizesById(userid)
+// 	if err != nil {
+// 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+// 	}
+// 	for _, prize := range raws {
+// 		res := new(resp.PrizesResp)
+// 		res.Name = prize.Name
+// 		res.Picture = prize.Picture
+// 		prizes = append(prizes, *res)
+// 	}
+// 	ctx.JSON(200, prizes)
+// }
 
 // //抽奖算法，落到最后分区直接没中
 // func methods(possibilities ...float64) int {

@@ -2,11 +2,12 @@ package router
 
 import (
 	"encoding/gob"
-	"git.100steps.top/100steps/ginwechat"
 	"io"
 	"log"
 	"os"
 	"time"
+
+	"git.100steps.top/100steps/ginwechat"
 
 	"git.100steps.top/100steps/healing2021_be/controller"
 	"git.100steps.top/100steps/healing2021_be/controller/middleware"
@@ -92,7 +93,7 @@ func SetupRouter() *gin.Engine {
 	api.POST("/healing/cover", controller.Recorder)
 	api.POST("/healing/selection", controller.Selector)
 	//经典治愈——抽奖箱
-	api.GET("healing/lotterybox/prizes", controller.GetPrizes)
+	// api.GET("healing/lotterybox/prizes", controller.GetPrizes)
 	api.GET("/healing/lotterybox/draw", controller.Draw)
 	api.GET("/healing/lotterybox/lotteries", controller.GetLotteries)
 	api.GET("/healing/lotterybox/tasktable", controller.GetTasktable)

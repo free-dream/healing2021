@@ -8,14 +8,14 @@ const (
 
 //动态关联任务
 type MomentTask struct {
-	field string
+	TID int
 }
 
 //有上限的数据
 func (s *MomentTask) CheckMax(userid int) bool {
-	target := GetCacheTask(userid, s.field)
+	target := GetCacheTask(userid, s.TID)
 	if target < 0 {
-		if err := CacheTask(userid, s.field, 0); err != nil {
+		if err := CacheTask(userid, s.TID, 0); err != nil {
 			return false
 		}
 	} else if target >= int(MOMENTMAX) {
@@ -27,8 +27,8 @@ func (s *MomentTask) CheckMax(userid int) bool {
 //更新任务缓存和数据
 func (s *MomentTask) AddRecord(userid int) bool {
 	if s.CheckMax(userid) {
-		if ChangePoints(MOMENT, userid, s.field) {
-			err := UpdateTask(userid, s.field, 1)
+		if ChangePoints(MOMENT, userid, s.TID) {
+			err := UpdateTask(userid, s.TID, 1)
 			if err == nil {
 				return true
 			}
