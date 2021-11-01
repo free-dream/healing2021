@@ -3,6 +3,7 @@ package task
 const (
 	MOMENT    float32 = 1.0
 	MOMENTMAX float32 = 8.0
+	MFIELD            = "moment"
 )
 
 //动态关联任务
@@ -26,7 +27,7 @@ func (s *MomentTask) CheckMax(userid int) bool {
 //更新任务缓存和数据
 func (s *MomentTask) AddRecord(userid int) bool {
 	if s.CheckMax(userid) {
-		if ChangePoints(MOMENT, userid) {
+		if ChangePoints(MOMENT, userid, s.field) {
 			err := UpdateTask(userid, s.field, 1)
 			if err == nil {
 				return true

@@ -8,11 +8,11 @@ import (
 )
 
 //具体任务参数
-//本次任务目前开来都是一次性的，没有计数要求
+//本次任务目前都是一次性的，没有计数要求
 
 //常量：积分和积分上限要求
 
-//原则上任务有需求都可以在此处扩展,需要实现接口里的主要方法
+//理论上任务有需求都可以在此处扩展,需要实现接口里的主要方法
 //一次性任务
 type MetaOTask interface {
 	AddRecord(int) bool
@@ -57,12 +57,14 @@ func GetCacheTask(userid int, field string) int {
 }
 
 //修改用户点数,任务特供
-func ChangePoints(point float32, userid int) bool {
+//同时更新总点数和用户点数
+func ChangePoints(point float32, userid int, field string) bool {
 	redisDb := setting.RedisConn()
 	mysqlDb := setting.MysqlConn()
 
 	tempkey := strconv.Itoa(userid) + "/point"
-	temp := redisDb.HIncrBy(tempkey, "point", int64(point)).Val()
+	temp := redisDb.HIncrBy(tempkey, "points", int64(point)).Val()
+	// tempf := redisDb.HIncrBy(tempkey, field, int64(point)).Val()
 
 	//单独拉出一个协程更新数据库以保证数据一致性
 	ch := make(chan int)

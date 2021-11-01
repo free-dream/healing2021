@@ -11,8 +11,8 @@ type TaskTable struct {
 	gorm.Model
 	TaskId  int `gorm:"default:0;index"`
 	UserId  int `gorm:"default:0;index"`
-	Check   int `gorm:"default:0"`
-	Counter int `gorm:"default:0"`
+	Check   int `gorm:"default:0"` //是否完成
+	Counter int `gorm:"default:0"` //已获得积分
 }
 
 func TaskTableInit() {
