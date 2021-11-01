@@ -143,6 +143,11 @@ func AddFakeCovers() {
 	CreateDummyCovers()
 }
 
+//向记录中增加奖品记录,奖品记录为真
+func CreateLottery() {
+
+}
+
 //假动态
 func CreateFakeMoment(id int, likes int, content string, songName string, selectId int, states string, picture string) {
 	Moment := statements.Moment{

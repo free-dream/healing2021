@@ -51,7 +51,18 @@ type draws struct {
 func Draw(ctx *gin.Context) {
 	ret := new(draws)
 	userid := sessions.Default(ctx).Get("user_id").(int)
-	ctx.ShouldBindJSON(ret)
+	err := ctx.ShouldBindJSON(ret)
+	if err != nil {
+		ctx.JSON(e.INVALID_PARAMS, e.ErrMsgResponse{Message: e.GetMsg(400)})
+		return
+	}
+	dao.CreatePrize(userid, ret.Tel)
+	ctx.JSON(200, e.ErrMsgResponse{Message: e.GetMsg(200)})
+}
+
+//GET /healing/lotterybox/drawcheck
+func DrawCheck(ctx *gin.Context) {
+	userid := sessions.Default(ctx).Get("user_id").(int)
 	check, err := dao.DrawCheck(userid)
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})

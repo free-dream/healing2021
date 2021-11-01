@@ -90,6 +90,16 @@ func DrawCheck(userid int) (int, error) {
 	return 2, nil
 }
 
+//为prize表增加一条记录，用于分配奖品
+func CreatePrize(userid int, tel string) error {
+	prize := tables.Prize{
+		UserId: userid,
+		Tel:    tel,
+	}
+	err := MysqlDb.Create(&prize).Error
+	return err
+}
+
 // //更新奖品归属
 // func UpdateLotterybox(lotteryid int, userid int) (bool, error) {
 // 	var target tables.Lottery
