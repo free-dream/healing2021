@@ -108,7 +108,7 @@ func GetTasktable(ctx *gin.Context) {
 		}
 		//生成任务返回表
 		tasktableresp := resp.TaskTableResp{
-			Check:   table.Check,
+
 			Counter: table.Counter,
 			Task:    taskresp,
 		}

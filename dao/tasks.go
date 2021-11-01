@@ -7,11 +7,11 @@ import (
 )
 
 //基于给定数据更新task_table
-func UpdateTasks(userid int, taskid int, process int, check int) {
+func UpdateTasks(userid int, taskid int, process int) {
 	mysqlDb := db.MysqlConn()
 	var tasktable tables.TaskTable
 	mysqlDb.Model(&tasktable).Where("UserId = ? AND TaskId = ?", userid, taskid).UpdateColumn("Counter", gorm.Expr("IsLiked + ?", process))
-	mysqlDb.Model(&tasktable).Where("UserId = ? AND TaskId = ?", userid, taskid).UpdateColumn("Check", check)
+	// mysqlDb.Model(&tasktable).Where("UserId = ? AND TaskId = ?", userid, taskid).UpdateColumn("Check", check)
 }
 
 //提取task_table
