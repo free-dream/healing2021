@@ -3,9 +3,10 @@ package task
 const (
 	MOOD    float32 = 1.0
 	MOODMAX float32 = 5.0
+	MOFIELD         = "mood"
 )
 
-//分享心情任务,待定
+//分享心情任务,产品暂时没有需求，挂起
 type MoodTask struct {
 	field string
 }
@@ -26,7 +27,7 @@ func (s *MoodTask) CheckMax(userid int) bool {
 //更新任务缓存和数据
 func (s *MoodTask) AddRecord(userid int) bool {
 	if s.CheckMax(userid) {
-		if ChangePoints(MOOD, userid) {
+		if ChangePoints(MOOD, userid, s.field) {
 			err := UpdateTask(userid, s.field, 1)
 			if err == nil {
 				return true

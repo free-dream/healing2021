@@ -2,7 +2,8 @@ package task
 
 const (
 	SELECTION    float32 = 1.0
-	SELECTIONMAX float32 = 10.0
+	SELECTIONMAX float32 = 8.0
+	SEFIELD              = "selection"
 )
 
 //点歌关联任务
@@ -26,7 +27,7 @@ func (s *SelectionTask) CheckMax(userid int) bool {
 //更新任务缓存和数据
 func (s *SelectionTask) AddRecord(userid int) bool {
 	if s.CheckMax(userid) {
-		if ChangePoints(SELECTION, userid) {
+		if ChangePoints(SELECTION, userid, s.field) {
 			err := UpdateTask(userid, s.field, 1)
 			if err == nil {
 				return true

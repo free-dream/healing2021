@@ -52,18 +52,8 @@ func GetPrizesById(userid int) ([]tables.Lottery, error) {
 }
 
 //抽奖确认
-func DrawCheck(userid int) bool {
-	return true
-}
-
-//我的回合，抽卡！#废案#
-func Draw(id int) (tables.Lottery, error) {
-	var target tables.Lottery
-	err := MysqlDb.Where("Id = ?", id).Find(target).Error
-	if err != nil {
-		return target, err
-	}
-	return target, nil
+func DrawCheck(userid int) int {
+	return 0
 }
 
 //更新奖品归属
@@ -77,3 +67,13 @@ func UpdateLotterybox(lotteryid int, userid int) (bool, error) {
 	MysqlDb.Save(target)
 	return true, nil
 }
+
+// 线上抽奖 ，临时废案#废案#
+// func Draw(id int) (tables.Lottery, error) {
+// 	var target tables.Lottery
+// 	err := MysqlDb.Where("Id = ?", id).Find(target).Error
+// 	if err != nil {
+// 		return target, err
+// 	}
+// 	return target, nil
+// }
