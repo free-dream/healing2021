@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"time"
 
-    "git.100steps.top/100steps/healing2021_be/pkg/setting"
-    "github.com/jinzhu/gorm"
+	"git.100steps.top/100steps/healing2021_be/pkg/setting"
+	"github.com/jinzhu/gorm"
 )
 
 type Sysmsg struct {
-    Uid     uint    `gorm:not null`
-    Type    int    `gorm:not null` 
-    ContentId   uint  `gorm:not null`
-    Song    string  `gorm:not null`
-    Time    time.Time
-    IsSend  int
-    gorm.Model
+	Uid       uint   `gorm:not null`
+	Type      int    `gorm:not null`
+	ContentId uint   `gorm:not null`
+	Song      string `gorm:not null`
+	Time      time.Time
+	IsSend    int
+	gorm.Model
 }
 
 func SysmsgInit() {

@@ -19,7 +19,7 @@ func EncodeStrArr(input []string) string {
 	ret := ""
 	max := len(input)
 
-	if max>=1 {
+	if max >= 1 {
 		ret += input[0]
 	}
 	for i := 1; i < max; i++ {

@@ -3,18 +3,18 @@ package statements
 import (
 	"fmt"
 
-    "git.100steps.top/100steps/healing2021_be/pkg/setting"
-    "github.com/jinzhu/gorm"
+	"git.100steps.top/100steps/healing2021_be/pkg/setting"
+	"github.com/jinzhu/gorm"
 )
 
 type Usrmsg struct {
-    FromUser uint `gorm:not null`
-    ToUser uint `gorm:not null`
-    Url string 
-    Song string
-    Message string
-    gorm.Model
-    IsSend int
+	FromUser uint `gorm:not null`
+	ToUser   uint `gorm:not null`
+	Url      string
+	Song     string
+	Message  string
+	gorm.Model
+	IsSend int
 }
 
 func UsrmsgInit() {

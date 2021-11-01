@@ -55,28 +55,24 @@ func GetMomentList(ctx *gin.Context) {
 			return
 		}
 
-		// 如有点歌，查表判断点歌类型
-		module := 0
-		if OneMoment.SelectionId != 0 {
-			module, err = dao.GetModuleBySelectionId(OneMoment.SelectionId)
-			if err != nil {
-				ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
-				return
-			}
+		// 如有点歌，查表判断点歌类型 && 根据模式返回对应的 song_id
+		module, songId, err := dao.DiffMoudle(OneMoment.SelectionId, OneMoment.SongName)
+		if err != nil {
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
 		}
 
 		TmpMoment := respModel.MomentResp{
-			Content:     OneMoment.Content,
-			DynamicsId:  int(OneMoment.ID),
-			CreatedAt:   tools.DecodeTime(OneMoment.CreatedAt),
-			Song:        OneMoment.SongName,
-			SelectionId: OneMoment.SelectionId,
-			Module:      module,
-			Lauds:       dao.CountMLaudsById(int(OneMoment.ID)),
-			Lauded:      dao.HaveMLauded(UserId, int(OneMoment.ID)),
-			Comments:    dao.CountCommentsById(int(OneMoment.ID)),
-			Status:      tools.DecodeStrArr(OneMoment.State),
-			Creator:     dao.TransformUserInfo(User),
+			Content:    OneMoment.Content,
+			DynamicsId: int(OneMoment.ID),
+			CreatedAt:  tools.DecodeTime(OneMoment.CreatedAt),
+			Song:       OneMoment.SongName,
+			SongId:     songId,
+			Module:     module,
+			Lauds:      dao.CountMLaudsById(int(OneMoment.ID)),
+			Lauded:     dao.HaveMLauded(UserId, int(OneMoment.ID)),
+			Comments:   dao.CountCommentsById(int(OneMoment.ID)),
+			Status:     tools.DecodeStrArr(OneMoment.State),
+			Creator:    dao.TransformUserInfo(User),
 		}
 		MomentsResp = append(MomentsResp, TmpMoment)
 	}
@@ -147,7 +143,7 @@ func PostMoment(ctx *gin.Context) {
 	for _, state := range NewMoment.Status {
 		sandwich.PutInStates(state)
 	}
-	if NewMoment.HaveSelection == 1 && NewMoment.IsNormal == 0{
+	if NewMoment.HaveSelection == 1 && NewMoment.IsNormal == 0 {
 		sandwich.PutInHotSong(tools.EncodeSong(tools.HotSong{
 			SongName: param.SongName,
 			Language: param.Language,
@@ -202,27 +198,24 @@ func GetMomentDetail(ctx *gin.Context) {
 		return
 	}
 
-	module := 0
-	if Moment.SelectionId != 0 {
-		module, err = dao.GetModuleBySelectionId(Moment.SelectionId)
-		if err != nil {
-			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
-			return
-		}
+	// 如有点歌，查表判断点歌类型 && 根据模式返回对应的 song_id
+	module, songId, err := dao.DiffMoudle(Moment.SelectionId, Moment.SongName)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
 	}
 
 	MomentDetail := respModel.MomentResp{
-		DynamicsId:  int(Moment.ID),
-		Content:     Moment.Content,
-		CreatedAt:   tools.DecodeTime(Moment.CreatedAt),
-		Song:        Moment.SongName,
-		SelectionId: Moment.SelectionId,
-		Module:      module,
-		Lauds:       dao.CountMLaudsById(int(Moment.ID)),
-		Lauded:      dao.HaveMLauded(UserId, int(Moment.ID)),
-		Comments:    dao.CountCommentsById(int(Moment.ID)),
-		Status:      tools.DecodeStrArr(Moment.State),
-		Creator:     dao.TransformUserInfo(User),
+		DynamicsId: int(Moment.ID),
+		Content:    Moment.Content,
+		CreatedAt:  tools.DecodeTime(Moment.CreatedAt),
+		Song:       Moment.SongName,
+		SongId:     songId,
+		Module:     module,
+		Lauds:      dao.CountMLaudsById(int(Moment.ID)),
+		Lauded:     dao.HaveMLauded(UserId, int(Moment.ID)),
+		Comments:   dao.CountCommentsById(int(Moment.ID)),
+		Status:     tools.DecodeStrArr(Moment.State),
+		Creator:    dao.TransformUserInfo(User),
 	}
 
 	ctx.JSON(200, MomentDetail)

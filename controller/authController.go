@@ -34,7 +34,7 @@ func FakeLogin(ctx *gin.Context) {
 	ctx.JSON(200, "OK")
 }
 
-func FakeLoinEasy(ctx *gin.Context)  {
+func FakeLoinEasy(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	session.Set("avatar", "我的头像 url")
 	session.Set("openid", 123456)
