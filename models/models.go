@@ -45,10 +45,11 @@ func CreateDummyUser(model *statements.User) {
 
 //生成假用户
 func AddFakeUsers() {
-	CreateFakeUser("heng1", "123456", "测试头像")
-	CreateFakeUser("heng2", "123456321", "测试头像")
-	CreateFakeUser("heng3", "1231", "测试头像")
-	CreateFakeUser("heng4", "99999", "测试头像")
+	avatar := "http://cdn.healing2020.100steps.top/static/personal/avatarFemale.png"
+	CreateFakeUser("heng1", "123456", avatar)
+	CreateFakeUser("heng2", "123456321", avatar)
+	CreateFakeUser("heng3", "1231", avatar)
+	CreateFakeUser("heng4", "99999", avatar)
 	for i := 0; i < 10; i++ {
 		CreateDummyUser(dummyUser())
 	}
