@@ -731,7 +731,7 @@ Content-Type: application/json
 
 #### 3.2.2.1 学校积分排名
 
-GET /healing/rank/{school}
+GET /healing/rank/:school
 
 ***school指学校名称，中间有一次对换，例如华工==华南理工大学==scut***
 
@@ -800,7 +800,7 @@ Content-Type: application/json
 
 #### 3.2.3.1 获取按日的热榜
 
-Get /healing/dailyrank/{date}
+Get /healing/dailyrank/:date
 ***date的日期遵循统一格式 mm-dd*** 
 ***日期不早于上线当日***
 
@@ -1155,10 +1155,6 @@ HTTP/1.1 403 Forbidden
 Content-Type: application/json
 
 `{"message" : "不存在对应的歌曲"}`
-
-### 4.2.3 录音接口
-
-调用 POST /healing/recording 接口，有一个属性用于确认归属
 
 ## 4.3 歌曲页相关接口
 

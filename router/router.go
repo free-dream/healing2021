@@ -97,6 +97,15 @@ func SetupRouter() *gin.Engine {
 	api.GET("/healing/lotterybox/draw", controller.Draw)
 	api.GET("/healing/lotterybox/lotteries", controller.GetLotteries)
 	api.GET("/healing/lotterybox/tasktable", controller.GetTasktable)
+	api.GET("/healing/lotterybox/points", controller.GetUserPoints)
+	//经典治愈——排行榜
+	api.GET("/healing/rank/:school", controller.GetRanking)
+	api.GET("/healing/rank/user", controller.GetMyRank)
+	//经典治愈——每日热榜
+	api.GET("/healing/dailyrank/:date", controller.GetDailyrank)
+	api.GET("/healing/dailyrank/all", controller.GetAllrank)
+	//经典治愈——搜索
+	api.POST("/healing/search", controller.Search)
 	// childhood 模块
 	api.GET("/childhood/rank", controller.GetRank)
 	api.GET("/childhood/list", controller.GetList)
