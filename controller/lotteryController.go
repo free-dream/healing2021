@@ -68,15 +68,15 @@ func GetLotteries(ctx *gin.Context) {
 }
 
 type draws struct {
-	tel string `json:"tel"`
+	Tel string `json:"tel"`
 }
 
 //POST /healing/lotterybox/draw
-func Draw(ctx *gin.Context) {
+func Draw(ctx *gin.Context) bool {
 	ret := new(draws)
 	userid := sessions.Default(ctx).Get("user_id").(int)
 	ctx.ShouldBindJSON(ret)
-
+	return dao.DrawCheck(userid)
 }
 
 //线上抽奖，废案
