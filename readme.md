@@ -987,7 +987,7 @@ POST /healing/selection
         "language":string,	
         "style":string,
 }
-//童年歌曲点歌的格式
+//童年歌曲点歌的格式（分享也按点歌这个进行操作）
 //"style":童年
 //"language":中文
 ```
@@ -1402,8 +1402,10 @@ Content-Type: application/json
         "content": string,								// 动态的内容
         "created_at": "2006-01-02 15:04:05",
         
-        "song" : string,								// 要点的歌名
+        "song" : string,								// 要点的、分享的歌名
+        "song_id": int,									// 经典点歌时为selection_id;童年分享时为classic_id
         "module" : int,									// 1为经典，2为童年
+        
         "lauds" : integer,								// 动态的点赞数
         "lauded": integer(0/1),							// 当前用户是否点赞
         "comments" : integer,							// 动态的评论数
@@ -1439,8 +1441,8 @@ Content-Type: application/json
     "content": string,							// 动态的内容
     "status": ["status1", "status2"...],		// 状态列表元素都是string
         
-    "have_selection":int,						// 点歌了为1，否则为0
-    "is_normal":int,							// 经典点歌为0，童年为1
+    "have_selection":int,						// 点歌or分享为1，否则为0
+    "is_normal":int,							// 经典点歌为0，童年分享为1
    
     // 经典点歌填这四个
     "song_name":string,	
@@ -1448,7 +1450,7 @@ Content-Type: application/json
     "style":string,
     "remark":text,								//点歌的备注
      
-     // 童年点歌填这一个
+     // 童年分享填这一个
     "classic_id":int
 }
 ```

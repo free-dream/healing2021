@@ -34,6 +34,7 @@ func FakeLogin(ctx *gin.Context) {
 	ctx.JSON(200, "OK")
 }
 
+
 func FakeLoginEasy(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	redirect, _ := ctx.GetQuery("redirect")

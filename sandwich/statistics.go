@@ -28,10 +28,10 @@ func GetStates() []string {
 
 	// 设置查找要求并找到前18个状态
 	op := redis.ZRangeBy{
-		Min:    "-inf",	//最小分数
-		Max:    "+inf",	//最大分数
-		Offset: 0,  // 类似sql的limit, 表示开始偏移量
-		Count:  18, // 一次返回多少数据
+		Min:    "-inf", //最小分数
+		Max:    "+inf", //最大分数
+		Offset: 0,      // 类似sql的limit, 表示开始偏移量
+		Count:  18,     // 一次返回多少数据
 	}
 	Values, err := redisDb.ZRevRangeByScore(ourStates, op).Result()
 	if err != nil && err != redis.Nil {
@@ -61,10 +61,10 @@ func GetSearchWord() []string {
 
 	// 设置查找要求并找到前10条搜索记录
 	op := redis.ZRangeBy{
-		Min:    "-inf",	//最小分数
-		Max:    "+inf",	//最大分数
-		Offset: 0,  // 类似sql的limit, 表示开始偏移量
-		Count:  10, // 一次返回多少数据
+		Min:    "-inf", //最小分数
+		Max:    "+inf", //最大分数
+		Offset: 0,      // 类似sql的limit, 表示开始偏移量
+		Count:  10,     // 一次返回多少数据
 	}
 	Values, err := redisDb.ZRevRangeByScore(hotSearch, op).Result()
 	if err != nil && err != redis.Nil {
@@ -94,13 +94,13 @@ func GetHotSong() []string {
 
 	// 设置查找要求并找到前 30 条点歌信息
 	op := redis.ZRangeBy{
-		Min:    "-inf",	//最小分数
-		Max:    "+inf",	//最大分数
-		Offset: 0,  // 类似sql的limit, 表示开始偏移量
-		Count:  10, // 一次返回多少数据
+		Min:    "-inf", //最小分数
+		Max:    "+inf", //最大分数
+		Offset: 0,      // 类似sql的limit, 表示开始偏移量
+		Count:  10,     // 一次返回多少数据
 	}
 	Values, err := redisDb.ZRevRangeByScore(hotSong, op).Result()
-	if err != nil && err != redis.Nil{
+	if err != nil && err != redis.Nil {
 		panic(err)
 	}
 
