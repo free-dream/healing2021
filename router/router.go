@@ -65,7 +65,7 @@ func SetupRouter() *gin.Engine {
 
 	if tools.IsDebug() {
 		r.POST("/user", controller.FakeLogin)
-		r.POST("/userEasy", controller.FakeLoinEasy)
+		r.POST("/userEasy", controller.FakeLoginEasy)
 	}
 	r.Use(middleware.IdentityCheck())
 	// 业务路由
