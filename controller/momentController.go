@@ -258,6 +258,26 @@ func PostComment(ctx *gin.Context) {
 		return
 	}
 
+	// 发送相应的系统消息[有 实际评论写入成功，但是系统消息发送失败 的不一致风险]
+	//conn := ws.GetConn()
+	//userId, err := dao.GetMomentSenderId(NewComment.DynamicsId)
+	//if err != nil {
+	//	ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+	//	return
+	//}
+	//err = conn.SendSystemMsg(respModel.SysMsg{
+	//	Uid: uint(userId),
+	//	Type:
+	//	ContentId:
+	//	Song:
+	//	Time: time.Now(),
+	//	IsSend:
+	//})
+	//if err != nil {
+	//	ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+	//	return
+	//}
+
 	ctx.JSON(200, e.ErrMsgResponse{Message: "评论发布成功"})
 }
 
@@ -296,6 +316,7 @@ func GetCommentList(ctx *gin.Context) {
 		Comment := respModel.CommentResp{
 			CommentId: int(comment.ID),
 			Content:   comment.Comment,
+			Lauds: dao.CountCLaudsById(int(comment.ID)),
 			Lauded:    dao.HaveCLauded(UserId, int(comment.ID)),
 			Creator:   dao.TransformUserInfo(User),
 			CreatedAt: tools.DecodeTime(comment.CreatedAt),

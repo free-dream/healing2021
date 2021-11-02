@@ -36,11 +36,15 @@ func Like(ctx *gin.Context) {
 		return
 	}
 
+	// 写入点赞表
 	ok := dao.UpdateLikesByID(UserId, LikeParam.Id, LikeParam.Todo, Type)
 	if ok != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入错误"})
 		return
 	}
+
+	// 发送对应的系统消息
+
 
 	ctx.JSON(200, e.ErrMsgResponse{Message: "操作成功"})
 	return
