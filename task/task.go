@@ -43,10 +43,22 @@ type MetaCTask interface {
 	Check(int) bool
 }
 
+//错误处理，暂定
 func errHandler(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+//在用户首次登录时创建对应的任务表
+func CreateTaskTable(userid int, taskid int) error {
+	mysqlDb := setting.MysqlConn()
+	usertask := state.TaskTable{
+		UserId: userid,
+		TaskId: taskid,
+	}
+	err := mysqlDb.Create(&usertask).Error
+	return err
 }
 
 //设置redis任务缓存,此处还未设置expile time

@@ -147,9 +147,9 @@ func AddFakeCovers() {
 //任务记录
 func CreateTask() {
 	db := setting.DB
-	db.Create(fakeLotteries("点歌一次", 8))
-	db.Create(fakeLotteries("治愈一次", -1))
-	db.Create(fakeLotteries("发动态一次", 8))
+	db.Create(fakeTasks("点歌一次", 8))
+	db.Create(fakeTasks("治愈一次", -1))
+	db.Create(fakeTasks("发动态一次", 8))
 }
 
 func AddTask() {
