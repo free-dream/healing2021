@@ -3,7 +3,6 @@ package dao
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"math/rand"
 	"strconv"
@@ -21,11 +20,9 @@ import (
 func GetUserById(Id int) (statements.User, bool) {
 	MysqlDB := setting.MysqlConn()
 	OneUser := statements.User{}
-	fmt.Println("reach")
 	if err := MysqlDB.Where("id=?", Id).First(&OneUser).Error; err != nil {
 		return OneUser, false
 	}
-	fmt.Println("reach")
 	return OneUser, true
 }
 

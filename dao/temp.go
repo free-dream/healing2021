@@ -9,7 +9,7 @@ import (
 func TransformUserInfo(OneUser state.User) resp.UserInfo {
 	UserInfos := resp.UserInfo{
 		Id:            int(OneUser.ID),
-		Nackname:      OneUser.Nickname,
+		Nickname:      OneUser.Nickname,
 		Avatar:        OneUser.Avatar,
 		AvatarVisible: OneUser.AvatarVisible,
 	}

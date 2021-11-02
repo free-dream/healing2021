@@ -133,7 +133,7 @@ func CountCLaudsById(CommentId int) int {
 	return Lauds
 }
 
-//通过评论的 Id 来判断当前用户是否点过赞
+// 通过评论的 Id 来判断当前用户是否点过赞
 func HaveCLauded(UserId int, CommentId int) int {
 	MysqlDB := setting.MysqlConn()
 
@@ -144,4 +144,15 @@ func HaveCLauded(UserId int, CommentId int) int {
 		return -1
 	}
 	return 1
+}
+
+// 通过动态id获得动态发送者userId
+type MomentSenderId struct {
+	UserId int `gorm:"user_id"`
+}
+func GetMomentSenderId(MomentId int)  (int,error){
+	momentSenderId := MomentSenderId{}
+	db := setting.MysqlConn()
+	err := db.Model(&statements.Moment{}).Where("id=?", MomentId).Scan(&momentSenderId).Error
+	return momentSenderId.UserId, err
 }

@@ -3,7 +3,7 @@ package respModel
 // 用户信息
 type UserInfo struct {
 	Id            int    `json:"id"`
-	Nackname      string `json:"nackname"`
+	Nickname      string `json:"nickname"`
 	Avatar        string `json:"avatar"`
 	AvatarVisible int    `json:"avatar_visible"`
 }

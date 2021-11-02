@@ -1421,7 +1421,7 @@ Content-Type: application/json
 
         "creator": {
             "id": integer,	
-            "nackname" : string,						// 用户名
+            "nickname" : string,						// 用户名
             "avatar": string(url),						// 头像
             "avatar_visible": integer(0/1)				// 0代表没设置头像
         }
@@ -1501,7 +1501,7 @@ Content-Type: application/json
 
     "creator": {
         "id": integer,	
-        "nackname" : string,						// 用户名
+        "nickname" : string,						// 用户名
         "avatar": string(url),						// 头像
     	"avatar_visible": integer(0/1)				// 0代表没设置头像
 	}
@@ -1567,7 +1567,7 @@ Content-Type: application/json
     
         "creator": {
             "id": integer,	
-            "nackname" : string,						// 用户名
+            "nickname" : string,						// 用户名
             "avatar": string(url),						// 头像
             "avatar_visible": integer(0/1)				// 是0代表没设置头像
         }
