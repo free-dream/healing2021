@@ -8,6 +8,7 @@ import (
 )
 
 //本次任务目前都是一次性的，没有计数要求 2021.11.1
+//本次任务目前为止所有用户的任务都是一样的 2021.11.2
 
 //任务注册和初始化
 var (
@@ -119,10 +120,10 @@ func ChangePoints(point float32, userid int, tid int) bool {
 		var user state.User
 		var tasktable state.TaskTable
 
-		err := mysqlDb.Where("ID = ?", userid).First(&user).Error
+		err := mysqlDb.Where("id = ?", userid).First(&user).Error
 		errHandler(err)
 
-		err = mysqlDb.Where("TaskID = ? AND UserID = ?", tid, userid).Find(&tasktable).Error
+		err = mysqlDb.Where("task_id = ? AND user_id = ?", tid, userid).Find(&tasktable).Error
 		errHandler(err)
 
 		user.Points = int(temp)

@@ -9,8 +9,21 @@ import (
 func GetCoversByDate(date string) ([]statements.Cover, error) {
 	mysqlDb := setting.MysqlConn()
 
-	data := make([]statements.Cover, 10)
+	var data []statements.Cover
+
 	err := mysqlDb.Where("CreatedAt LIKE ?", (date + "%")).Order("Likes desc").Limit(10).Find(&data).Error
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+//获取全时间获赞最高项
+func GetCoversByLikes() ([]statements.Cover, error) {
+	mysqlDb := setting.MysqlConn()
+
+	var data []statements.Cover
+	err := mysqlDb.Order("IsLikes desc").Limit(10).Find(&data).Error
 	if err != nil {
 		return nil, err
 	}

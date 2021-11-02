@@ -144,6 +144,18 @@ func AddFakeCovers() {
 	CreateDummyCovers()
 }
 
+//任务记录
+func CreateTask() {
+	db := setting.DB
+	db.Create(fakeLotteries("点歌一次", 8))
+	db.Create(fakeLotteries("治愈一次", -1))
+	db.Create(fakeLotteries("发动态一次", 8))
+}
+
+func AddTask() {
+	CreateTask()
+}
+
 //向记录中增加奖品记录,奖品记录为真
 func CreateLottery() {
 	db := setting.DB
@@ -229,6 +241,7 @@ func AddFakeClassic() {
 
 // 造点测试用的假数据
 func FakeData() {
+	AddTask()
 	AddFakeUsers()
 	AddLotteries()
 	AddFakeMoments()

@@ -3,7 +3,7 @@ package respModel
 //彩票信息
 type TaskResp struct {
 	ID   int    `json:"id"`
-	Text string `json:"string"`
+	Text string `json:"text"`
 	Max  int    `json:"max"`
 }
 

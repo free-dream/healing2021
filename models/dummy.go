@@ -168,6 +168,15 @@ func fakeLotteries(name string, possilbity float64) *statements.Lottery {
 	return &lottery
 }
 
+//真任务
+func fakeTasks(text string, max int) *statements.Task {
+	task := statements.Task{
+		Text: text,
+		Max:  max,
+	}
+	return &task
+}
+
 //基于用户创建点歌
 func dummySelections(userid int, song string, language string, style string) (*statements.Selection, error) {
 	avatar, err := GetUserAvatar(userid)
