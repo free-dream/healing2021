@@ -613,6 +613,8 @@ Content-Type: application/json
 
 #### 3.2.1.2 抽奖
 
+**先调用抽奖确认，弹窗出现再触发抽奖**
+
 POST  /healing/lotterybox/draw HTTP 1.1
 
 ```json
@@ -627,12 +629,6 @@ HTTP/1.1 200 OK
 
 Content-Type: application/json
 
-```json
-{
-    "msg":string	//显示抽奖资格确认
-}
-```
-
 失败(例)：
 
 HTTP/1.1 403 Forbidden
@@ -641,9 +637,11 @@ Content-Type: application/json
 
 `{"message" : "抽奖失败"}`
 
-#### 3.2.1.3 拉取用户中奖记录(废案)
+#### 3.2.1.3 抽奖确认
 
-GET /healing/lotterybox/prizes
+GET /healing/lotterybox/drawcheck HTTP 1.1
+
+**作为抽奖按钮的前置接口存在**
 
 成功:
 
@@ -652,22 +650,32 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 ```json
-[//已按照时间戳进行排序
-    {
-        "name":string,	//奖品名
-        "picture":string,	//奖品图片url
-    }
-    ...
-]
+{
+    "msg":"积分不足"
+}
 ```
 
-失败(例)：
+or
+
+```json
+{
+    "msg":"请填写手机号码"
+}
+```
+
+or
+
+```json
+{
+    "msg":"已参与抽奖
+}
+```
 
 HTTP/1.1 403 Forbidden
 
 Content-Type: application/json
 
-`{"message" : "拉取中奖信息失败"}`
+`{"message" : "抽奖失败"}`
 
 #### 3.2.1.4 拉取对应用户的任务列表
 
@@ -1720,3 +1728,31 @@ Content-Type: application/json
 ```
 
 ## 
+
+#### 3.2.1.3 拉取用户中奖记录(废案)
+
+GET /healing/lotterybox/prizes
+
+成功:
+
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+```json
+[//已按照时间戳进行排序
+    {
+        "name":string,	//奖品名
+        "picture":string,	//奖品图片url
+    }
+    ...
+]
+```
+
+失败(例)：
+
+HTTP/1.1 403 Forbidden
+
+Content-Type: application/json
+
+`{"message" : "拉取中奖信息失败"}`

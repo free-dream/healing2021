@@ -9,17 +9,10 @@ import (
 )
 
 type Sysmsg struct {
-<<<<<<< HEAD
 	Uid       uint   `gorm:"not null"`
 	Type      int    `gorm:"not null"`
 	ContentId uint   `gorm:"not null"`
 	Song      string `gorm:"not null"`
-=======
-	Uid       uint   `gorm:not null`
-	Type      int    `gorm:not null`
-	ContentId uint   `gorm:not null`
-	Song      string `gorm:not null`
->>>>>>> 922030c154cc558ac41520ba99ca5b16da30c9b1
 	Time      time.Time
 	IsSend    int
 	gorm.Model

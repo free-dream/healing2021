@@ -56,7 +56,10 @@ func Draw(ctx *gin.Context) {
 		ctx.JSON(e.INVALID_PARAMS, e.ErrMsgResponse{Message: e.GetMsg(400)})
 		return
 	}
-	dao.CreatePrize(userid, ret.Tel)
+	err = dao.CreatePrize(userid, ret.Tel)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+	}
 	ctx.JSON(200, e.ErrMsgResponse{Message: e.GetMsg(200)})
 }
 

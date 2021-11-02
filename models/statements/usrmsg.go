@@ -8,13 +8,8 @@ import (
 )
 
 type Usrmsg struct {
-<<<<<<< HEAD
 	FromUser uint `gorm:"not null"`
 	ToUser   uint `gorm:"not null"`
-=======
-	FromUser uint `gorm:not null`
-	ToUser   uint `gorm:not null`
->>>>>>> 922030c154cc558ac41520ba99ca5b16da30c9b1
 	Url      string
 	Song     string
 	Message  string
