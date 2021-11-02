@@ -51,7 +51,6 @@ func SetupRouter() *gin.Engine {
 			ctx.JSON(200, gin.H{
 				"nickname": wechatUser.Nickname,
 			})
-			//登录任务
 			return session.Save()
 		},
 	})

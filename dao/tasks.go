@@ -14,6 +14,36 @@ func UpdateTasks(userid int, taskid int, process int) {
 	// mysqlDb.Model(&tasktable).Where("UserId = ? AND TaskId = ?", userid, taskid).UpdateColumn("Check", check)
 }
 
+//基于给定数据生成tasktable,用于用户初始化
+func GenerateTasktable(tids []int, userid int) error {
+	mysqlDb := db.MysqlConn()
+	for tid := range tids {
+		task := tables.TaskTable{
+			TaskId:  tids[tid],
+			UserId:  userid,
+			Counter: 0,
+		}
+		err := mysqlDb.Create(&task).Error
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+//任务建立查重,仅用于假登录
+func CheckTasks(userid int) (bool, error) {
+	mysqlDb := db.MysqlConn()
+	var data []tables.TaskTable
+	err := mysqlDb.Where("user_id = ?", userid).Find(&data).Error
+	if err != nil {
+		return false, err
+	} else {
+		return true, err
+	}
+}
+
 //提取task_table
 func GetTasktables(userid int) ([]tables.TaskTable, error) {
 	mysqlDb := db.MysqlConn()

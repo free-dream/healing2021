@@ -9,8 +9,9 @@ import (
 
 //本次任务目前都是一次性的，没有计数要求 2021.11.1
 //本次任务目前为止所有用户的任务都是一样的 2021.11.2
+//不存在线性任务、个性化任务和条件性任务
 
-//任务注册和初始化
+//任务注册和初始化，声明变量和init()
 var (
 	ST SelectionTask
 	MT MomentTask
@@ -116,8 +117,7 @@ func GetCacheTask(userid int, tid int) int {
 	return data
 }
 
-//修改用户点数,任务特供
-//同时更新总点数和用户点数
+//同时更新总点数和任务点数
 func ChangePoints(point float32, userid int, tid int) bool {
 	redisDb := setting.RedisConn()
 	mysqlDb := setting.MysqlConn()
@@ -127,6 +127,7 @@ func ChangePoints(point float32, userid int, tid int) bool {
 	tempf := redisDb.HIncrBy(tempkey, strconv.Itoa(tid), int64(point)).Val()
 
 	//单独拉出一个协程更新数据库以保证数据一致性
+	//错误处理
 	ch := make(chan int)
 	go func() {
 		var user state.User

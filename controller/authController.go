@@ -26,6 +26,14 @@ func FakeLogin(ctx *gin.Context) {
 		})
 		return
 	}
+
+	//建立任务表
+	err = dao.GenerateTasktable(normaltasks, id)
+	if err != nil {
+		panic(err)
+	}
+	//
+
 	session := sessions.Default(ctx)
 	session.Set("avatar", user.Avatar)
 	session.Set("openid", user.Openid)
@@ -33,7 +41,6 @@ func FakeLogin(ctx *gin.Context) {
 	session.Save()
 	ctx.JSON(200, "OK")
 }
-
 
 func FakeLoginEasy(ctx *gin.Context) {
 	session := sessions.Default(ctx)

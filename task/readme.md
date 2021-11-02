@@ -12,7 +12,7 @@
 
 ## 使用
 
-在对应controller下读取userid,后调用task模块的对象使用方法
+在对应controller下读取userid,后调用task模块的对象使用方法,实现接口约定的方法
 
 ## Mysql设计
 **源码见models文件夹 task.go / task_table.go**

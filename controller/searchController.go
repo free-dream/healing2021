@@ -9,9 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//构建一个词库，用于区分不同的关键词
-var ()
-
 type keyword struct {
 	Keyword string `json:"keyword"`
 }

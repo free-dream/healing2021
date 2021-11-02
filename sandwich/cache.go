@@ -1,6 +1,7 @@
 package sandwich
 
 import (
+	"fmt"
 	"reflect"
 	"strconv"
 	"time"
@@ -22,6 +23,9 @@ func GetCURanking(userid int) string {
 	db := setting.RedisConn()
 	key := strconv.Itoa(userid) + "rank"
 	data := db.Get(key).Val()
+	//
+	fmt.Println(data)
+	//
 	return data
 }
 

@@ -103,7 +103,7 @@ func GetUserPoints(ctx *gin.Context) {
 //GET /healing/lotterybox/tasktable
 func GetTasktable(ctx *gin.Context) {
 	//返回结构体
-	respTasks := make([]resp.TaskTableResp, 10)
+	respTasks := make([]resp.TaskTableResp, 0)
 	//userid
 	userid := sessions.Default(ctx).Get("user_id").(int)
 	//获取任务表
