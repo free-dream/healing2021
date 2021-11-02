@@ -8,9 +8,9 @@ const (
 
 //彩票信息
 type LotteryResp struct {
-	Picture     string `json:"string"`
-	Name        string `json:"name"`
-	Possibility int    `json:"possibility"`
+	Picture     string  `json:"picture"`
+	Name        string  `json:"name"`
+	Possibility float32 `json:"possibility"`
 }
 
 //抽奖信息

@@ -2,6 +2,8 @@ package dao
 
 //废案方法
 import (
+	"fmt"
+
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	db "git.100steps.top/100steps/healing2021_be/pkg/setting"
@@ -55,7 +57,7 @@ func GetUserAvatar(userid int) (string, error) {
 	return user.Avatar, nil
 }
 
-//获取所有奖品，不展示奖品归属
+//展示所有奖品
 func GetAllLotteries() ([]tables.Lottery, error) {
 	var lotteries []tables.Lottery
 	err := MysqlDb.Find(&lotteries).Error
@@ -65,24 +67,26 @@ func GetAllLotteries() ([]tables.Lottery, error) {
 	return lotteries, err
 }
 
-//根据lottery里奖品的归属拉取奖品列表
-func GetPrizesById(userid int) ([]tables.Lottery, error) {
-	var prizes []tables.Lottery
-	err := MysqlDb.Where("UserId = ?", userid).Find(&prizes).Error
-	if err != nil {
-		return nil, err
-	}
-	return prizes, nil
-}
-
 //抽奖确认
 func DrawCheck(userid int) (int, error) {
 	points := task.GetCachePoints(userid)
+	var err error
+	if points < 0 {
+		var user tables.User
+		err = MysqlDb.Where("ID = ?", userid).First(&user).Error
+		if err != nil {
+			return -1, err
+		}
+		points = user.Points
+	}
+	//
+	fmt.Println(points)
+	//
 	if points < MINPOINTS {
 		return 0, nil
 	}
 	var prize statements.Prize
-	if err := MysqlDb.Where("UserId = ?", userid).First(&prize).Error; gorm.IsRecordNotFoundError(err) {
+	if err = MysqlDb.Where("user_id = ?", userid).First(&prize).Error; gorm.IsRecordNotFoundError(err) {
 		return 1, nil
 	} else if err != nil {
 		return -1, err
@@ -99,6 +103,16 @@ func CreatePrize(userid int, tel string) error {
 	err := MysqlDb.Create(&prize).Error
 	return err
 }
+
+// //根据lottery里奖品的归属拉取奖品列表 废案
+// func GetPrizesById(userid int) ([]tables.Lottery, error) {
+// 	var prizes []tables.Lottery
+// 	err := MysqlDb.Where("UserId = ?", userid).Find(&prizes).Error
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return prizes, nil
+// }
 
 // //更新奖品归属
 // func UpdateLotterybox(lotteryid int, userid int) (bool, error) {

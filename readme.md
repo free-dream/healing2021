@@ -93,9 +93,9 @@ Content-Type application/json
 POST /user  HTTP/1.1
 ```json
 {
-"nickname": "string",
-"openid": string,
-  "avatar": string
+	"nickname": "string",
+	"openid": string,
+  	"avatar": string
 }
 ```
 

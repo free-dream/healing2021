@@ -27,11 +27,11 @@ const (
 )
 
 //奖品是真实概率数据
-//目前设计四个奖项，一等奖 5%，二等奖 15%，三等奖 29%
+//目前设计三个奖项，一等奖 2%，二等奖 8%，三等奖 20%
 const (
-	PRIZE1 = "一等奖"
-	PRIZE2 = "二等奖"
-	PRIZE3 = "三等奖"
+	PRIZE1 = "蓝牙耳机/八音盒"
+	PRIZE2 = "有线耳机"
+	PRIZE3 = "小玩偶/台灯"
 )
 
 //测试用歌曲名
@@ -159,7 +159,7 @@ func dummyUser() *statements.User {
 	return &user
 }
 
-//假彩票
+//真奖品
 func fakeLotteries(name string, possilbity float64) *statements.Lottery {
 	lottery := statements.Lottery{
 		Name:        name,

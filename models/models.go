@@ -32,6 +32,7 @@ func CreateFakeUser(nickname string, openid string, avatar string) { /*hobby map
 		Openid:   openid,
 		Nickname: nickname,
 		Avatar:   avatar,
+		Points:   20,
 	}
 
 	db := setting.DB
@@ -145,7 +146,14 @@ func AddFakeCovers() {
 
 //向记录中增加奖品记录,奖品记录为真
 func CreateLottery() {
+	db := setting.DB
+	db.Create(fakeLotteries(PRIZE1, 0.02))
+	db.Create(fakeLotteries(PRIZE2, 0.08))
+	db.Create(fakeLotteries(PRIZE3, 0.2))
+}
 
+func AddLotteries() {
+	CreateLottery()
 }
 
 //假动态
@@ -222,6 +230,7 @@ func AddFakeClassic() {
 // 造点测试用的假数据
 func FakeData() {
 	AddFakeUsers()
+	AddLotteries()
 	AddFakeMoments()
 	AddFakeComments()
 	AddFakeSelections()

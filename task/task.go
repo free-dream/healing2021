@@ -74,7 +74,11 @@ func GetCachePoints(userid int) int {
 	if len(temp) < 1 {
 		return -1
 	}
-	return temp[0].(int)
+	data, ok := temp[0].(int)
+	if !ok {
+		return -1
+	}
+	return data
 }
 
 //基于mysql更新用户积分缓存

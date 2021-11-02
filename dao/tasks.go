@@ -10,7 +10,7 @@ import (
 func UpdateTasks(userid int, taskid int, process int) {
 	mysqlDb := db.MysqlConn()
 	var tasktable tables.TaskTable
-	mysqlDb.Model(&tasktable).Where("UserId = ? AND TaskId = ?", userid, taskid).UpdateColumn("Counter", gorm.Expr("IsLiked + ?", process))
+	mysqlDb.Model(&tasktable).Where("user_id = ? AND task_id = ?", userid, taskid).UpdateColumn("Counter", gorm.Expr("IsLiked + ?", process))
 	// mysqlDb.Model(&tasktable).Where("UserId = ? AND TaskId = ?", userid, taskid).UpdateColumn("Check", check)
 }
 
@@ -18,7 +18,7 @@ func UpdateTasks(userid int, taskid int, process int) {
 func GetTasktables(userid int) ([]tables.TaskTable, error) {
 	mysqlDb := db.MysqlConn()
 	var tasktables []tables.TaskTable
-	err := mysqlDb.Where("UserId = ?", userid).Find(&tasktables).Error
+	err := mysqlDb.Where("user_id = ?", userid).Find(&tasktables).Error
 	if err != nil {
 		return nil, err
 	}

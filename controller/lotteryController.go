@@ -26,8 +26,7 @@ const (
 */
 //GET /healing/lotterybox/lotteries
 func GetLotteries(ctx *gin.Context) {
-	//从数据库里调，redis爆炸的备选方案
-	lotteries := make([]resp.LotteryResp, 10)
+	lotteries := make([]resp.LotteryResp, 0)
 	raws, err := dao.GetAllLotteries()
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
@@ -36,7 +35,7 @@ func GetLotteries(ctx *gin.Context) {
 		lottery := resp.LotteryResp{
 			Name:        raw.Name,
 			Picture:     raw.Picture,
-			Possibility: int(raw.Possibility),
+			Possibility: float32(raw.Possibility),
 		}
 		lotteries = append(lotteries, lottery)
 	}
@@ -69,6 +68,7 @@ func DrawCheck(ctx *gin.Context) {
 	check, err := dao.DrawCheck(userid)
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+		return
 	}
 	var msg resp.DrawResp
 	if check == 0 {
