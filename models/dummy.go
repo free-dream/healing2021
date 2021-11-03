@@ -1,12 +1,13 @@
 package models
 
 import (
+	"math/rand"
+	"strconv"
+
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
-	"math/rand"
-	"strconv"
 )
 
 //测试学校名
@@ -25,12 +26,12 @@ const (
 	TARGET3 = "bbt21bc"
 )
 
-//目前设计四个奖项，特奖 1%，一等奖 5%，二等奖 15%，三等奖 29%
+//奖品是真实概率数据
+//目前设计三个奖项，一等奖 2%，二等奖 8%，三等奖 20%
 const (
-	PRIZESP = "特奖"
-	PRIZE1  = "一等奖"
-	PRIZE2  = "二等奖"
-	PRIZE3  = "三等奖"
+	PRIZE1 = "蓝牙耳机/八音盒"
+	PRIZE2 = "有线耳机"
+	PRIZE3 = "小玩偶/台灯"
 )
 
 //测试用歌曲名
@@ -81,9 +82,9 @@ const (
 //由于翻唱是个性要求，所以录音的歌唱语言、歌唱风格与歌曲本身不做绑定
 //也就是说，用户完全可以要求一首摇滚版的大悲咒
 var (
-	SchoolPool   = []string{SCUT, SYU, JU, SCNU, OTHER}
-	TargetPool   = []string{TARGET1, TARGET2, TARGET3}
-	PrizePool    = []string{PRIZESP, PRIZE1, PRIZE2, PRIZE3}
+	SchoolPool = []string{SCUT, SYU, JU, SCNU, OTHER}
+	TargetPool = []string{TARGET1, TARGET2, TARGET3}
+	// PrizePool    = []string{PRIZE1, PRIZE2, PRIZE3}
 	StylePool    = []string{S1, S2, S3, S4, S5, S6}
 	SongPool     = []string{G1, G2, G3, G4, G5, G6, G7, G8, G9, GA, GB, GC, GD}
 	LanguagePool = []string{L1, L2, L3, L4, L5}
@@ -158,7 +159,7 @@ func dummyUser() *statements.User {
 	return &user
 }
 
-//假彩票
+//真奖品
 func fakeLotteries(name string, possilbity float64) *statements.Lottery {
 	lottery := statements.Lottery{
 		Name:        name,
@@ -167,19 +168,28 @@ func fakeLotteries(name string, possilbity float64) *statements.Lottery {
 	return &lottery
 }
 
+//真任务
+func fakeTasks(text string, max int) *statements.Task {
+	task := statements.Task{
+		Text: text,
+		Max:  max,
+	}
+	return &task
+}
+
 //基于用户创建点歌
 func dummySelections(userid int, song string, language string, style string) (*statements.Selection, error) {
-	// avatar, err := GetUserAvatar(userid)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	avatar, err := GetUserAvatar(userid)
+	if err != nil {
+		return nil, err
+	}
 	selection := statements.Selection{
 		SongName: song,
 		Remark:   string(tools.GetRandomString(20)),
 		Language: language,
 		UserId:   userid,
-		// Avatar:   avatar,
-		Style: style,
+		Avatar:   avatar,
+		Style:    style,
 	}
 	return &selection, nil
 }

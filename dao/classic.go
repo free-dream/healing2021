@@ -72,3 +72,15 @@ func GetOriginInfo(ClassicId int) (respModel.OriginInfoResp, error) {
 	}
 	return OriginInfoResp, nil
 }
+
+// 通过歌名找 classic_id (要求给的童年歌曲歌名不能重复)
+type ClassicIdInfo struct {
+	ClassicId int `gorm:"classic_id"`
+}
+
+func GetClassicIdByName(SongName string) (int, error) {
+	db := setting.MysqlConn()
+	ClassicId := ClassicIdInfo{}
+	err := db.Model(&statements.Classic{}).Where("song_name=?", SongName).Scan(&ClassicId).Error
+	return ClassicId.ClassicId, err
+}

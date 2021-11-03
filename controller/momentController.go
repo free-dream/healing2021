@@ -9,6 +9,7 @@ import (
 	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"git.100steps.top/100steps/healing2021_be/sandwich"
+	"git.100steps.top/100steps/healing2021_be/task"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -55,28 +56,24 @@ func GetMomentList(ctx *gin.Context) {
 			return
 		}
 
-		// 如有点歌，查表判断点歌类型
-		module := 0
-		if OneMoment.SelectionId != 0 {
-			module, err = dao.GetModuleBySelectionId(OneMoment.SelectionId)
-			if err != nil {
-				ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
-				return
-			}
+		// 如有点歌，查表判断点歌类型 && 根据模式返回对应的 song_id
+		module, songId, err := dao.DiffMoudle(OneMoment.SelectionId, OneMoment.SongName)
+		if err != nil {
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
 		}
 
 		TmpMoment := respModel.MomentResp{
-			Content:     OneMoment.Content,
-			DynamicsId:  int(OneMoment.ID),
-			CreatedAt:   tools.DecodeTime(OneMoment.CreatedAt),
-			Song:        OneMoment.SongName,
-			SelectionId: OneMoment.SelectionId,
-			Module:      module,
-			Lauds:       dao.CountMLaudsById(int(OneMoment.ID)),
-			Lauded:      dao.HaveMLauded(UserId, int(OneMoment.ID)),
-			Comments:    dao.CountCommentsById(int(OneMoment.ID)),
-			Status:      tools.DecodeStrArr(OneMoment.State),
-			Creator:     dao.TransformUserInfo(User),
+			Content:    OneMoment.Content,
+			DynamicsId: int(OneMoment.ID),
+			CreatedAt:  tools.DecodeTime(OneMoment.CreatedAt),
+			Song:       OneMoment.SongName,
+			SongId:     songId,
+			Module:     module,
+			Lauds:      dao.CountMLaudsById(int(OneMoment.ID)),
+			Lauded:     dao.HaveMLauded(UserId, int(OneMoment.ID)),
+			Comments:   dao.CountCommentsById(int(OneMoment.ID)),
+			Status:     tools.DecodeStrArr(OneMoment.State),
+			Creator:    dao.TransformUserInfo(User),
 		}
 		MomentsResp = append(MomentsResp, TmpMoment)
 	}
@@ -85,6 +82,7 @@ func GetMomentList(ctx *gin.Context) {
 }
 
 // 发布动态
+// @@@@@@@任务模块已植入此接口函数@@@@@@@
 type MomentBase struct {
 	Content string   `json:"content"`
 	Status  []string `json:"status"`
@@ -107,8 +105,10 @@ func PostMoment(ctx *gin.Context) {
 	var selectionId int
 
 	param := statements.Selection{}
-	param.UserId = sessions.Default(ctx).Get("user_id").(int)
-
+	//把userid拿出来用于任务---voloroloq 2021.11.1
+	userid := sessions.Default(ctx).Get("user_id").(int)
+	param.UserId = userid
+	//
 	// 跳转点歌(修改和使用了接口3.3的点歌，相应做修改时这边要同步操作)
 	if NewMoment.HaveSelection == 1 {
 		if NewMoment.IsNormal == 0 { // 经典点歌
@@ -140,6 +140,9 @@ func PostMoment(ctx *gin.Context) {
 			selectionId = resp.ID
 		} else { // 出现错误
 			ctx.JSON(403, e.ErrMsgResponse{Message: "非法参数"})
+			//为了保证后面任务在接口使用时顺利进行---voloroloq 2021.11.1
+			return
+			//
 		}
 	}
 
@@ -147,7 +150,7 @@ func PostMoment(ctx *gin.Context) {
 	for _, state := range NewMoment.Status {
 		sandwich.PutInStates(state)
 	}
-	if NewMoment.HaveSelection == 1 {
+	if NewMoment.HaveSelection == 1 && NewMoment.IsNormal == 0 {
 		sandwich.PutInHotSong(tools.EncodeSong(tools.HotSong{
 			SongName: param.SongName,
 			Language: param.Language,
@@ -161,7 +164,6 @@ func PostMoment(ctx *gin.Context) {
 		SongName:    NewMoment.SongName,
 		UserId:      param.UserId,
 		State:       tools.EncodeStrArr(NewMoment.Status),
-		LikeNum:     0,
 		SelectionId: selectionId,
 	}
 
@@ -170,7 +172,10 @@ func PostMoment(ctx *gin.Context) {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入失败"})
 		return
 	}
-
+	//任务模块植入 2021.11.1
+	thistask := task.MT
+	thistask.AddRecord(userid)
+	//
 	ctx.JSON(200, e.ErrMsgResponse{Message: "动态发布成功"})
 }
 
@@ -203,27 +208,24 @@ func GetMomentDetail(ctx *gin.Context) {
 		return
 	}
 
-	module := 0
-	if Moment.SelectionId != 0 {
-		module, err = dao.GetModuleBySelectionId(Moment.SelectionId)
-		if err != nil {
-			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
-			return
-		}
+	// 如有点歌，查表判断点歌类型 && 根据模式返回对应的 song_id
+	module, songId, err := dao.DiffMoudle(Moment.SelectionId, Moment.SongName)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
 	}
 
 	MomentDetail := respModel.MomentResp{
-		DynamicsId:  int(Moment.ID),
-		Content:     Moment.Content,
-		CreatedAt:   tools.DecodeTime(Moment.CreatedAt),
-		Song:        Moment.SongName,
-		SelectionId: Moment.SelectionId,
-		Module:      module,
-		Lauds:       dao.CountMLaudsById(int(Moment.ID)),
-		Lauded:      dao.HaveMLauded(UserId, int(Moment.ID)),
-		Comments:    dao.CountCommentsById(int(Moment.ID)),
-		Status:      tools.DecodeStrArr(Moment.State),
-		Creator:     dao.TransformUserInfo(User),
+		DynamicsId: int(Moment.ID),
+		Content:    Moment.Content,
+		CreatedAt:  tools.DecodeTime(Moment.CreatedAt),
+		Song:       Moment.SongName,
+		SongId:     songId,
+		Module:     module,
+		Lauds:      dao.CountMLaudsById(int(Moment.ID)),
+		Lauded:     dao.HaveMLauded(UserId, int(Moment.ID)),
+		Comments:   dao.CountCommentsById(int(Moment.ID)),
+		Status:     tools.DecodeStrArr(Moment.State),
+		Creator:    dao.TransformUserInfo(User),
 	}
 
 	ctx.JSON(200, MomentDetail)
@@ -255,6 +257,26 @@ func PostComment(ctx *gin.Context) {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入失败"})
 		return
 	}
+
+	// 发送相应的系统消息[有 实际评论写入成功，但是系统消息发送失败 的不一致风险]
+	//conn := ws.GetConn()
+	//userId, err := dao.GetMomentSenderId(NewComment.DynamicsId)
+	//if err != nil {
+	//	ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+	//	return
+	//}
+	//err = conn.SendSystemMsg(respModel.SysMsg{
+	//	Uid: uint(userId),
+	//	Type:
+	//	ContentId:
+	//	Song:
+	//	Time: time.Now(),
+	//	IsSend:
+	//})
+	//if err != nil {
+	//	ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+	//	return
+	//}
 
 	ctx.JSON(200, e.ErrMsgResponse{Message: "评论发布成功"})
 }
@@ -294,8 +316,8 @@ func GetCommentList(ctx *gin.Context) {
 		Comment := respModel.CommentResp{
 			CommentId: int(comment.ID),
 			Content:   comment.Comment,
-			Lauded:    dao.HaveCLauded(UserId, int(comment.ID)),
 			Lauds:     dao.CountCLaudsById(int(comment.ID)),
+			Lauded:    dao.HaveCLauded(UserId, int(comment.ID)),
 			Creator:   dao.TransformUserInfo(User),
 			CreatedAt: tools.DecodeTime(comment.CreatedAt),
 		}
@@ -326,5 +348,5 @@ func HotSong(ctx *gin.Context) {
 		hotSongResp = append(hotSongResp, tools.DecodeSong(hotSong))
 	}
 
-	ctx.JSON(200, result)
+	ctx.JSON(200, hotSongResp)
 }

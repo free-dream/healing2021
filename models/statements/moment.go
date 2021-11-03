@@ -14,7 +14,6 @@ type Moment struct {
 	SongName    string `gorm:"default:''"`
 	SelectionId int    `gorm:"default:0;index"`
 	State       string `gorm:"default:''"`
-	LikeNum     int    `gorm:"default:0"`
 }
 
 func MomentInit() {

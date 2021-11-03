@@ -26,6 +26,14 @@ func FakeLogin(ctx *gin.Context) {
 		})
 		return
 	}
+
+	//建立任务表
+	err = dao.GenerateTasktable(normaltasks, id)
+	if err != nil {
+		panic(err)
+	}
+	//
+
 	session := sessions.Default(ctx)
 	session.Set("avatar", user.Avatar)
 	session.Set("openid", user.Openid)
@@ -34,11 +42,13 @@ func FakeLogin(ctx *gin.Context) {
 	ctx.JSON(200, "OK")
 }
 
-func FakeLoinEasy(ctx *gin.Context)  {
+func FakeLoginEasy(ctx *gin.Context) {
 	session := sessions.Default(ctx)
+	redirect, _ := ctx.GetQuery("redirect")
 	session.Set("avatar", "我的头像 url")
 	session.Set("openid", 123456)
 	session.Set("user_id", 1)
 	session.Save()
-	ctx.JSON(200, "OK")
+	ctx.Redirect(302, redirect)
+	ctx.Abort()
 }

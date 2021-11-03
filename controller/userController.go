@@ -6,11 +6,12 @@ import (
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
-//用户注册
+//用户注册,新增生成任务表机制
 func Register(ctx *gin.Context) {
-	//登录奖励机制尚未完成
+	//登录奖励机制,需要时可实现于task内
 	session := sessions.Default(ctx)
 	openid := session.Get("openid").(string)
 	//headImgUrl := session.Get("headImgUrl").(string)
@@ -45,12 +46,22 @@ func Register(ctx *gin.Context) {
 	err = session.Save()
 	if err != nil {
 		panic(err)
-
 	}
+
+	//根据给定的数组生成任务表
+	var err1 error
+	check, err1 := dao.CheckTasks(id)
+	if !check && gorm.IsRecordNotFoundError(err1) {
+		err = dao.GenerateTasktable(normaltasks, id)
+		if err != nil {
+			panic(err)
+		}
+	}
+	//
+
 	ctx.JSON(200, gin.H{
 		"user_id": id,
 	})
-
 }
 func Updater(ctx *gin.Context) {
 	//用户更新

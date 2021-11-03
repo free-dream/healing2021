@@ -3,7 +3,6 @@ package dao
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"math/rand"
 	"strconv"
@@ -21,11 +20,9 @@ import (
 func GetUserById(Id int) (statements.User, bool) {
 	MysqlDB := setting.MysqlConn()
 	OneUser := statements.User{}
-	fmt.Println("reach")
 	if err := MysqlDB.Where("id=?", Id).First(&OneUser).Error; err != nil {
 		return OneUser, false
 	}
-	fmt.Println("reach")
 	return OneUser, true
 }
 
@@ -112,18 +109,23 @@ type UserMsg struct {
 	Signature string `json:"signature"`
 }
 type SelectionMsg struct {
+	ID        int    `json:"id"`
 	SongName  string `json:"song_name"`
 	CreatedAt string `json:"created_at"`
 }
 type SelectionMsgV2 struct {
+	ID        int       `json:"id"`
 	SongName  string    `json:"song_name"`
 	CreatedAt time.Time `json:"created_at"`
 }
 type CoverMsg struct {
+	ID        int    `json:"id"`
 	SongName  string `json:"song_name"`
 	CreatedAt string `json:"created_at"`
+	Likes     int    `json:"likes"`
 }
 type CoverMsgV2 struct {
+	ID        int       `json:"id"`
 	SongName  string    `json:"song_name"`
 	CreatedAt time.Time `json:"created_at"`
 }
@@ -131,8 +133,11 @@ type PraiseMsg struct {
 	SongName  string `json:"song_name"`
 	CreatedAt string `json:"created_at"`
 	ID        int    `json:"id"`
+	CoverId   int    `json:"cover_id"`
+	Likes     int    `json:"likes"`
 }
 type PraiseMsgV2 struct {
+	CoverId   int       `json:"cover_id"`
 	SongName  string    `json:"song_name"`
 	CreatedAt time.Time `json:"created_at"`
 	ID        int       `json:"id"`
@@ -143,6 +148,7 @@ type MomentMsg struct {
 	ID        int      `json:"id"`
 	State     []string `json:"state"`
 	Content   string   `json:"content"`
+	Likes     int      `json:"likes"`
 }
 type MomentMsgV2 struct {
 	SongName  string    `json:"song_name"`
@@ -202,8 +208,10 @@ func getPraises(value interface{}, tableName string, condition string) interface
 			panic(err)
 		}
 		resp.ID = obj.ID
+		resp.CoverId = obj.CoverId
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
-		content[index] = obj
+		setting.DB.Table("praise").Where("cover_id=? and is_liked=?", resp.CoverId, 1).Count(&resp.Likes)
+		content[index] = resp
 		index++
 	}
 	return content
@@ -223,8 +231,10 @@ func getCovers(value interface{}, tableName string, condition string) interface{
 		if err != nil {
 			panic(err)
 		}
+		resp.ID = obj.ID
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		resp.SongName = obj.SongName
+		setting.DB.Table("praise").Where("cover_id=? and is_liked=?", resp.ID, 1).Count(&resp.Likes)
 		content[index] = resp
 		index++
 	}
@@ -270,6 +280,7 @@ func getMoments(value interface{}, tableName string, condition string) interface
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		resp.SongName = obj.SongName
 		resp.Content = obj.Content
+		setting.DB.Table("praise").Where("cover_id=? and is_liked=?", resp.ID, 1).Count(&resp.Likes)
 		if err != nil {
 			panic(err)
 		}

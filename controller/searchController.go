@@ -41,7 +41,8 @@ func Search(ctx *gin.Context) {
 
 	//提取关键字
 	if err := ctx.ShouldBind(&key); err != nil {
-		panic(err)
+		ctx.JSON(e.INVALID_PARAMS, e.ErrMsgResponse{Message: e.GetMsg(400)})
+		return
 	}
 	keyword := key.Keyword
 

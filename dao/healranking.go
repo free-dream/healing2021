@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"fmt"
 	"strconv"
 
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
@@ -46,9 +47,12 @@ func GetRankByCUserId(userid int) (string, error) {
 			break
 		}
 	}
+	//
+	fmt.Println(i)
+	//
 	var resp string
 	if i <= 199 {
-		resp = strconv.Itoa(i)
+		resp = strconv.Itoa(i + 1)
 	} else if i <= 499 {
 		resp = a
 	} else if i <= 999 {

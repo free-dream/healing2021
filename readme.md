@@ -90,12 +90,12 @@ Content-Type application/json
 `可能遇到401,用户未登录强制重定向进行授权登录`
 ## 1.2 假登录
 
-POST /wechatUser  HTTP/1.1
+POST /user  HTTP/1.1
 ```json
 {
-"nickname": "string",
-"openid": string,
-  "avatar": string
+	"nickname": "string",
+	"openid": string,
+  	"avatar": string
 }
 ```
 
@@ -217,22 +217,24 @@ Content-Type: application/json
       index:{
     "song_name": "string",
     "created_at": "string", //“2006-01-02 15:04:05”
-    "anonymous": int, //1:匿名 2:不匿名
       }
   },
   "mySongs": {
       index:{
-
+	"id":int,
+    "likes":int,
     "created_at": "string",
     "song_name": "string",
       }
   },
   "myLikes": {
       index:{
+    "cover_id":int,
+    "likes":int,
     "created_at": "string",
     "song_name": "string",
     "id": int, //对应点赞的id
-    "likeNum": int //对应点赞数
+    "likes": int //对应点赞数
       }
   },
   "moments": {
@@ -242,7 +244,7 @@ Content-Type: application/json
     "content": "string", //动态内容
     "id": int, //对应动态的id
     "song_name": string, //分享的歌曲名
-    "likeNum": int 
+    "likes": int 
       }
   }
 }
@@ -308,6 +310,7 @@ Content-Type: application/json
     "songId": int,
     "likeId":int,
     "song": "string" //歌曲url
+    "likes":int
   }
   }
 }
@@ -343,45 +346,45 @@ Content-Type: application/json
 
 ```json
 {
-    message：{
+   "message":{
   "avatar": "string",
   "nickname": "string",
   "school": "string",
   "signature": "string",
-}
+},
   "mySelections": {
       index:{
-    "model": "string", //模块名 治愈或是投递箱
     "song_name": "string",
     "created_at": "string", //“2006-01-02 15:04:05”
-      },
+      }
   },
   "mySongs": {
-      index：{
-    "model": "string",//模块名 治愈或是投递箱
+      index:{
+	"id":int,
+    "likes":int,
     "created_at": "string",
     "song_name": "string",
-    "likeNum": int,
-    "songId": int, //受访者所唱歌曲的id
-  },
+     "likes":int
+      }
   },
   "myLikes": {
       index:{
-    "model": "string",
+    "cover_id":int,
+    "likes":int,
     "created_at": "string",
     "song_name": "string",
-    "likeId": int, //对应点赞的id
-    "likeNum": int //对应点赞数
+    "id": int, //对应点赞的id
+    "likes": int //对应点赞数
       }
   },
   "moments": {
       index:{
     "created_at": "string",
-    "state": "[]string", //状态:摸鱼
+    "state": "string", //状态:摸鱼
     "content": "string", //动态内容
-    "momentId": int, //对应动态的id
+    "id": int, //对应动态的id
     "song_name": string, //分享的歌曲名
-    "likeNum": int 
+    "likes": int 
       }
   }
 }
@@ -610,21 +613,21 @@ Content-Type: application/json
 
 #### 3.2.1.2 抽奖
 
-GET /healing/lotterybox/draw HTTP 1.1
+**先调用抽奖确认，弹窗出现再触发抽奖**
+
+POST  /healing/lotterybox/draw HTTP 1.1
+
+```json
+{
+    "tel":string
+}
+```
 
 成功:
 
 HTTP/1.1 200 OK
 
 Content-Type: application/json
-
-```json
-{
-    "check":int,	//1或0或2，对应中或者没中或者积分不足一抽，前端设置对应文案
-    "name":string,	//奖品名,default=null
-    "picture":string(url)	//奖品图片，或者没中的话指向一些默认图片url
-}
-```
 
 失败(例)：
 
@@ -634,9 +637,11 @@ Content-Type: application/json
 
 `{"message" : "抽奖失败"}`
 
-#### 3.2.1.3 拉取用户中奖记录
+#### 3.2.1.3 抽奖确认
 
-GET /healing/lotterybox/prizes
+GET /healing/lotterybox/drawcheck HTTP 1.1
+
+**作为抽奖按钮的前置接口存在**
 
 成功:
 
@@ -645,22 +650,32 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 ```json
-[//已按照时间戳进行排序
-    {
-        "name":string,	//奖品名
-        "picture":string,	//奖品图片url
-    }
-    ...
-]
+{
+    "msg":"积分不足"
+}
 ```
 
-失败(例)：
+or
+
+```json
+{
+    "msg":"请填写手机号码"
+}
+```
+
+or
+
+```json
+{
+    "msg":"已参与抽奖
+}
+```
 
 HTTP/1.1 403 Forbidden
 
 Content-Type: application/json
 
-`{"message" : "拉取中奖信息失败"}`
+`{"message" : "抽奖失败"}`
 
 #### 3.2.1.4 拉取对应用户的任务列表
 
@@ -672,16 +687,17 @@ HTTP/1.1 200 OK
 
 Content-Type: application/json
 
+**前端的任务上限确认由前端自行完成,只要用max和counter进行比较，若max<=counter,则任务已完成**
+
 ```json
 [
     {
-        "check": integer,	//0未完成，1已完成	
         "task": {
             "id": integer,	
             "text" : string,	// 任务描述					
-            "target": integer	//目标次数				
+            "max": integer	//上限积分				
         },
-        "counter":integer	//已经进行的次数，交付前端表示进度
+        "counter":integer	//已经获得的积分，交付前端表示进度
     },
     ...
 ]
@@ -695,13 +711,35 @@ Content-Type: application/json
 
 `{"message" : "加载任务列表失败"}`
 
-#### 3.2.1.5 任务更新/领取积分
+#### 3.2.1.5 获取当前用户的积分
+
+GET /healing/lotterybox/points
+
+成功:
+
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+```json
+{
+    "points":integer， //当前用户的积分
+}
+```
+
+失败(例)：
+
+HTTP/1.1 403 Forbidden
+
+Content-Type: application/json
+
+`{"message" : "获取当前用户积分失败"}`
 
 ### 3.2.2 排行榜
 
 #### 3.2.2.1 学校积分排名
 
-GET /healing/rank/{school}
+GET /healing/rank/:school
 
 ***school指学校名称，中间有一次对换，例如华工==华南理工大学==scut***
 
@@ -718,6 +756,7 @@ Content-Type: application/json
 ```json
 [//列表长度为10
     {
+        “userid”:integer, 	//userid
         "avatar":string,	//用户头像url
         "nickname":string,	//用户名
     }
@@ -769,7 +808,7 @@ Content-Type: application/json
 
 #### 3.2.3.1 获取按日的热榜
 
-Get /healing/dailyrank/{date}
+Get /healing/dailyrank/:date
 ***date的日期遵循统一格式 mm-dd*** 
 ***日期不早于上线当日***
 
@@ -907,7 +946,7 @@ Content-Type: application/json
 
 `{"message" : "搜索失败"}`
 
-#### 3.2.4.2 搜索历史 (保留，可选，视前端需求)
+#### 3.2.4.2 搜索历史 (废案)
 
 GET /healing/search/history
 
@@ -956,7 +995,7 @@ POST /healing/selection
         "language":string,	
         "style":string,
 }
-//童年歌曲点歌的格式
+//童年歌曲点歌的格式（分享也按点歌这个进行操作）
 //"style":童年
 //"language":中文
 ```
@@ -1124,10 +1163,6 @@ HTTP/1.1 403 Forbidden
 Content-Type: application/json
 
 `{"message" : "不存在对应的歌曲"}`
-
-### 4.2.3 录音接口
-
-调用 POST /healing/recording 接口，有一个属性用于确认归属
 
 ## 4.3 歌曲页相关接口
 
@@ -1375,8 +1410,10 @@ Content-Type: application/json
         "content": string,								// 动态的内容
         "created_at": "2006-01-02 15:04:05",
         
-        "song" : string,								// 要点的歌名
+        "song" : string,								// 要点的、分享的歌名
+        "song_id": int,									// 经典点歌时为selection_id;童年分享时为classic_id
         "module" : int,									// 1为经典，2为童年
+        
         "lauds" : integer,								// 动态的点赞数
         "lauded": integer(0/1),							// 当前用户是否点赞
         "comments" : integer,							// 动态的评论数
@@ -1384,7 +1421,7 @@ Content-Type: application/json
 
         "creator": {
             "id": integer,	
-            "nackname" : string,						// 用户名
+            "nickname" : string,						// 用户名
             "avatar": string(url),						// 头像
             "avatar_visible": integer(0/1)				// 0代表没设置头像
         }
@@ -1412,8 +1449,8 @@ Content-Type: application/json
     "content": string,							// 动态的内容
     "status": ["status1", "status2"...],		// 状态列表元素都是string
         
-    "have_selection":int,						// 点歌了为1，否则为0
-    "is_normal":int,							// 经典点歌为0，童年为1
+    "have_selection":int,						// 点歌or分享为1，否则为0
+    "is_normal":int,							// 经典点歌为0，童年分享为1
    
     // 经典点歌填这四个
     "song_name":string,	
@@ -1421,7 +1458,7 @@ Content-Type: application/json
     "style":string,
     "remark":text,								//点歌的备注
      
-     // 童年点歌填这一个
+     // 童年分享填这一个
     "classic_id":int
 }
 ```
@@ -1464,7 +1501,7 @@ Content-Type: application/json
 
     "creator": {
         "id": integer,	
-        "nackname" : string,						// 用户名
+        "nickname" : string,						// 用户名
         "avatar": string(url),						// 头像
     	"avatar_visible": integer(0/1)				// 0代表没设置头像
 	}
@@ -1530,7 +1567,7 @@ Content-Type: application/json
     
         "creator": {
             "id": integer,	
-            "nackname" : string,						// 用户名
+            "nickname" : string,						// 用户名
             "avatar": string(url),						// 头像
             "avatar_visible": integer(0/1)				// 是0代表没设置头像
         }
@@ -1691,3 +1728,31 @@ Content-Type: application/json
 ```
 
 ## 
+
+#### 3.2.1.3 拉取用户中奖记录(废案)
+
+GET /healing/lotterybox/prizes
+
+成功:
+
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+```json
+[//已按照时间戳进行排序
+    {
+        "name":string,	//奖品名
+        "picture":string,	//奖品图片url
+    }
+    ...
+]
+```
+
+失败(例)：
+
+HTTP/1.1 403 Forbidden
+
+Content-Type: application/json
+
+`{"message" : "拉取中奖信息失败"}`
