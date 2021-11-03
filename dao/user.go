@@ -43,11 +43,20 @@ type User struct {
 }
 
 func FakeCreateUser(user *statements.User) (int, error) {
-	err := setting.DB.Table("user").Where("nickname=?", user.Nickname).Scan(&user).Error
-	if err != nil {
-		return 0, err
+	index := 0
+	exUser := statements.User{}
+	setting.DB.Table("user").Where("nickname=?", user.Nickname).Count(&index).Scan(&exUser)
+	if index == 0 {
+		setting.DB.Table("user").Create(&user)
+		return int(user.ID), nil
+	} else {
+		if user.Openid == exUser.Openid {
+			return int(user.ID), nil
+		} else {
+			return 0, errors.New("昵称已存在")
+		}
+
 	}
-	return int(user.ID), nil
 
 }
 
