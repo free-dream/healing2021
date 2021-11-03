@@ -4,11 +4,13 @@
 
 **标记在源码内，以const形式存在，可修正** 
 
-| taskid | mission   |
-| ------ | --------- |
-| 1      | selection |
-| 2      | healing   |
-| 3      | moment    |
+| taskid | mission                           |
+| ------ | --------------------------------- |
+| 1      | selection                         |
+| 2      | healing                           |
+| 3      | moment                            |
+| 4      | easteregg1(准备一个彩蛋任务,可选) |
+| 5      | easteregg2(准备两个彩蛋任务,可选) |
 
 ## 使用
 
