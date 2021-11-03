@@ -22,7 +22,7 @@ func FakeLogin(ctx *gin.Context) {
 	id, err1 := dao.FakeCreateUser(&user)
 	if err1 != nil {
 		ctx.JSON(403, gin.H{
-			"message": "用户不存在",
+			"message": "昵称重复",
 		})
 		return
 	}
@@ -39,7 +39,9 @@ func FakeLogin(ctx *gin.Context) {
 	session.Set("openid", user.Openid)
 	session.Set("user_id", id)
 	session.Save()
-	ctx.JSON(200, "OK")
+	ctx.JSON(200, gin.H{
+		"message": "登录成功",
+	})
 }
 
 func FakeLoginEasy(ctx *gin.Context) {
