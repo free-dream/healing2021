@@ -173,7 +173,7 @@ func PostMoment(ctx *gin.Context) {
 		return
 	}
 	//任务模块植入 2021.11.1
-	thistask := task.HT
+	thistask := task.MT
 	thistask.AddRecord(userid)
 	//
 	ctx.JSON(200, e.ErrMsgResponse{Message: "动态发布成功"})
@@ -316,7 +316,7 @@ func GetCommentList(ctx *gin.Context) {
 		Comment := respModel.CommentResp{
 			CommentId: int(comment.ID),
 			Content:   comment.Comment,
-			Lauds: dao.CountCLaudsById(int(comment.ID)),
+			Lauds:     dao.CountCLaudsById(int(comment.ID)),
 			Lauded:    dao.HaveCLauded(UserId, int(comment.ID)),
 			Creator:   dao.TransformUserInfo(User),
 			CreatedAt: tools.DecodeTime(comment.CreatedAt),

@@ -2,8 +2,6 @@ package dao
 
 //废案方法
 import (
-	"fmt"
-
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	db "git.100steps.top/100steps/healing2021_be/pkg/setting"
@@ -80,9 +78,6 @@ func DrawCheck(userid int) (int, error) {
 		}
 		points = user.Points
 	}
-	//
-	fmt.Println(points)
-	//
 	if points < MINPOINTS {
 		return 0, nil
 	}

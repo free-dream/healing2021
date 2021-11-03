@@ -1,7 +1,6 @@
 package task
 
 import (
-	"fmt"
 	"strconv"
 
 	state "git.100steps.top/100steps/healing2021_be/models/statements"
@@ -20,12 +19,15 @@ var (
 )
 
 func init() {
+	//点歌任务
 	ST = SelectionTask{
 		TID: STID,
 	}
+	//动态任务
 	MT = MomentTask{
 		TID: MTID,
 	}
+	//唱歌任务
 	HT = HealingTask{
 		TID: HTID,
 	}
@@ -50,17 +52,6 @@ func errHandler(err error) {
 	if err != nil {
 		panic(err)
 	}
-}
-
-//在用户首次登录时创建对应的任务表
-func CreateTaskTable(userid int, taskid int) error {
-	mysqlDb := setting.MysqlConn()
-	usertask := state.TaskTable{
-		UserId: userid,
-		TaskId: taskid,
-	}
-	err := mysqlDb.Create(&usertask).Error
-	return err
 }
 
 //设置redis任务缓存,此处还未设置expile time
@@ -124,11 +115,18 @@ func GetCacheTask(userid int, tid int) int {
 	redisDb := setting.RedisConn()
 	key := strconv.Itoa(userid) + "/task"
 	temp := redisDb.HMGet(key, strconv.Itoa(tid)).Val()
-	if len(temp) < 1 {
+	// if len(temp) < 1 {
+	// 	return -1
+	// }
+	if temp[0] == nil {
 		return -1
 	}
-	data := temp[0].(int)
-	return data
+	data := temp[0].(string)
+	temp1, check := strconv.Atoi(data)
+	if check != nil {
+		return -1
+	}
+	return temp1
 }
 
 //同时更新总点数和任务点数
@@ -139,9 +137,9 @@ func ChangePoints(point float32, userid int, tid int) bool {
 	tempkey := strconv.Itoa(userid) + "/point"
 	temp := redisDb.HIncrBy(tempkey, "points", int64(point)).Val()
 	tempf := redisDb.HIncrBy(tempkey, strconv.Itoa(tid), int64(point)).Val()
-	//redis缓存读取测试
-	fmt.Println(redisDb.HMGet(tempkey, "points").Val())
-	fmt.Println(redisDb.HMGet(tempkey, strconv.Itoa(tid)).Val())
+	// //redis缓存读取测试
+	// fmt.Println(redisDb.HMGet(tempkey, "points").Val())
+	// fmt.Println(redisDb.HMGet(tempkey, strconv.Itoa(tid)).Val())
 	//单独拉出一个协程更新数据库以保证数据一致性
 	//错误处理
 	ch := make(chan int)
@@ -168,3 +166,15 @@ func ChangePoints(point float32, userid int, tid int) bool {
 	ch <- 0
 	return true
 }
+
+// 已实现于dao/task.go
+// //在用户首次登录时创建对应的任务表
+// func CreateTaskTable(userid int, taskid int) error {
+// 	mysqlDb := setting.MysqlConn()
+// 	usertask := state.TaskTable{
+// 		UserId: userid,
+// 		TaskId: taskid,
+// 	}
+// 	err := mysqlDb.Create(&usertask).Error
+// 	return err
+// }
