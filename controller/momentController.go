@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"git.100steps.top/100steps/healing2021_be/controller/ws"
 	"strconv"
+	"time"
 
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
@@ -253,30 +255,30 @@ func PostComment(ctx *gin.Context) {
 	}
 
 	// 存入数据库
-	if ok := dao.CreateComment(Comment); !ok {
+	commentId := 0
+	ok := false
+	if commentId, ok = dao.CreateComment(Comment); !ok {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入失败"})
 		return
 	}
 
 	// 发送相应的系统消息[有 实际评论写入成功，但是系统消息发送失败 的不一致风险]
-	//conn := ws.GetConn()
-	//userId, err := dao.GetMomentSenderId(NewComment.DynamicsId)
-	//if err != nil {
-	//	ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
-	//	return
-	//}
-	//err = conn.SendSystemMsg(respModel.SysMsg{
-	//	Uid: uint(userId),
-	//	Type:
-	//	ContentId:
-	//	Song:
-	//	Time: time.Now(),
-	//	IsSend:
-	//})
-	//if err != nil {
-	//	ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
-	//	return
-	//}
+	conn := ws.GetConn()
+	userId, err := dao.GetMomentSenderId(NewComment.DynamicsId)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+		return
+	}
+	err = conn.SendSystemMsg(respModel.SysMsg{
+		Uid:       uint(userId),
+		Type:      3,
+		ContentId: uint(commentId),
+		Time:      time.Now(),
+	})
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+		return
+	}
 
 	ctx.JSON(200, e.ErrMsgResponse{Message: "评论发布成功"})
 }
