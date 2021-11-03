@@ -116,6 +116,7 @@ type UserMsg struct {
 	ID        int    `json:"id"`
 	School    string `json:"school"`
 	Signature string `json:"signature"`
+	Sex       int    `json:"sex"`
 }
 type SelectionMsg struct {
 	ID        int    `json:"id"`
@@ -170,7 +171,7 @@ type MomentMsgV2 struct {
 func GetUser(id int) interface{} {
 	user := UserMsg{}
 	resp := make(map[string]interface{})
-	setting.DB.Table("user").Select("id,avatar,nickname,school,signature").Where("id=?", id).Scan(&user)
+	setting.DB.Table("user").Select("id,avatar,nickname,school,signature，sex").Where("id=?", id).Scan(&user)
 	resp["message"] = user
 	resp["mySelections"] = getSelections(user.ID, "selection", "user_id=?")
 	resp["mySongs"] = getCovers(user.ID, "cover", "user_id=?")
