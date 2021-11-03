@@ -53,7 +53,8 @@ func WsHandler(ctx *gin.Context) {
     )
     // get uid
     session := sessions.Default(ctx)
-    uid := session.Get("user_id").(string)
+    id := session.Get("user_id").(int)
+    uid := strconv.Itoa(id)
     // fake uid
     //uid := strconv.Itoa(TestUid)
     //TestUid++ 
