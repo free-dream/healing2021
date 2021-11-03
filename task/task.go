@@ -1,6 +1,7 @@
 package task
 
 import (
+	"fmt"
 	"strconv"
 
 	state "git.100steps.top/100steps/healing2021_be/models/statements"
@@ -83,16 +84,29 @@ func UpdateTask(userid int, tid int, value int64) error {
 //取用用户积分缓存
 func GetCachePoints(userid int) int {
 	redisDb := setting.RedisConn()
-	key := strconv.Itoa(userid) + "/task"
+	key := strconv.Itoa(userid) + "/points"
 	temp := redisDb.HMGet(key, "points").Val()
 	if len(temp) < 1 {
+		// //
+		// fmt.Println("redis读取points为空")
+		// //
 		return -1
 	}
-	data, ok := temp[0].(int)
+	data, ok := temp[0].(string)
 	if !ok {
+		// //
+		// fmt.Println("类型断言有误")
+		// //
 		return -1
 	}
-	return data
+	temp1, check := strconv.Atoi(data)
+	if check != nil {
+		// //
+		// fmt.Println("读取的非数字")
+		// //
+		return -1
+	}
+	return temp1
 }
 
 //基于mysql更新用户积分缓存
@@ -125,7 +139,9 @@ func ChangePoints(point float32, userid int, tid int) bool {
 	tempkey := strconv.Itoa(userid) + "/point"
 	temp := redisDb.HIncrBy(tempkey, "points", int64(point)).Val()
 	tempf := redisDb.HIncrBy(tempkey, strconv.Itoa(tid), int64(point)).Val()
-
+	//redis缓存读取测试
+	fmt.Println(redisDb.HMGet(tempkey, "points").Val())
+	fmt.Println(redisDb.HMGet(tempkey, strconv.Itoa(tid)).Val())
 	//单独拉出一个协程更新数据库以保证数据一致性
 	//错误处理
 	ch := make(chan int)

@@ -87,7 +87,6 @@ func DrawCheck(ctx *gin.Context) {
 	ctx.JSON(200, msg)
 }
 
-//未注册
 //GET /healing/lotterybox/points
 func GetUserPoints(ctx *gin.Context) {
 	points := resp.PointsResp{}

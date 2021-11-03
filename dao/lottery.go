@@ -25,14 +25,15 @@ func GetUserPoints(userid int) (int, error) {
 	temp := task.GetCachePoints(userid)
 	if temp < 0 {
 		var user tables.User
-		err := MysqlDb.Where("ID = ?", userid).Find(&user).Error
+		err := MysqlDb.Where("id = ?", userid).First(&user).Error
 		if err != nil {
 			return -1, err
 		}
 		err = task.UpdateCachePoints(userid, user.Points)
 		if err != nil {
-			return user.Points, err
+			return -1, err
 		}
+		return user.Points, err
 	}
 	return temp, nil
 }
@@ -40,7 +41,7 @@ func GetUserPoints(userid int) (int, error) {
 //获取用户的nickname
 func GetUserNickname(userid int) (string, error) {
 	var user tables.User
-	err := MysqlDb.Where("Id = ?", userid).First(&user).Error
+	err := MysqlDb.Where("id = ?", userid).First(&user).Error
 	if err != nil {
 		return "", err
 	}
@@ -50,7 +51,7 @@ func GetUserNickname(userid int) (string, error) {
 //获取用户的avatar
 func GetUserAvatar(userid int) (string, error) {
 	var user tables.User
-	err := MysqlDb.Where("Id = ?", userid).First(&user).Error
+	err := MysqlDb.Where("id = ?", userid).First(&user).Error
 	if err != nil {
 		return "", err
 	}
