@@ -3,7 +3,6 @@ package dao
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"math/rand"
 	"strconv"
@@ -175,7 +174,6 @@ func GetUser(id int) interface{} {
 	setting.DB.Table("user").Select("id,avatar,nickname,school,signature,sex").Where("id=?", id).Scan(&user)
 	resp["message"] = user
 	resp["mySelections"] = getSelections(user.ID, "selection", "user_id=?")
-	fmt.Println(resp["mySelections"])
 	resp["mySongs"] = getCovers(user.ID, "cover", "user_id=?")
 	resp["moments"] = getMoments(user.ID, "moment", "user_id=?")
 	resp["myLikes"] = getPraises(user.ID, "praise", "praise.user_id=?")
@@ -272,8 +270,6 @@ func getSelections(value interface{}, tableName string, condition string) interf
 		resp.SongName = obj.SongName
 		resp.ID = obj.ID
 		content[index] = resp
-		fmt.Println(index)
-		fmt.Println(content)
 		index++
 	}
 	return content
