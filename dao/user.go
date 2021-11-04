@@ -76,15 +76,27 @@ func CreateUser(param *User) (int, error) {
 		return 0, errors.New("error")
 	}
 	setting.DB.Table("user").Create(&user)
-	value, err := json.Marshal(param.Hobby)
+	/*value, err := json.Marshal(param.Hobby)
 	if err != nil {
 		panic(err)
 		// return 0, err
 	}
-	setting.RedisClient.HSet("hobby", strconv.Itoa(int(user.ID)), value)
+	setting.RedisClient.HSet("hobby", strconv.Itoa(int(user.ID)), value)*/
 
 	return int(user.ID), nil
 
+}
+
+func HobbyStore(hobby []string, id int) error {
+	value, err := json.Marshal(hobby)
+	if err != nil {
+		return err
+	}
+	err = setting.RedisClient.HSet("hobby", strconv.Itoa(id), value).Err()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func UpdateUser(user *User, id int, avatar string) (string, error) {

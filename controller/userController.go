@@ -63,6 +63,22 @@ func Register(ctx *gin.Context) {
 		"user_id": id,
 	})
 }
+
+func HobbyPoster(ctx *gin.Context) {
+	var hobby []string
+	id := sessions.Default(ctx).Get("user_id").(int)
+	err := ctx.ShouldBindJSON(&hobby)
+	if err != nil {
+		ctx.JSON(400, gin.H{
+			"message": "error param",
+		})
+	}
+	err = dao.HobbyStore(hobby, id)
+	if err != nil {
+		panic(err)
+	}
+	ctx.JSON(200, "ok")
+}
 func Updater(ctx *gin.Context) {
 	//用户更新
 	session := sessions.Default(ctx)

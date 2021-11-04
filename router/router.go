@@ -78,6 +78,7 @@ func SetupRouter() *gin.Engine {
 	//user 模块
 
 	api.POST("/user", controller.Register)
+	api.POST("/hobby", controller.HobbyPoster)
 	api.PUT("/user", controller.Updater)
 	api.GET("/user", controller.Fetcher)
 	api.POST("/background", controller.Refresher)
