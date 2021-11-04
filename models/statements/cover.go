@@ -7,6 +7,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+//还是加了一项点赞数
 type Cover struct {
 	gorm.Model
 	UserId      int    `gorm:"default:0;index" json:"userid"`
@@ -19,7 +20,7 @@ type Cover struct {
 	Style       string `gorm:"default:''" json:"style"`
 	Language    string `gorm:"default:''" json:"language"`
 	Module      int    `gorm:"default:0" json:"module"`
-	// Module 1经典 2童年
+	Likes       int    `gorm:"default:0" json:"likes"`
 }
 
 func CoverInit() {

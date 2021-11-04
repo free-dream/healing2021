@@ -9,7 +9,7 @@ import (
 
 type Praise struct {
 	gorm.Model
-	CoverId         int `gorm:"default:0;index"`
+	CoverId         int `gorm:"index"`
 	UserId          int `gorm:"default:0;index"`
 	IsLiked         int `gorm:"default:0;index"`
 	MomentId        int `gorm:"default:0;index"`

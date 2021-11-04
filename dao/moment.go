@@ -90,12 +90,20 @@ func CountCommentsById(MomentId int) int {
 }
 
 // 创建新评论
-func CreateComment(Comment statements.MomentComment) bool {
+type CommentId struct {
+	Id int `gorm:"id"`
+}
+func CreateComment(Comment statements.MomentComment) (int,bool) {
 	MysqlDB := setting.MysqlConn()
 	if err := MysqlDB.Create(&Comment).Error; err != nil {
-		return false
+		return 0, false
 	}
-	return true
+
+	commentId := 0
+	if err := MysqlDB.Where(&Comment).Scan(&commentId).Error; err != nil {
+		return 0, false
+	}
+	return commentId, true
 }
 
 // 拉取一个动态下的评论列表
@@ -155,4 +163,15 @@ func GetMomentSenderId(MomentId int)  (int,error){
 	db := setting.MysqlConn()
 	err := db.Model(&statements.Moment{}).Where("id=?", MomentId).Scan(&momentSenderId).Error
 	return momentSenderId.UserId, err
+}
+
+// 通过评论id获得动态发送者userId
+type CommentSenderId struct {
+	UserId int `gorm:"user_id"`
+}
+func GetCommentSenderId(CommentId int)  (int,error){
+	commentSenderId := MomentSenderId{}
+	db := setting.MysqlConn()
+	err := db.Model(&statements.MomentComment{}).Where("id=?", CommentId).Scan(&commentSenderId).Error
+	return commentSenderId.UserId, err
 }
