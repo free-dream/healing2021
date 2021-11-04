@@ -44,7 +44,9 @@ func SetupRouter() *gin.Engine {
 		Appsecret: "",
 		BaseUrl:   "https://healing2021.test.100steps.top",
 		StoreSession: func(ctx *gin.Context, wechatUser *ginwechat.WechatUser) error {
+			user_id := controller.Login(wechatUser.OpenID)
 			session := sessions.Default(ctx)
+			session.Set("user_id", user_id)
 			session.Set("openid", wechatUser.OpenID)
 			session.Set("headImgUrl", wechatUser.HeadImgUrl)
 			session.Set("nickname", wechatUser.Nickname)

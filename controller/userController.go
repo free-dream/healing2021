@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"strconv"
 
 	"git.100steps.top/100steps/healing2021_be/dao"
@@ -9,14 +10,33 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+//用户登录
+func Login(openid string) int {
+	user := statements.User{
+		Openid: openid,
+	}
+	id := dao.CreateUser(&user)
+	//根据给定的数组生成任务表
+	var err1 error
+	check, err1 := dao.CheckTasks(id)
+	if !check && gorm.IsRecordNotFoundError(err1) {
+		err := dao.GenerateTasktable(normaltasks, id)
+		if err != nil {
+			panic(err)
+		}
+	}
+	return id
+}
+
 //用户注册,新增生成任务表机制
 func Register(ctx *gin.Context) {
 	//登录奖励机制,需要时可实现于task内
 	session := sessions.Default(ctx)
 	openid := session.Get("openid").(string)
 	//headImgUrl := session.Get("headImgUrl").(string)
+	id := session.Get("user_id").(int)
 
-	user := dao.User{}
+	user := statements.User{}
 	err := ctx.ShouldBindJSON(&user)
 	if err != nil {
 		ctx.JSON(400, gin.H{
@@ -35,33 +55,14 @@ func Register(ctx *gin.Context) {
 		})
 		return
 	}
-	id, err := dao.CreateUser(&user)
+	err = dao.RefineUser(&user, id)
 	if err != nil {
 		ctx.JSON(403, gin.H{
 			"message": "昵称已存在，无法注册",
 		})
 		return
 	}
-	session.Set("user_id", id)
-	err = session.Save()
-	if err != nil {
-		panic(err)
-	}
 
-	//根据给定的数组生成任务表
-	var err1 error
-	check, err1 := dao.CheckTasks(id)
-	if !check && gorm.IsRecordNotFoundError(err1) {
-		err = dao.GenerateTasktable(normaltasks, id)
-		if err != nil {
-			panic(err)
-		}
-	}
-	//
-
-	ctx.JSON(200, gin.H{
-		"user_id": id,
-	})
 }
 
 func HobbyPoster(ctx *gin.Context) {
@@ -84,7 +85,7 @@ func Updater(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	id := session.Get("user_id").(int)
 	avatar := session.Get("avatar").(string)
-	user := dao.User{}
+	user := statements.User{}
 	err := ctx.ShouldBind(&user)
 	if err != nil {
 		ctx.JSON(400, gin.H{

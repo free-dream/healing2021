@@ -26,7 +26,7 @@ func GetUserById(Id int) (statements.User, bool) {
 	return OneUser, true
 }
 
-type User struct {
+/*type User struct {
 	ID             uint
 	Openid         string   `json:"openid"`
 	Nickname       string   `json:"nickname"`
@@ -40,7 +40,7 @@ type User struct {
 	RealNameSearch int      `json:"real_name_search"`
 	Signature      string   `json:"signature"`
 	Hobby          []string `json:"hobby"`
-}
+}*/
 
 func FakeCreateUser(user *statements.User) (int, error) {
 	index := 0
@@ -61,10 +61,21 @@ func FakeCreateUser(user *statements.User) (int, error) {
 	}
 
 }
+func CreateUser(user *statements.User) int {
+	if !setting.RedisClient.SIsMember("healing2021:openid", user.Openid).Val() {
+		value, _ := json.Marshal(user.Openid)
+		setting.RedisClient.SAdd("healing:openid", value)
+		setting.DB.Table("user").Create(&user)
+		return int(user.ID)
+	}
+	setting.DB.Table("user").Where("openid=?", user.Openid).Scan(user)
+	return int(user.ID)
 
-func CreateUser(param *User) (int, error) {
+}
+
+func RefineUser(param *statements.User, id int) error {
 	count := 0
-	user := statements.User{
+	user = statements.User{
 		Nickname:    param.Nickname,
 		RealName:    param.RealName,
 		PhoneNumber: param.PhoneNumber,
@@ -73,9 +84,9 @@ func CreateUser(param *User) (int, error) {
 	}
 	setting.DB.Table("user").Where("nickname=?", user.Nickname).Count(&count)
 	if count != 0 {
-		return 0, errors.New("error")
+		return errors.New("error")
 	}
-	setting.DB.Table("user").Create(&user)
+	setting.DB.Table("user").Where("id=?", id).Select("nickname,real_name,phone_number,sex,school").Update(&user)
 	/*value, err := json.Marshal(param.Hobby)
 	if err != nil {
 		panic(err)
@@ -83,7 +94,7 @@ func CreateUser(param *User) (int, error) {
 	}
 	setting.RedisClient.HSet("hobby", strconv.Itoa(int(user.ID)), value)*/
 
-	return int(user.ID), nil
+	return nil
 
 }
 
@@ -99,7 +110,7 @@ func HobbyStore(hobby []string, id int) error {
 	return nil
 }
 
-func UpdateUser(user *User, id int, avatar string) (string, error) {
+func UpdateUser(user *statements.User, id int, avatar string) (string, error) {
 	other := statements.User{}
 	setting.DB.Table("user").Where("nickname=?", user.Nickname).Scan(&other)
 	if int(other.ID) != id && other.ID != 0 {

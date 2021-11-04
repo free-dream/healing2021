@@ -70,7 +70,7 @@
 
 ## 1.1 授权
 
-GET /wx/jump/?redirect=  HTTP/1.1
+GET /wx/jump2wechat/?redirect=  HTTP/1.1
 
 成功：
 
