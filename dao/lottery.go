@@ -5,7 +5,7 @@ import (
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	db "git.100steps.top/100steps/healing2021_be/pkg/setting"
-	"git.100steps.top/100steps/healing2021_be/task"
+	"git.100steps.top/100steps/healing2021_be/sandwich"
 	"github.com/jinzhu/gorm"
 )
 
@@ -20,14 +20,14 @@ var (
 
 //先从缓存里拿，拿不到再读取数据库，后增加缓存
 func GetUserPoints(userid int) (int, error) {
-	temp := task.GetCachePoints(userid)
+	temp := sandwich.GetCachePoints(userid)
 	if temp < 0 {
 		var user tables.User
 		err := MysqlDb.Where("id = ?", userid).First(&user).Error
 		if err != nil {
 			return -1, err
 		}
-		err = task.UpdateCachePoints(userid, user.Points)
+		err = sandwich.UpdateCachePoints(userid, user.Points)
 		if err != nil {
 			return -1, err
 		}
@@ -68,7 +68,7 @@ func GetAllLotteries() ([]tables.Lottery, error) {
 
 //抽奖确认
 func DrawCheck(userid int) (int, error) {
-	points := task.GetCachePoints(userid)
+	points := sandwich.GetCachePoints(userid)
 	var err error
 	if points < 0 {
 		var user tables.User

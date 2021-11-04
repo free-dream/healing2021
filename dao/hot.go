@@ -11,7 +11,7 @@ func GetCoversByDate(date string) ([]statements.Cover, error) {
 
 	var data []statements.Cover
 
-	err := mysqlDb.Where("CreatedAt LIKE ?", (date + "%")).Order("IsLiked desc").Limit(10).Find(&data).Error
+	err := mysqlDb.Where("CreatedAt LIKE ?", ("%" + date + "%")).Order("IsLiked desc").Limit(10).Find(&data).Error
 	if err != nil {
 		return nil, err
 	}

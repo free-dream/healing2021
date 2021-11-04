@@ -91,7 +91,13 @@ Content-Type application/json
 ## 1.2 假登录
 
 POST /user  HTTP/1.1
-前端可自定义参数，格式参考2.1注册接口
+```json
+{
+	"nickname": "string",
+	"openid": string,
+  	"avatar": string
+}
+```
 
 成功：
 

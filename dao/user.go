@@ -3,10 +3,12 @@ package dao
 import (
 	"encoding/json"
 	"errors"
-	"git.100steps.top/100steps/healing2021_be/pkg/tools"
+	"fmt"
 	"math/rand"
 	"strconv"
 	"time"
+
+	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
@@ -46,14 +48,19 @@ func FakeCreateUser(user *statements.User) (int, error) {
 	index := 0
 	exUser := statements.User{}
 	setting.DB.Table("user").Where("nickname=?", user.Nickname).Count(&index).Scan(&exUser)
+
 	if index == 0 {
 		setting.DB.Table("user").Create(&user)
 		return int(user.ID), nil
 	} else {
 		if user.Openid == exUser.Openid {
-			return int(user.ID), nil
+			//
+			fmt.Println("fake login openid", int(user.ID))
+			//
+			return int(exUser.ID), nil
 		} else {
-			return 0, errors.New("昵称已存在")
+			//逻辑更改，返回已有用户
+			return int(exUser.ID), errors.New("昵称已存在")
 		}
 
 	}

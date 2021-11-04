@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"strconv"
 
 	"git.100steps.top/100steps/healing2021_be/models/statements"
@@ -60,6 +61,9 @@ func Selector(ctx *gin.Context) {
 		// return
 	}
 	userid := sessions.Default(ctx).Get("user_id").(int)
+	//
+	fmt.Println(userid)
+	//
 	param.UserId = userid
 	param.Module = 1
 	resp, err := dao.Select(param)
