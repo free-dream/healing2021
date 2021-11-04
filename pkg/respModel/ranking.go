@@ -2,6 +2,12 @@ package respModel
 
 import "time"
 
+//查询点赞表获得的视图
+type CoverRank struct {
+	CoverId int
+	Likes   int
+}
+
 //排序的返回值
 type RankingResp struct {
 	Avatar   string `json:"avatar"`
@@ -15,6 +21,7 @@ type RankingUResp struct {
 
 //每日热榜返回值
 type HotResp struct {
+	CoverId  int       `json:"cover_id"`
 	Avatar   string    `json:"avatar"`
 	Nickname string    `json:"nickname"`
 	Posttime time.Time `json:"post_time"`

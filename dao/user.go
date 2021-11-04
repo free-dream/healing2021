@@ -3,15 +3,13 @@ package dao
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"math/rand"
 	"strconv"
 	"time"
 
-	"git.100steps.top/100steps/healing2021_be/pkg/tools"
-
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
+	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 )
 
 /**
@@ -54,9 +52,6 @@ func FakeCreateUser(user *statements.User) (int, error) {
 		return int(user.ID), nil
 	} else {
 		if user.Openid == exUser.Openid {
-			//
-			fmt.Println("fake login openid", int(user.ID))
-			//
 			return int(exUser.ID), nil
 		} else {
 			//逻辑更改，返回已有用户
@@ -178,7 +173,7 @@ type MomentMsgV2 struct {
 func GetUser(id int) interface{} {
 	user := UserMsg{}
 	resp := make(map[string]interface{})
-	setting.DB.Table("user").Select("id,avatar,nickname,school,signature，sex").Where("id=?", id).Scan(&user)
+	setting.DB.Table("user").Select("id,avatar,nickname,school,signature,sex").Where("id=?", id).Scan(&user)
 	resp["message"] = user
 	resp["mySelections"] = getSelections(user.ID, "selection", "user_id=?")
 	resp["mySongs"] = getCovers(user.ID, "cover", "user_id=?")
@@ -199,6 +194,7 @@ func GetCallee(id int) interface{} {
 	setting.DB.Table("user").Where("id=?", id).Scan(&user)
 	resp["message"] = user
 	resp["mySelections"] = getSelections(user.ID, "selection", "user_id=?")
+
 	resp["mySongs"] = getCovers(user.ID, "cover", "user_id=?")
 	resp["moments"] = getMoments(user.ID, "moment", "user_id=?")
 	resp["myLikes"] = getPraises(user.ID, "praise", "praise.user_id=?")
@@ -274,6 +270,7 @@ func getSelections(value interface{}, tableName string, condition string) interf
 		}
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		resp.SongName = obj.SongName
+		resp.ID = obj.ID
 		content[index] = resp
 		index++
 	}

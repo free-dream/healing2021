@@ -22,7 +22,7 @@ func GetRankingBySchool(school string) ([]tables.User, error) {
 	var err error = nil
 	if school != "All" {
 		//按Record 倒序排列
-		err = mysqlDb.Where("School = ?", school).Order("Record desc").Limit(10).Find(&users).Error
+		err = mysqlDb.Where("School = ?", school).Order("Points desc").Limit(10).Find(&users).Error
 	} else if school == "All" {
 		err = mysqlDb.Order("Record desc").Limit(10).Find(&users).Error
 	}

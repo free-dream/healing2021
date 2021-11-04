@@ -26,9 +26,9 @@ func IdentityCheck() gin.HandlerFunc {
 				redirect := ctx.Query("redirect")
 				var url string
 				if tools.IsDebug() {
-					url = "https://healing2020.100steps.top/test/wx/jump2wechat?redirect=" + redirect
+					url = "https://healing2021.test.100steps.top/wx/jump2wechat?redirect=" + redirect
 				} else {
-					url = "https://healing2020.100steps.top/wx/jump2wechat?redirect=" + redirect
+					url = "https://healing2021.100steps.top/wx/jump2wechat?redirect=" + redirect
 				}
 				ctx.Redirect(302, url)
 				ctx.Abort()

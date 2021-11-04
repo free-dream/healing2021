@@ -1,17 +1,23 @@
 package dao
 
 import (
-	"git.100steps.top/100steps/healing2021_be/models/statements"
+	tables "git.100steps.top/100steps/healing2021_be/models/statements"
+	resp "git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
 
-//根据日期查询对应热榜
-func GetCoversByDate(date string) ([]statements.Cover, error) {
+//根据日期获取对应热榜
+func GetCoversByDate(date string) ([]tables.Cover, error) {
 	mysqlDb := setting.MysqlConn()
 
-	var data []statements.Cover
+	var data []tables.Cover
+	var likes []resp.CoverRank
 
-	err := mysqlDb.Where("CreatedAt LIKE ?", ("%" + date + "%")).Order("IsLiked desc").Limit(10).Find(&data).Error
+	err := mysqlDb.Order("likes desc").
+		Table("praise").
+		Select("cover_id, count(cover_id) as likes").
+		Group("cover_id").
+		Scan(&likes).Error
 	if err != nil {
 		return nil, err
 	}
@@ -19,14 +25,37 @@ func GetCoversByDate(date string) ([]statements.Cover, error) {
 }
 
 //获取全时间获赞最高项
-func GetCoversByLikes() ([]statements.Cover, error) {
+func GetCoversByLikes() ([]tables.Cover, []resp.CoverRank, error) {
 	mysqlDb := setting.MysqlConn()
+	// 用cover表做了一个测试
+	// var test []Test
+	// err1 := mysqlDb.Order("test desc").Table("cover").Select("nickname, count(nickname) as test").Group("nickname").Scan(&test).Error
+	// if err1 != nil {
+	// 	panic(err1)
+	// }
+	// fmt.Println(test)
+	// return nil, nil
+	// //
+	var likes []resp.CoverRank
+	covers := make([]tables.Cover, 0)
 
-	var datas []statements.Cover
+	err := mysqlDb.Order("likes desc").
+		Table("praise").
+		Select("cover_id, count(cover_id) as likes").
+		Group("cover_id").
+		Limit(10).
+		Scan(&likes).Error
 
-	err := mysqlDb.Order("IsLiked desc").Limit(10).Find(&datas).Error
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return datas, nil
+	for _, item := range likes {
+		var temp tables.Cover
+		err = mysqlDb.Where("id = ?", item.CoverId).First(&temp).Error
+		if err != nil {
+			return nil, nil, err
+		}
+		covers = append(covers, temp)
+	}
+	return covers, likes, nil
 }

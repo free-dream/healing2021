@@ -51,27 +51,29 @@ func UpdateLikesByID(user int, target int, likes int, kind string) error {
 	}
 
 	//分支结构估计跑起来不快,不过先这样
-	if target == 1 { //创建点赞表
-		if kind == "cover" {
+	if target == 1 { //创建点赞表,更新coverLikes字段
+		switch kind {
+		case "cover":
 			like = tables.Praise{
 				CoverId: target,
 				IsLiked: likes,
 			}
 			err = lock.Create(&like).Error
-		} else if kind == "moment" {
+		case "moment":
 			like = tables.Praise{
 				MomentId: target,
 				IsLiked:  likes,
 			}
 			err = lock.Create(&like).Error
-		} else if kind == "momentcomment" {
+		case "momentcomment":
 			like = tables.Praise{
 				MomentCommentId: target,
 				IsLiked:         likes,
 			}
 			err = lock.Create(&like).Error
-		} else {
+		default:
 			panic("wrong type") //基本上不可能抵达,除非有意设计
+
 		}
 		//错误处理
 		if err != nil {
@@ -79,13 +81,14 @@ func UpdateLikesByID(user int, target int, likes int, kind string) error {
 			return err
 		}
 	} else if target == -1 { //删除点赞表
-		if kind == "cover" {
+		switch kind {
+		case "cover":
 			err = lock.Model(&like).Where("cover_id = ? AND user_id = ?", target, user).Delete(&like).Error
-		} else if kind == "moment" {
+		case "moment":
 			err = lock.Model(&like).Where("moment_id = ? AND user_id = ?", target, user).Delete(&like).Error
-		} else if kind == "momentcomment" {
+		case "momentcomment":
 			err = lock.Model(&like).Where("moment_comment_id = ? AND user_id = ?", target, user).Delete(&like).Error
-		} else {
+		default:
 			panic("wrong type") //基本上不可能抵达,除非有意
 		}
 	}

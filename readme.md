@@ -856,6 +856,7 @@ Content-Type: application/json
 ```json
 [//列表长度为10
     {
+        "cover_id":integer,	//翻唱id，跳转
         "avatar":string,	//用户头像url
         "nickname":string,	//用户名
         "post_time":string(datetime),	//时间

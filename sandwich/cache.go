@@ -1,7 +1,6 @@
 package sandwich
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -32,23 +31,14 @@ func GetCachePoints(userid int) int {
 	key := strconv.Itoa(userid) + "/points"
 	temp := redisDb.HMGet(key, "points").Val()
 	if len(temp) < 1 {
-		// //
-		// fmt.Println("redis读取points为空")
-		// //
 		return -1
 	}
 	data, ok := temp[0].(string)
 	if !ok {
-		// //
-		// fmt.Println("类型断言有误")
-		// //
 		return -1
 	}
 	temp1, check := strconv.Atoi(data)
 	if check != nil {
-		// //
-		// fmt.Println("读取的非数字")
-		// //
 		return -1
 	}
 	return temp1
@@ -77,9 +67,6 @@ func GetCURanking(userid int) string {
 	db := setting.RedisConn()
 	key := strconv.Itoa(userid) + "rank"
 	data := db.Get(key).Val()
-	//
-	fmt.Println(data)
-	//
 	return data
 }
 
