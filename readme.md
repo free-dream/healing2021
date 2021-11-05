@@ -81,6 +81,8 @@ Content-Type application/json
 ```json
 {
   "nickname": "string",
+  "is_existed": int,//0表示未注册，1表示注册过
+  "is_administrator": bool //判断是否是管理员，true是管理员，可以看到删除评论的按钮
 }
 ```
 

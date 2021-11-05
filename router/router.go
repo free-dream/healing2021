@@ -1,7 +1,6 @@
 package router
 
 import (
-	"encoding/gob"
 	"io"
 	"log"
 	"os"
@@ -32,7 +31,7 @@ func SetupRouter() *gin.Engine {
 	r.Use(middleware.Timeout(time.Minute))
 	r.Use(middleware.Cors())
 	// 注册sessions组件，使用redis作为驱动
-	gob.Register(tools.RedisUser{})
+	//gob.Register(tools.RedisUser{})
 	var err error
 	store, err = redis.NewStore(30, "tcp", tools.GetConfig("redis", "addr"), "", []byte("__100steps__100steps__100steps__"))
 	if err != nil {

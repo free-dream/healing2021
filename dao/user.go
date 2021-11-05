@@ -45,10 +45,12 @@ func GetUserById(Id int) (statements.User, bool) {
 func FakeCreateUser(user *statements.User) (int, error) {
 	index := 0
 	exUser := statements.User{}
-	setting.DB.Table("user").Where("nickname=?", user.Nickname).Count(&index).Scan(&exUser)
+	db := setting.MysqlConn()
+
+	db.Table("user").Where("nickname=?", user.Nickname).Count(&index).Scan(&exUser)
 
 	if index == 0 {
-		setting.DB.Table("user").Create(&user)
+		db.Table("user").Create(&user)
 		return int(user.ID), nil
 	} else {
 		if user.Openid == exUser.Openid {
@@ -62,17 +64,21 @@ func FakeCreateUser(user *statements.User) (int, error) {
 
 }
 func CreateUser(user *statements.User) (int, int) {
-	if !setting.RedisClient.SIsMember("healing2021:openid", user.Openid).Val() {
+	db := setting.MysqlConn()
+	redisCli := setting.RedisConn()
+	if !redisCli.SIsMember("healing2021:openid", user.Openid).Val() {
 
-		setting.DB.Table("user").Create(&user)
+		db.Table("user").Create(&user)
 		return 0, int(user.ID)
 	}
-	setting.DB.Table("user").Where("openid=?", user.Openid).Scan(&user)
+	db.Table("user").Where("openid=?", user.Openid).Scan(&user)
 	return 1, int(user.ID)
 
 }
 
 func RefineUser(param *statements.User, id int) error {
+	db := setting.MysqlConn()
+	redisCli := setting.RedisConn()
 	count := 0
 	user = statements.User{
 		Nickname:    param.Nickname,
@@ -81,11 +87,11 @@ func RefineUser(param *statements.User, id int) error {
 		Sex:         param.Sex,
 		School:      param.School,
 	}
-	setting.DB.Table("user").Where("nickname=?", user.Nickname).Count(&count)
+	db.Table("user").Where("nickname=?", user.Nickname).Count(&count)
 	if count != 0 {
 		return errors.New("error")
 	}
-	setting.DB.Table("user").Where("id=?", id).Select("nickname,real_name,phone_number,sex,school").Update(&user)
+	db.Table("user").Where("id=?", id).Select("nickname,real_name,phone_number,sex,school").Update(&user)
 	/*value, err := json.Marshal(param.Hobby)
 	if err != nil {
 		panic(err)
@@ -93,17 +99,19 @@ func RefineUser(param *statements.User, id int) error {
 	}
 	setting.RedisClient.HSet("hobby", strconv.Itoa(int(user.ID)), value)*/
 	value, _ := json.Marshal(user.Openid)
-	setting.RedisClient.SAdd("healing2021:openid", value)
+	redisCli.SAdd("healing2021:openid", value)
 	return nil
 
 }
 
 func HobbyStore(hobby []string, id int) error {
+
+	redisCli := setting.RedisConn()
 	value, err := json.Marshal(hobby)
 	if err != nil {
 		return err
 	}
-	err = setting.RedisClient.HSet("healing2021:hobby.", strconv.Itoa(id), value).Err()
+	err = redisCli.HSet("healing2021:hobby.", strconv.Itoa(id), value).Err()
 	if err != nil {
 		return err
 	}
@@ -111,8 +119,9 @@ func HobbyStore(hobby []string, id int) error {
 }
 
 func UpdateUser(user *statements.User, id int, avatar string) (string, error) {
+	db := setting.MysqlConn()
 	other := statements.User{}
-	setting.DB.Table("user").Where("nickname=?", user.Nickname).Scan(&other)
+	db.Table("user").Where("nickname=?", user.Nickname).Scan(&other)
 	if int(other.ID) != id && other.ID != 0 {
 
 		return "", errors.New("error")
@@ -127,7 +136,7 @@ func UpdateUser(user *statements.User, id int, avatar string) (string, error) {
 	message["phone_search"] = user.PhoneSearch
 	message["real_name_search"] = user.RealNameSearch
 	message["signature"] = user.Signature
-	err := setting.DB.Table("user").Select("nickname,signature,avatar_visible,phone_search,real_name_search ").Where("id=?", id).Update(message).Error
+	err := db.Table("user").Select("nickname,signature,avatar_visible,phone_search,real_name_search ").Where("id=?", id).Update(message).Error
 	if err != nil {
 		return "", err
 	}
@@ -194,9 +203,10 @@ type MomentMsgV2 struct {
 }
 
 func GetUser(id int) interface{} {
+	db := setting.MysqlConn()
 	user := UserMsg{}
 	resp := make(map[string]interface{})
-	setting.DB.Table("user").Select("id,avatar,nickname,school,signature,sex").Where("id=?", id).Scan(&user)
+	db.Table("user").Select("id,avatar,nickname,school,signature,sex").Where("id=?", id).Scan(&user)
 	resp["message"] = user
 	resp["mySelections"] = getSelections(user.ID, "selection", "user_id=?")
 	resp["mySongs"] = getCovers(user.ID, "cover", "user_id=?")
@@ -207,14 +217,16 @@ func GetUser(id int) interface{} {
 }
 
 func UpdateBackground(openid string, background string) error {
-	err := setting.DB.Table("user").Where("openid=?", openid).Update("background", background).Error
+	db := setting.MysqlConn()
+	err := db.Table("user").Where("openid=?", openid).Update("background", background).Error
 	return err
 }
 
 func GetCallee(id int) interface{} {
+	db := setting.MysqlConn()
 	user := UserMsg{}
 	resp := make(map[string]interface{})
-	setting.DB.Table("user").Where("id=?", id).Scan(&user)
+	db.Table("user").Where("id=?", id).Scan(&user)
 	resp["message"] = user
 	resp["mySelections"] = getSelections(user.ID, "selection", "user_id=?")
 
@@ -229,9 +241,10 @@ func GetCallee(id int) interface{} {
 //返回所有信息采用扫描行的方式
 
 func getPraises(value interface{}, tableName string, condition string) interface{} {
+	db := setting.MysqlConn()
 	obj := PraiseMsgV2{}
 	resp := PraiseMsg{}
-	rows, err := setting.DB.Table(tableName).Joins("left join cover on cover.id=praise.cover_id").Where(condition, value).Rows()
+	rows, err := db.Table(tableName).Joins("left join cover on cover.id=praise.cover_id").Where(condition, value).Rows()
 	index := 0
 	content := make(map[int]interface{})
 	if err != nil {
@@ -239,23 +252,24 @@ func getPraises(value interface{}, tableName string, condition string) interface
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err = setting.DB.ScanRows(rows, &obj)
+		err = db.ScanRows(rows, &obj)
 		if err != nil {
 			panic(err)
 		}
 		resp.ID = obj.ID
 		resp.CoverId = obj.CoverId
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
-		setting.DB.Table("praise").Where("cover_id=? and is_liked=?", resp.CoverId, 1).Count(&resp.Likes)
+		db.Table("praise").Where("cover_id=? and is_liked=?", resp.CoverId, 1).Count(&resp.Likes)
 		content[index] = resp
 		index++
 	}
 	return content
 }
 func getCovers(value interface{}, tableName string, condition string) interface{} {
+	db := setting.MysqlConn()
 	obj := CoverMsgV2{}
 	resp := CoverMsg{}
-	rows, err := setting.DB.Table(tableName).Where(condition, value).Rows()
+	rows, err := db.Table(tableName).Where(condition, value).Rows()
 	index := 0
 	content := make(map[int]interface{})
 	if err != nil {
@@ -263,23 +277,24 @@ func getCovers(value interface{}, tableName string, condition string) interface{
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err = setting.DB.ScanRows(rows, &obj)
+		err = db.ScanRows(rows, &obj)
 		if err != nil {
 			panic(err)
 		}
 		resp.ID = obj.ID
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		resp.SongName = obj.SongName
-		setting.DB.Table("praise").Where("cover_id=? and is_liked=?", resp.ID, 1).Count(&resp.Likes)
+		db.Table("praise").Where("cover_id=? and is_liked=?", resp.ID, 1).Count(&resp.Likes)
 		content[index] = resp
 		index++
 	}
 	return content
 }
 func getSelections(value interface{}, tableName string, condition string) interface{} {
+	db := setting.MysqlConn()
 	obj := SelectionMsgV2{}
 	resp := SelectionMsg{}
-	rows, err := setting.DB.Table(tableName).Where(condition, value).Rows()
+	rows, err := db.Table(tableName).Where(condition, value).Rows()
 	index := 0
 	content := make(map[int]interface{})
 	if err != nil {
@@ -287,7 +302,7 @@ func getSelections(value interface{}, tableName string, condition string) interf
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err = setting.DB.ScanRows(rows, &obj)
+		err = db.ScanRows(rows, &obj)
 		if err != nil {
 			panic(err)
 		}
@@ -301,9 +316,10 @@ func getSelections(value interface{}, tableName string, condition string) interf
 }
 
 func getMoments(value interface{}, tableName string, condition string) interface{} {
+	db := setting.MysqlConn()
 	obj := MomentMsgV2{}
 	resp := MomentMsg{}
-	rows, err := setting.DB.Table(tableName).Where(condition, value).Rows()
+	rows, err := db.Table(tableName).Where(condition, value).Rows()
 	index := 0
 	content := make(map[int]interface{})
 	if err != nil {
@@ -311,13 +327,13 @@ func getMoments(value interface{}, tableName string, condition string) interface
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err = setting.DB.ScanRows(rows, &obj)
+		err = db.ScanRows(rows, &obj)
 		resp.State = tools.DecodeStrArr(obj.State)
-		resp.ID = int(obj.ID)
+		resp.ID = obj.ID
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		resp.SongName = obj.SongName
 		resp.Content = obj.Content
-		setting.DB.Table("praise").Where("cover_id=? and is_liked=?", resp.ID, 1).Count(&resp.Likes)
+		db.Table("praise").Where("cover_id=? and is_liked=?", resp.ID, 1).Count(&resp.Likes)
 		if err != nil {
 			panic(err)
 		}

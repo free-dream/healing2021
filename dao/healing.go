@@ -33,14 +33,15 @@ type CovMsg struct {
 //点赞数debug，尚未测试
 //结构体疑似有bug
 func GetHealingPage(selectionId int) (interface{}, error) {
+	db := setting.MysqlConn()
 	userMsg := UsrMsg{}
 	resp := make(map[string]interface{})
-	setting.DB.Table("selection").Select("selection.id,selection.song_name,selection.style,selection.created_at,selection.remark,user.nickname").Joins("left join user on user.id=selection.user_id").Where("selection.id=?", selectionId).Scan(&userMsg)
+	db.Table("selection").Select("selection.id,selection.song_name,selection.style,selection.created_at,selection.remark,user.nickname").Joins("left join user on user.id=selection.user_id").Where("selection.id=?", selectionId).Scan(&userMsg)
 	/*if err!=nil{
 		panic(err)
 		return nil, err
 	}*/
-	rows, err := setting.DB.Table("cover").Select("cover.user_id,user.nickname,cover.id").Joins("left join user on user.id=cover.user_id").Where("cover.selection_id=?", selectionId).Rows()
+	rows, err := db.Table("cover").Select("cover.user_id,user.nickname,cover.id").Joins("left join user on user.id=cover.user_id").Where("cover.selection_id=?", selectionId).Rows()
 	if err != nil {
 		return nil, err
 	}
@@ -49,8 +50,8 @@ func GetHealingPage(selectionId int) (interface{}, error) {
 	obj := CovMsg{}
 	content := make(map[int]interface{})
 	for rows.Next() {
-		err = setting.DB.ScanRows(rows, &obj)
-		setting.DB.Table("praise").Where("cover_id=? and is_liked", obj.ID, 0).Count(&obj.Likes)
+		err = db.ScanRows(rows, &obj)
+		db.Table("praise").Where("cover_id=? and is_liked", obj.ID, 0).Count(&obj.Likes)
 		if err != nil {
 			return nil, err
 		}
@@ -65,7 +66,9 @@ func GetHealingPage(selectionId int) (interface{}, error) {
 
 //获取广告url
 func GetAds() (interface{}, error) {
-	rows, err := setting.DB.Table("advertisement").Rows()
+	db := setting.MysqlConn()
+
+	rows, err := db.Table("advertisement").Rows()
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +77,7 @@ func GetAds() (interface{}, error) {
 	var obj interface{}
 	content := make(map[int]interface{})
 	for rows.Next() {
-		setting.DB.ScanRows(rows, &obj)
+		db.ScanRows(rows, &obj)
 		content[index] = obj
 		index++
 	}
@@ -103,19 +106,21 @@ type SelectionDetails struct {
 //且由于每次分页资源不同所以key可相同
 //例首页:home
 func Cache(key string, resp interface{}) {
+	redisCli := setting.RedisConn()
 	value, err := json.Marshal(resp)
 	if err != nil {
 		panic(err)
 	}
-	err = setting.RedisClient.HSet(key, "cache", value).Err()
+	err = redisCli.HSet(key, "cache", value).Err()
 	fmt.Println(err)
 }
 
 //分页器
 //从分页器里面取出
 func Pager(key string, page int) (interface{}, error) {
+	redisCli := setting.RedisConn()
 	var resp []interface{}
-	by, err := setting.RedisClient.HGet(key, "cache").Bytes()
+	by, err := redisCli.HGet(key, "cache").Bytes()
 	if err != nil {
 		return nil, err
 	}
@@ -135,12 +140,13 @@ func Pager(key string, page int) (interface{}, error) {
 //module1表示治愈系，2表示童年，但返回参数可能不同
 //可参考
 func GetSelections(module string, id int, tag Tags) (interface{}, error) {
+	redisCli := setting.RedisConn()
 	index := 0
 	var resp []SelectionDetails
 	var err error
 	if tag.Label == "recommend" {
 		var hobby []string
-		by, err := setting.RedisClient.HGet("healing2021:hobby", strconv.Itoa(id)).Bytes()
+		by, err := redisCli.HGet("healing2021:hobby", strconv.Itoa(id)).Bytes()
 		if err != nil {
 			return nil, err
 		}
@@ -153,16 +159,16 @@ func GetSelections(module string, id int, tag Tags) (interface{}, error) {
 		}
 		var size int
 		for _, value := range hobby {
-			lenth := setting.RedisClient.LLen("healing2021:selection." + module + "." + value).Val()
+			lenth := redisCli.LLen("healing2021:selection." + module + "." + value).Val()
 			size += int(lenth)
 		}
 		resp = make([]SelectionDetails, size)
 		for _, value := range hobby {
-			if setting.RedisClient.Exists("healing2021:selection."+module+"."+value).Val() == 0 {
+			if redisCli.Exists("healing2021:selection."+module+"."+value).Val() == 0 {
 				continue
 			}
-			lenth := setting.RedisClient.LLen("healing2021:selection." + module + "." + value).Val()
-			for _, content := range setting.RedisClient.LRange("healing2021:selection."+module+"."+value, 0, lenth).Val() {
+			lenth := redisCli.LLen("healing2021:selection." + module + "." + value).Val()
+			for _, content := range redisCli.LRange("healing2021:selection."+module+"."+value, 0, lenth).Val() {
 				by = []byte(content)
 				err = json.Unmarshal(by, &resp[index])
 				index++
@@ -185,10 +191,10 @@ func GetSelections(module string, id int, tag Tags) (interface{}, error) {
 			return resp, nil
 		}
 	} else {
-		lenth := setting.RedisClient.LLen("healing2021:selection." + module + "." + tag.Label).Val()
+		lenth := redisCli.LLen("healing2021:selection." + module + "." + tag.Label).Val()
 		resp = make([]SelectionDetails, lenth)
 		for index < int(lenth) {
-			for _, content := range setting.RedisClient.LRange("healing2021:selection."+module+"."+tag.Label, 0, lenth).Val() {
+			for _, content := range redisCli.LRange("healing2021:selection."+module+"."+tag.Label, 0, lenth).Val() {
 				by := []byte(content)
 				err = json.Unmarshal(by, &resp[index])
 				if err != nil {
@@ -229,12 +235,14 @@ type CoverDetails struct {
 }
 
 func GetCovers(module string, id int, tag Tags) (interface{}, error) {
+	db := setting.MysqlConn()
+	redisCli := setting.RedisConn()
 	index := 0
 	var resp []CoverDetails
 	var err error
 	if tag.Label == "recommend" {
 		var hobby []string
-		by, err := setting.RedisClient.HGet("hobby", strconv.Itoa(id)).Bytes()
+		by, err := redisCli.HGet("hobby", strconv.Itoa(id)).Bytes()
 		if err != nil {
 			panic(err)
 		}
@@ -247,16 +255,16 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 		}
 		var size int
 		for _, value := range hobby {
-			lenth := setting.RedisClient.LLen("cover" + module + value).Val()
+			lenth := redisCli.LLen("cover" + module + value).Val()
 			size += int(lenth)
 		}
 		resp = make([]CoverDetails, size)
 		for _, value := range hobby {
-			if setting.RedisClient.Exists("cover"+module+value).Val() == 0 {
+			if redisCli.Exists("cover"+module+value).Val() == 0 {
 				continue
 			}
-			lenth := setting.RedisClient.LLen("cover" + module + value).Val()
-			for _, content := range setting.RedisClient.LRange("cover"+module+value, 0, lenth).Val() {
+			lenth := redisCli.LLen("cover" + module + value).Val()
+			for _, content := range redisCli.LRange("cover"+module+value, 0, lenth).Val() {
 				by = []byte(content)
 				err = json.Unmarshal(by, &resp[index])
 				index++
@@ -272,7 +280,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			//采用rand.Shuffle，将切片随机化处理后返回
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
 			for i, _ := range resp {
-				setting.DB.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
+				db.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			return resp, err
 		} else {
@@ -280,15 +288,15 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 				return resp[i].CreatedAt > resp[j].CreatedAt
 			})
 			for i, _ := range resp {
-				setting.DB.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
+				db.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			return resp, nil
 		}
 	} else {
-		lenth := setting.RedisClient.LLen("healing2021:cover." + module + "." + tag.Label).Val()
+		lenth := redisCli.LLen("healing2021:cover." + module + "." + tag.Label).Val()
 		resp = make([]CoverDetails, lenth)
 		for index < int(lenth) {
-			for _, content := range setting.RedisClient.LRange("healing2021:cover."+module+"."+tag.Label, 0, lenth).Val() {
+			for _, content := range redisCli.LRange("healing2021:cover."+module+"."+tag.Label, 0, lenth).Val() {
 				by := []byte(content)
 				err = json.Unmarshal(by, &resp[index])
 				if err != nil {
@@ -306,7 +314,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			//采用rand.Shuffle，将切片随机化处理后返回
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
 			for i, _ := range resp {
-				setting.DB.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
+				db.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			return resp, err
 		} else {
@@ -314,7 +322,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 				return resp[i].CreatedAt > resp[j].CreatedAt
 			})
 			for i, _ := range resp {
-				setting.DB.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
+				db.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			return resp, err
 		}
@@ -325,9 +333,10 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 
 //治愈系对应的录音
 func CreateRecord(module int, id string, file string, uid int) (CoverDetails, error) {
+	db := setting.MysqlConn()
+	redisCli := setting.RedisConn()
 	intId, _ := strconv.Atoi(id)
 	selectionId := intId
-	db := setting.MysqlConn()
 	userId := uid
 	var selection statements.Selection
 	result1 := db.Model(&statements.Selection{}).Where("id=?", selectionId).First(&selection)
@@ -344,39 +353,41 @@ func CreateRecord(module int, id string, file string, uid int) (CoverDetails, er
 	cover.Module = module
 	coverDetails := CoverDetails{}
 	err := db.Model(&statements.Cover{}).Create(&cover).Error
-	setting.DB.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
+	db.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
 	coverDetails.CreatedAt = tools.DecodeTime(cover.CreatedAt)
 	value, err := json.Marshal(coverDetails)
 	if err != nil {
 		return coverDetails, err
 	}
 	if cover.Style != "" {
-		setting.RedisClient.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Style, string(value))
+		redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Style, string(value))
 	}
 	if cover.Language != "" {
-		setting.RedisClient.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Language, string(value))
+		redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Language, string(value))
 	}
-	setting.RedisClient.RPush("healing2021:cover."+strconv.Itoa(module)+"."+"all", string(value))
+	redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+"all", string(value))
 
 	return coverDetails, err
 }
 
 func Select(selection statements.Selection) (SelectionDetails, error) {
-	err := setting.DB.Table("selection").Create(&selection).Error
+	db := setting.MysqlConn()
+	redisCli := setting.RedisConn()
+	err := db.Table("selection").Create(&selection).Error
 	selectionDetails := SelectionDetails{}
-	err = setting.DB.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at").Where("selection.id=?", selection.ID).Joins("left join selection on user.id=selection.user_id").Scan(&selectionDetails).Error
+	err = db.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at").Where("selection.id=?", selection.ID).Joins("left join selection on user.id=selection.user_id").Scan(&selectionDetails).Error
 	selectionDetails.CreatedAt = tools.DecodeTime(selection.CreatedAt)
 	value, err := json.Marshal(selectionDetails)
 	if err != nil {
 		return selectionDetails, err
 	}
 	if selection.Style != "" {
-		setting.RedisClient.RPush("healing2021:selection"+"."+selection.Style, string(value))
+		redisCli.RPush("healing2021:selection"+"."+selection.Style, string(value))
 	}
 	if selection.Language != "" {
-		setting.RedisClient.RPush("healing2021:selection"+"."+selection.Language, string(value))
+		redisCli.RPush("healing2021:selection"+"."+selection.Language, string(value))
 	}
-	setting.RedisClient.RPush("healing2021:selection"+"."+"all", string(value))
+	redisCli.RPush("healing2021:selection"+"."+"all", string(value))
 
 	return selectionDetails, err
 }
