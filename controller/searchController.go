@@ -34,9 +34,9 @@ func clean(keyword string) []string {
 func Search(ctx *gin.Context) {
 	var key keyword
 	respAll := make([]interface{}, 0)
-	respCovers := make([]respModel.CoversResp, 5)
-	respSelections := make([]respModel.SelectionResp, 5)
-	respUsers := make([]respModel.UserResp, 5)
+	respCovers := make([]respModel.CoversResp, 0)
+	respSelections := make([]respModel.SelectionResp, 0)
+	respUsers := make([]respModel.UserResp, 0)
 	respLen := new(respModel.SumResp)
 
 	//提取关键字
@@ -66,6 +66,7 @@ func Search(ctx *gin.Context) {
 			Coverid:  int(cover.ID),
 			Nickname: nickname,
 			Posttime: cover.CreatedAt,
+			Songname: cover.SongName,
 		}
 		respCovers = append(respCovers, temp)
 	}
@@ -88,6 +89,7 @@ func Search(ctx *gin.Context) {
 			Selectionid: int(selection.ID),
 			Nickname:    nickname,
 			Posttime:    selection.CreatedAt,
+			Songname:    selection.SongName,
 		}
 		respSelections = append(respSelections, temp)
 	}
