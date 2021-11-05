@@ -27,7 +27,7 @@ func SearchUserByKeyword(keyword string) ([]statements.User, int, error) {
 	mysqlDb := setting.MysqlConn()
 	var data []statements.User
 	var counter int
-	db := mysqlDb.Limit(30).Where("NickName LIKE ?", "%"+keyword+"%").Find(&data)
+	db := mysqlDb.Limit(30).Where("nickname LIKE ?", "%"+keyword+"%").Find(&data)
 	err := db.Error
 	if err != nil {
 		return nil, -1, err
@@ -40,7 +40,7 @@ func SearchCoverByKeyword(keyword string) ([]statements.Cover, int, error) {
 	mysqlDb := setting.MysqlConn()
 	var data []statements.Cover
 	var counter int
-	db := mysqlDb.Limit(30).Where("SongName LIKE ?", "%"+keyword+"%").Find(&data)
+	db := mysqlDb.Limit(30).Where("song_name LIKE ?", "%"+keyword+"%").Find(&data)
 	err := db.Error
 	if err != nil {
 		return nil, -1, err
@@ -53,7 +53,7 @@ func SearchSelectionByKeyword(keyword string) ([]statements.Selection, int, erro
 	mysqlDb := setting.MysqlConn()
 	var data []statements.Selection
 	var counter int
-	db := mysqlDb.Limit(30).Where("SongName LIKE ?", "%"+keyword+"%").Find(&data)
+	db := mysqlDb.Limit(30).Where("song_name LIKE ?", "%"+keyword+"%").Find(&data)
 	err := db.Error
 	if err != nil {
 		return nil, -1, err
