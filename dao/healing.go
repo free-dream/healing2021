@@ -305,7 +305,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 				index++
 			}
 		}
-		Cache("home"+strconv.Itoa(id), resp)
+		Cache("healing2021:home."+strconv.Itoa(id), resp)
 		if len(resp) > 10 {
 			resp = resp[0:10]
 		}

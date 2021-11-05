@@ -1,8 +1,6 @@
 package tools
 
 import (
-	"fmt"
-	"git.100steps.top/100steps/healing2021_be/pkg/e"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -26,6 +24,7 @@ type RedisUser struct {
 	Postbox  string
 }
 
+/*
 func GetUser(c *gin.Context) RedisUser {
 	session := sessions.Default(c)
 	data := session.Get("user")
@@ -45,7 +44,7 @@ func GetUser(c *gin.Context) RedisUser {
 	}
 	return data.(RedisUser)
 }
-
+*/
 //获取openid
 func GetOpenid(ctx *gin.Context) string {
 	session := sessions.Default(ctx)
