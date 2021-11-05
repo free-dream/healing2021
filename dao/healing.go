@@ -140,7 +140,7 @@ func GetSelections(module string, id int, tag Tags) (interface{}, error) {
 	var err error
 	if tag.Label == "recommend" {
 		var hobby []string
-		by, err := setting.RedisClient.HGet("hobby", strconv.Itoa(id)).Bytes()
+		by, err := setting.RedisClient.HGet("healing2021:hobby", strconv.Itoa(id)).Bytes()
 		if err != nil {
 			return nil, err
 		}
@@ -153,23 +153,23 @@ func GetSelections(module string, id int, tag Tags) (interface{}, error) {
 		}
 		var size int
 		for _, value := range hobby {
-			lenth := setting.RedisClient.LLen("selection" + module + value).Val()
+			lenth := setting.RedisClient.LLen("healing2021:selection." + module + "." + value).Val()
 			size += int(lenth)
 		}
 		resp = make([]SelectionDetails, size)
 		for _, value := range hobby {
-			if setting.RedisClient.Exists("selection"+module+value).Val() == 0 {
+			if setting.RedisClient.Exists("healing2021:selection."+module+"."+value).Val() == 0 {
 				continue
 			}
-			lenth := setting.RedisClient.LLen("selection" + module + value).Val()
-			for _, content := range setting.RedisClient.LRange("selection"+module+value, 0, lenth).Val() {
+			lenth := setting.RedisClient.LLen("healing2021:selection." + module + "." + value).Val()
+			for _, content := range setting.RedisClient.LRange("healing2021:selection."+module+"."+value, 0, lenth).Val() {
 				by = []byte(content)
 				err = json.Unmarshal(by, &resp[index])
 				index++
 			}
 		}
 		//第一次查询做缓存,与分页
-		Cache("home"+strconv.Itoa(id), resp)
+		Cache("healing2021:home."+strconv.Itoa(id), resp)
 		if len(resp) > 10 {
 			resp = resp[0:10]
 		}
@@ -185,10 +185,10 @@ func GetSelections(module string, id int, tag Tags) (interface{}, error) {
 			return resp, nil
 		}
 	} else {
-		lenth := setting.RedisClient.LLen("selection" + module + tag.Label).Val()
+		lenth := setting.RedisClient.LLen("healing2021:selection." + module + "." + tag.Label).Val()
 		resp = make([]SelectionDetails, lenth)
 		for index < int(lenth) {
-			for _, content := range setting.RedisClient.LRange("selection"+module+tag.Label, 0, lenth).Val() {
+			for _, content := range setting.RedisClient.LRange("healing2021:selection."+module+"."+tag.Label, 0, lenth).Val() {
 				by := []byte(content)
 				err = json.Unmarshal(by, &resp[index])
 				if err != nil {
@@ -197,7 +197,7 @@ func GetSelections(module string, id int, tag Tags) (interface{}, error) {
 				index++
 			}
 		}
-		Cache("home"+strconv.Itoa(id), resp)
+		Cache("healing2021:home"+strconv.Itoa(id), resp)
 		if len(resp) > 10 {
 			resp = resp[0:10]
 		}
@@ -263,7 +263,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			}
 		}
 		//第一次查询做缓存,与分页
-		Cache("home"+strconv.Itoa(id), resp)
+		Cache("healing2021:home."+strconv.Itoa(id), resp)
 		if len(resp) > 10 {
 			resp = resp[0:10]
 		}
@@ -285,10 +285,10 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			return resp, nil
 		}
 	} else {
-		lenth := setting.RedisClient.LLen("cover" + module + tag.Label).Val()
+		lenth := setting.RedisClient.LLen("healing2021:cover." + module + "." + tag.Label).Val()
 		resp = make([]CoverDetails, lenth)
 		for index < int(lenth) {
-			for _, content := range setting.RedisClient.LRange("cover"+module+tag.Label, 0, lenth).Val() {
+			for _, content := range setting.RedisClient.LRange("healing2021:cover."+module+"."+tag.Label, 0, lenth).Val() {
 				by := []byte(content)
 				err = json.Unmarshal(by, &resp[index])
 				if err != nil {
@@ -351,12 +351,12 @@ func CreateRecord(module int, id string, file string, uid int) (CoverDetails, er
 		return coverDetails, err
 	}
 	if cover.Style != "" {
-		setting.RedisClient.RPush("cover"+strconv.Itoa(module)+cover.Style, string(value))
+		setting.RedisClient.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Style, string(value))
 	}
 	if cover.Language != "" {
-		setting.RedisClient.RPush("cover"+strconv.Itoa(module)+cover.Language, string(value))
+		setting.RedisClient.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Language, string(value))
 	}
-	setting.RedisClient.RPush("cover"+strconv.Itoa(module)+"all", string(value))
+	setting.RedisClient.RPush("healing2021:cover."+strconv.Itoa(module)+"."+"all", string(value))
 
 	return coverDetails, err
 }
@@ -371,12 +371,12 @@ func Select(selection statements.Selection) (SelectionDetails, error) {
 		return selectionDetails, err
 	}
 	if selection.Style != "" {
-		setting.RedisClient.RPush("selection"+strconv.Itoa(selection.Module)+selection.Style, string(value))
+		setting.RedisClient.RPush("healing2021:selection"+"."+selection.Style, string(value))
 	}
 	if selection.Language != "" {
-		setting.RedisClient.RPush("selection"+strconv.Itoa(selection.Module)+selection.Language, string(value))
+		setting.RedisClient.RPush("healing2021:selection"+"."+selection.Language, string(value))
 	}
-	setting.RedisClient.RPush("selection"+strconv.Itoa(selection.Module)+"all", string(value))
+	setting.RedisClient.RPush("healing2021:selection"+"."+"all", string(value))
 
 	return selectionDetails, err
 }

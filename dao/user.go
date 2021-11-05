@@ -103,7 +103,7 @@ func HobbyStore(hobby []string, id int) error {
 	if err != nil {
 		return err
 	}
-	err = setting.RedisClient.HSet("hobby", strconv.Itoa(id), value).Err()
+	err = setting.RedisClient.HSet("healing2021:hobby.", strconv.Itoa(id), value).Err()
 	if err != nil {
 		return err
 	}
