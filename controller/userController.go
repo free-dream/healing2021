@@ -11,11 +11,11 @@ import (
 )
 
 //用户登录
-func Login(openid string) int {
+func Login(openid string) (int, int) {
 	user := statements.User{
 		Openid: openid,
 	}
-	id := dao.CreateUser(&user)
+	isExisted, id := dao.CreateUser(&user)
 	//根据给定的数组生成任务表
 	var err1 error
 	check, err1 := dao.CheckTasks(id)
@@ -25,7 +25,13 @@ func Login(openid string) int {
 			panic(err)
 		}
 	}
-	return id
+	return isExisted, id
+}
+
+//判断用户是否是管理员
+func GodJudger(nickname string) bool {
+	isAdministrator := dao.Authentication(nickname)
+	return isAdministrator
 }
 
 //用户注册,新增生成任务表机制

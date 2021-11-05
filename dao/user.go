@@ -61,15 +61,15 @@ func FakeCreateUser(user *statements.User) (int, error) {
 	}
 
 }
-func CreateUser(user *statements.User) int {
+func CreateUser(user *statements.User) (int, int) {
 	if !setting.RedisClient.SIsMember("healing2021:openid", user.Openid).Val() {
 		value, _ := json.Marshal(user.Openid)
 		setting.RedisClient.SAdd("healing:openid", value)
 		setting.DB.Table("user").Create(&user)
-		return int(user.ID)
+		return 0, int(user.ID)
 	}
-	setting.DB.Table("user").Where("openid=?", user.Openid).Scan(user)
-	return int(user.ID)
+	setting.DB.Table("user").Where("openid=?", user.Openid).Scan(&user)
+	return 1, int(user.ID)
 
 }
 
