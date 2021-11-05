@@ -660,47 +660,11 @@ HTTP/1.1 200 OK
 
 Content-Type: application/json
 
+`{"message" : "抽奖成功，请耐心等待开奖"}`
+
+`{"message" : "不能重复抽奖"}`
+
 失败(例)：
-
-HTTP/1.1 403 Forbidden
-
-Content-Type: application/json
-
-`{"message" : "抽奖失败"}`
-
-#### 3.2.1.3 抽奖确认
-
-GET /healing/lotterybox/drawcheck HTTP 1.1
-
-**作为抽奖按钮的前置接口存在**
-
-成功:
-
-HTTP/1.1 200 OK
-
-Content-Type: application/json
-
-```json
-{
-    "msg":"积分不足"
-}
-```
-
-or
-
-```json
-{
-    "msg":"请填写手机号码"
-}
-```
-
-or
-
-```json
-{
-    "msg":"已参与抽奖
-}
-```
 
 HTTP/1.1 403 Forbidden
 
@@ -1788,3 +1752,45 @@ HTTP/1.1 403 Forbidden
 Content-Type: application/json
 
 `{"message" : "拉取中奖信息失败"}`
+
+
+
+#### 3.2.1.3 抽奖确认(废案)
+
+GET /healing/lotterybox/drawcheck HTTP 1.1
+
+**作为抽奖按钮的前置接口存在**
+
+成功:
+
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+```json
+{
+    "msg":"积分不足"
+}
+```
+
+or
+
+```json
+{
+    "msg":"请填写手机号码"
+}
+```
+
+or
+
+```json
+{
+    "msg":"已参与抽奖
+}
+```
+
+HTTP/1.1 403 Forbidden
+
+Content-Type: application/json
+
+`{"message" : "抽奖失败"}

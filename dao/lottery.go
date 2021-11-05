@@ -68,26 +68,28 @@ func GetAllLotteries() ([]tables.Lottery, error) {
 
 //抽奖确认
 func DrawCheck(userid int) (int, error) {
-	points := sandwich.GetCachePoints(userid)
+	// points := sandwich.GetCachePoints(userid)
 	var err error
-	if points < 0 {
-		var user tables.User
-		err = MysqlDb.Where("ID = ?", userid).First(&user).Error
-		if err != nil {
-			return -1, err
-		}
-		points = user.Points
-	}
-	if points < MINPOINTS {
-		return 0, nil
-	}
+	// if points < 0 {
+	// 	var user tables.User
+	// 	err = MysqlDb.Where("ID = ?", userid).First(&user).Error
+	// 	if err != nil {
+	// 		return -1, err
+	// 	}
+	// 	points = user.Points
+	// }
+	// if points < MINPOINTS {
+	// 	return 0, nil
+	// }
 	var prize statements.Prize
 	if err = MysqlDb.Where("user_id = ?", userid).First(&prize).Error; gorm.IsRecordNotFoundError(err) {
-		return 1, nil
+		//未抽奖
+		return 0, nil
 	} else if err != nil {
 		return -1, err
 	}
-	return 2, nil
+	//已抽奖
+	return 1, nil
 }
 
 //为prize表增加一条记录，用于分配奖品

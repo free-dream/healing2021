@@ -98,8 +98,8 @@ func SetupRouter() *gin.Engine {
 	api.POST("/healing/selection", controller.Selector) //植入任务 2021.11.1
 	//经典治愈——抽奖箱
 	// api.GET("healing/lotterybox/prizes", controller.GetPrizes)
+	// api.GET("/healing/lotterybox/drawcheck", controller.DrawCheck)
 	api.POST("/healing/lotterybox/draw", controller.Draw)
-	api.GET("/healing/lotterybox/drawcheck", controller.DrawCheck)
 	api.GET("/healing/lotterybox/lotteries", controller.GetLotteries)
 	api.GET("/healing/lotterybox/tasktable", controller.GetTasktable)
 	api.GET("/healing/lotterybox/points", controller.GetUserPoints)
