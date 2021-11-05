@@ -27,15 +27,6 @@ func GetCoversByDate(date string) ([]tables.Cover, error) {
 //获取全时间获赞最高项
 func GetCoversByLikes() ([]tables.Cover, []resp.CoverRank, error) {
 	mysqlDb := setting.MysqlConn()
-	// 用cover表做了一个测试
-	// var test []Test
-	// err1 := mysqlDb.Order("test desc").Table("cover").Select("nickname, count(nickname) as test").Group("nickname").Scan(&test).Error
-	// if err1 != nil {
-	// 	panic(err1)
-	// }
-	// fmt.Println(test)
-	// return nil, nil
-	// //
 	var likes []resp.CoverRank
 	covers := make([]tables.Cover, 0)
 

@@ -33,7 +33,7 @@ func clean(keyword string) []string {
 //POST heaing/search
 func Search(ctx *gin.Context) {
 	var key keyword
-	respAll := make([]interface{}, 4)
+	respAll := make([]interface{}, 0)
 	respCovers := make([]respModel.CoversResp, 5)
 	respSelections := make([]respModel.SelectionResp, 5)
 	respUsers := make([]respModel.UserResp, 5)
@@ -58,6 +58,9 @@ func Search(ctx *gin.Context) {
 		if err != nil {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 		}
+		if cover.ID == 0 {
+			continue
+		}
 		temp := respModel.CoversResp{
 			Avatar:   cover.Avatar,
 			Coverid:  int(cover.ID),
@@ -74,6 +77,9 @@ func Search(ctx *gin.Context) {
 	}
 	respLen.LenSelection = lenselec
 	for _, selection := range rawSelections {
+		if selection.ID == 0 {
+			continue
+		}
 		nickname, err := dao.GetUserNickname(selection.UserId)
 		if err != nil {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
@@ -93,6 +99,9 @@ func Search(ctx *gin.Context) {
 	}
 	respLen.LenUser = lenuser
 	for _, user := range rawUsers {
+		if user.ID == 0 {
+			continue
+		}
 		temp := respModel.UserResp{
 			Avatar:   user.Avatar,
 			Userid:   int(user.ID),
@@ -102,6 +111,6 @@ func Search(ctx *gin.Context) {
 		respUsers = append(respUsers, temp)
 	}
 
-	respAll = append(respAll, respLen, respSelections, respCovers)
+	respAll = append(respAll, respLen, respUsers, respSelections, respCovers)
 	ctx.JSON(200, respAll)
 }
