@@ -43,6 +43,7 @@ func Register(ctx *gin.Context) {
 	id := session.Get("user_id").(int)
 
 	user := statements.User{}
+
 	err := ctx.ShouldBindJSON(&user)
 	if err != nil {
 		ctx.JSON(400, gin.H{

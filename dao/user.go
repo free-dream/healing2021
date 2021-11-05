@@ -63,8 +63,7 @@ func FakeCreateUser(user *statements.User) (int, error) {
 }
 func CreateUser(user *statements.User) (int, int) {
 	if !setting.RedisClient.SIsMember("healing2021:openid", user.Openid).Val() {
-		value, _ := json.Marshal(user.Openid)
-		setting.RedisClient.SAdd("healing:openid", value)
+
 		setting.DB.Table("user").Create(&user)
 		return 0, int(user.ID)
 	}
@@ -93,7 +92,8 @@ func RefineUser(param *statements.User, id int) error {
 		// return 0, err
 	}
 	setting.RedisClient.HSet("hobby", strconv.Itoa(int(user.ID)), value)*/
-
+	value, _ := json.Marshal(user.Openid)
+	setting.RedisClient.SAdd("healing2021:openid", value)
 	return nil
 
 }
