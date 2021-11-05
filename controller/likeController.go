@@ -1,13 +1,14 @@
 package controller
 
 import (
+	"time"
+
 	"git.100steps.top/100steps/healing2021_be/controller/ws"
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
 	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"time"
 )
 
 type LikeParams struct {
@@ -42,13 +43,19 @@ func Like(ctx *gin.Context) {
 
 	// 写入点赞表
 	ok := dao.UpdateLikesByID(UserId, LikeParam.Id, LikeParam.Todo, Type)
+
+	//重复点赞判断/数据库写入检查
 	if ok != nil {
+		if dao.IsLikesExistError(ok) {
+			ctx.JSON(200, e.ErrMsgResponse{Message: "不允许重复点赞"})
+			return
+		}
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入错误"})
 		return
 	}
 
 	//发送相应的系统消息[有 实际评论写入成功，但是系统消息发送失败 的不一致风险]
-	if LikeParam.Todo==1{
+	if LikeParam.Todo == 1 {
 		conn := ws.GetConn()
 		sysMsg := respModel.SysMsg{}
 
@@ -84,7 +91,7 @@ func Like(ctx *gin.Context) {
 				return
 			}
 			sysMsg = respModel.SysMsg{
-				Uid: uint(singerId),
+				Uid:  uint(singerId),
 				Type: 2,
 				Song: songName,
 				Time: time.Now(),
