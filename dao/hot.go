@@ -7,21 +7,32 @@ import (
 )
 
 //根据日期获取对应热榜
-func GetCoversByDate(date string) ([]tables.Cover, error) {
+func GetCoversByDate(date string) ([]tables.Cover, []resp.CoverRank, error) {
 	mysqlDb := setting.MysqlConn()
 
+	//组合获得日期模糊匹配
+	temp := "%" + date + "%"
 	var data []tables.Cover
 	var likes []resp.CoverRank
 
+	//子查询准备
+	subquery := mysqlDb.Table("cover").Select("id").Where("created_at like ?", temp)
+	if err1 := subquery.Error; err1 != nil {
+		return nil, nil, err1
+	}
+
+	//主查询
 	err := mysqlDb.Order("likes desc").
 		Table("praise").
 		Select("cover_id, count(cover_id) as likes").
 		Group("cover_id").
-		Scan(&likes).Error
+		Where("cover_id in (?)", subquery).
+		Limit(10).Error
+
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return data, nil
+	return data, likes, nil
 }
 
 //获取全时间获赞最高项
