@@ -12,27 +12,39 @@ func GetCoversByDate(date string) ([]tables.Cover, []resp.CoverRank, error) {
 
 	//组合获得日期模糊匹配
 	temp := "%" + date + "%"
-	var data []tables.Cover
+
+	var datas []tables.Cover
 	var likes []resp.CoverRank
 
 	//子查询准备
-	subquery := mysqlDb.Table("cover").Select("id").Where("created_at like ?", temp)
-	if err1 := subquery.Error; err1 != nil {
+	temps := mysqlDb.Select("id").Where("created_at like ?", temp).Table("cover")
+	if err1 := temps.Error; err1 != nil {
 		return nil, nil, err1
 	}
+	subquery := temps.SubQuery()
 
 	//主查询
 	err := mysqlDb.Order("likes desc").
 		Table("praise").
 		Select("cover_id, count(cover_id) as likes").
 		Group("cover_id").
+		Limit(10).
 		Where("cover_id in (?)", subquery).
-		Limit(10).Error
+		Find(&likes).Error
 
 	if err != nil {
 		return nil, nil, err
 	}
-	return data, likes, nil
+
+	for _, item := range likes {
+		var temp tables.Cover
+		err = mysqlDb.Where("id = ?", item.CoverId).First(&temp).Error
+		if err != nil {
+			return nil, nil, err
+		}
+		datas = append(datas, temp)
+	}
+	return datas, likes, nil
 }
 
 //获取全时间获赞最高项

@@ -6,6 +6,7 @@ import (
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
+	"github.com/jinzhu/gorm"
 )
 
 func TableInit() {
@@ -143,6 +144,30 @@ func AddFakeCovers() {
 	CreateDummyCovers()
 }
 
+//假翻唱点赞表
+func CreatePraise() bool {
+	db := setting.DB
+	temp, c1, c2 := dummyLikes()
+	var praise statements.Praise
+	if err := MysqlDb.Where("user_id = ? AND cover_id = ?", c1, c2).First(&praise).Error; gorm.IsRecordNotFoundError(err) {
+		db.Create(temp)
+		return true
+	}
+	return false
+}
+
+func AddFakePraises() {
+	i := 0
+	for {
+		if CreatePraise() {
+			i++
+		}
+		if i > 50 {
+			break
+		}
+	}
+}
+
 //任务记录
 func CreateTask() {
 	db := setting.DB
@@ -247,5 +272,6 @@ func FakeData() {
 	AddFakeComments()
 	AddFakeSelections()
 	AddFakeCovers()
+	AddFakePraises()
 	AddFakeClassic()
 }
