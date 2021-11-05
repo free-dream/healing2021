@@ -12,7 +12,7 @@ import (
 // GET /healing/dailyrank/all
 func GetAllrank(ctx *gin.Context) {
 	raws, likes, err := dao.GetCoversByLikes()
-	respCovers := make([]resp.HotResp, 10)
+	respCovers := make([]resp.HotResp, 0)
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 		return
@@ -45,7 +45,7 @@ func GetDailyrank(ctx *gin.Context) {
 		return
 	}
 	raws, err := dao.GetCoversByDate(date)
-	respCovers := make([]resp.HotResp, 10)
+	respCovers := make([]resp.HotResp, 0)
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 		return

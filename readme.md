@@ -1733,7 +1733,7 @@ Content-Type: application/json
 
 ## 8.1点赞
 
-PUT/praise HTTP1.1
+PUT/like HTTP1.1
 
 成功时：
 

@@ -1,7 +1,6 @@
 package task
 
 import (
-	"fmt"
 	"strconv"
 
 	"git.100steps.top/100steps/healing2021_be/dao"
@@ -88,9 +87,6 @@ func ChangePoints(point float32, userid int, tid int) bool {
 	//错误处理
 	ch := make(chan int)
 	go func() {
-		//
-		fmt.Println(userid, tid, int(temp), int(tempf))
-		//
 		err := dao.UpdateTaskPoints(userid, tid, int(temp), int(tempf))
 		errHandler(err)
 		<-ch
