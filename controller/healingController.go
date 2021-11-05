@@ -62,7 +62,6 @@ func Selector(ctx *gin.Context) {
 	userid := sessions.Default(ctx).Get("user_id").(int)
 
 	param.UserId = userid
-	param.Module = 1
 	resp, err := dao.Select(param)
 	if err != nil {
 		panic(err)

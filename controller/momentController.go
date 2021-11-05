@@ -114,7 +114,7 @@ func PostMoment(ctx *gin.Context) {
 	// 跳转点歌(修改和使用了接口3.3的点歌，相应做修改时这边要同步操作)
 	if NewMoment.HaveSelection == 1 {
 		if NewMoment.IsNormal == 0 { // 经典点歌
-			param.Module = 1
+			//param.Module = 1
 			param.SongName = NewMoment.SongName
 			param.Language = NewMoment.Language
 			param.Remark = NewMoment.Remark
@@ -127,7 +127,7 @@ func PostMoment(ctx *gin.Context) {
 			}
 			selectionId = resp.ID
 		} else if NewMoment.IsNormal == 1 { // 童年点歌
-			param.Module = 2
+			//	param.Module = 2
 			momentResp, _ := dao.GetOriginInfo(NewMoment.ClassicId)
 			param.SongName = momentResp.SongName
 			param.Language = "中文"

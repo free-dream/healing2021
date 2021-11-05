@@ -75,7 +75,6 @@ func CreateFakeSelection(uid int, name string) {
 	selection := statements.Selection{
 		UserId:   uid,
 		SongName: name,
-		Module:   tools.GetRandomNumbers(2) + 1,
 	}
 
 	db := setting.MysqlConn()
