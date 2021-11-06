@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"fmt"
-
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"github.com/gin-contrib/sessions"
@@ -30,7 +28,7 @@ func FakeLogin(ctx *gin.Context) {
 	}
 
 	//
-	fmt.Println("FakeLogin", id)
+	//fmt.Println("FakeLogin", id)
 	//
 
 	//建立任务表

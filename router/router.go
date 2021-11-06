@@ -43,19 +43,16 @@ func SetupRouter() *gin.Engine {
 		Appsecret: "",
 		BaseUrl:   "https://healing2021.test.100steps.top",
 		StoreSession: func(ctx *gin.Context, wechatUser *ginwechat.WechatUser) error {
-			//redirect, _ := ctx.GetQuery("redirect")
+			redirect, _ := ctx.GetQuery("redirect")
 			isExisted, user_id := controller.Login(wechatUser.OpenID)
 			session := sessions.Default(ctx)
+			session.Set("is_existed", isExisted)
 			session.Set("user_id", user_id)
 			session.Set("openid", wechatUser.OpenID)
 			session.Set("headImgUrl", wechatUser.HeadImgUrl)
 			session.Set("nickname", wechatUser.Nickname)
-			ctx.JSON(200, gin.H{
-				"nickname":         wechatUser.Nickname,
-				"is_existed":       isExisted,
-				"is_administrator": controller.GodJudger(wechatUser.Nickname),
-			})
-			//ctx.Redirect(302, redirect)
+			ctx.Redirect(302, redirect)
+			ctx.Abort()
 			return session.Save()
 		},
 	})
@@ -80,11 +77,11 @@ func SetupRouter() *gin.Engine {
 	api.GET("/ws/history", ws.WsData)
 
 	//user 模块
-
+	api.GET("user", controller.Judger)
 	api.POST("/user", controller.Register)
 	api.POST("/hobby", controller.HobbyPoster)
 	api.PUT("/user", controller.Updater)
-	api.GET("/user", controller.Fetcher)
+	api.GET("/userMsg", controller.Fetcher)
 	api.POST("/background", controller.Refresher)
 	api.GET("/callee", controller.GetOther)
 	//qiniu

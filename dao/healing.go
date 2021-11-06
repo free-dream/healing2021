@@ -139,7 +139,7 @@ func Pager(key string, page int) (interface{}, error) {
 //获取点歌页
 //module1表示治愈系，2表示童年，但返回参数可能不同
 //可参考
-func GetSelections(module string, id int, tag Tags) (interface{}, error) {
+func GetSelections(id int, tag Tags) (interface{}, error) {
 	redisCli := setting.RedisConn()
 	index := 0
 	var resp []SelectionDetails
@@ -159,16 +159,16 @@ func GetSelections(module string, id int, tag Tags) (interface{}, error) {
 		}
 		var size int
 		for _, value := range hobby {
-			lenth := redisCli.LLen("healing2021:selection." + module + "." + value).Val()
+			lenth := redisCli.LLen("healing2021:selection." + value).Val()
 			size += int(lenth)
 		}
 		resp = make([]SelectionDetails, size)
 		for _, value := range hobby {
-			if redisCli.Exists("healing2021:selection."+module+"."+value).Val() == 0 {
+			if redisCli.Exists("healing2021:selection."+value).Val() == 0 {
 				continue
 			}
-			lenth := redisCli.LLen("healing2021:selection." + module + "." + value).Val()
-			for _, content := range redisCli.LRange("healing2021:selection."+module+"."+value, 0, lenth).Val() {
+			lenth := redisCli.LLen("healing2021:selection." + value).Val()
+			for _, content := range redisCli.LRange("healing2021:selection."+value, 0, lenth).Val() {
 				by = []byte(content)
 				err = json.Unmarshal(by, &resp[index])
 				index++
@@ -191,10 +191,10 @@ func GetSelections(module string, id int, tag Tags) (interface{}, error) {
 			return resp, nil
 		}
 	} else {
-		lenth := redisCli.LLen("healing2021:selection." + module + "." + tag.Label).Val()
+		lenth := redisCli.LLen("healing2021:selection." + tag.Label).Val()
 		resp = make([]SelectionDetails, lenth)
 		for index < int(lenth) {
-			for _, content := range redisCli.LRange("healing2021:selection."+module+"."+tag.Label, 0, lenth).Val() {
+			for _, content := range redisCli.LRange("healing2021:selection."+tag.Label, 0, lenth).Val() {
 				by := []byte(content)
 				err = json.Unmarshal(by, &resp[index])
 				if err != nil {
