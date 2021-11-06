@@ -69,8 +69,9 @@ func SetupRouter() *gin.Engine {
 	}
 
 	// 业务路由
-	api := r.Group("/api")
 	r.Use(middleware.IdentityCheck())
+	api := r.Group("/api")
+
 	// ws
 	api.GET("/ws", ws.WsHandler)
 	api.GET("/ws/history", ws.WsData)
