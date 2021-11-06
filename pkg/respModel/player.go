@@ -8,4 +8,5 @@ type PlayerResp struct {
 	Nickname string `json:"nickname"`
 	Icon     string `json:"icon"`
 	WorkName string `json:"work_name"`
+	Check int `json:"check"`
 }

@@ -6,6 +6,7 @@ import (
 	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
+	"github.com/jinzhu/gorm"
 )
 
 // 获取所有翻唱信息（全表查找，后面优化
@@ -43,4 +44,16 @@ func GetCoverInfo(CoverId int) (int, string, error) {
 	coverInfo := CoverInfo{}
 	err := MysqlDB.Table("cover").Select("user_id,song_name").Where("id=?", CoverId).Scan(&coverInfo).Error
 	return coverInfo.Singer, coverInfo.SongName, err
+}
+
+// 判断某用户是否点赞
+func HaveCoverLaud(UserId int, CoverId int)  int{
+	MysqlDB := setting.MysqlConn()
+	err := MysqlDB.Where("user_id=? and cover_id=? and is_liked=?", UserId, CoverId, 1).First(&statements.Praise{}).Error
+	if gorm.IsRecordNotFoundError(err) {
+		return 0
+	} else if err != nil {
+		return -1
+	}
+	return 1
 }

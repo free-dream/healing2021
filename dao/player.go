@@ -9,7 +9,7 @@ import (
 )
 
 // 获取当前歌曲的信息
-func GetPlayerInfo(CoverId int) (respModel.PlayerResp, error) {
+func GetPlayerInfo(UserId int, CoverId int) (respModel.PlayerResp, error) {
 	MysqlDB := setting.MysqlConn()
 	Cover := statements.Cover{}
 	err := MysqlDB.Where("id=?", CoverId).First(&Cover).Error
@@ -18,7 +18,7 @@ func GetPlayerInfo(CoverId int) (respModel.PlayerResp, error) {
 		return respModel.PlayerResp{}, err
 	}
 
-	// 找到作品名
+	// 找到作品
 	Classic := statements.Classic{}
 	err = MysqlDB.Where("song_name=?", Cover.SongName).First(&Classic).Error
 	if err != nil {
@@ -34,6 +34,7 @@ func GetPlayerInfo(CoverId int) (respModel.PlayerResp, error) {
 		File:     Cover.File,
 		Name:     Cover.SongName,
 		WorkName: Classic.WorkName,
+		Check: HaveCoverLaud(UserId, int(Cover.ID)),
 	}, nil
 }
 
