@@ -1489,7 +1489,7 @@ Content-Type: application/json
     
     "song" : string,								// 歌名
     "song_id" : string, 							// 歌曲id
-    "module" : int,									// 1为经典，2为童年
+    "module" : int,									// 1为经典，2为童年，0为无歌曲
     "lauds" : integer,								// 动态的点赞数
     "lauded": integer(0/1),							// 当前用户是否点赞该动态
     "comments" : integer,							// 动态的评论数

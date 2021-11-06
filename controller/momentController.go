@@ -58,25 +58,32 @@ func GetMomentList(ctx *gin.Context) {
 			return
 		}
 
-		// 如有点歌，查表判断点歌类型 && 根据模式返回对应的 song_id
-		module, songId, err := dao.DiffMoudle(OneMoment.SelectionId, OneMoment.SongName)
-		if err != nil {
-			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
-		}
-
 		TmpMoment := respModel.MomentResp{
 			Content:    OneMoment.Content,
 			DynamicsId: int(OneMoment.ID),
 			CreatedAt:  tools.DecodeTime(OneMoment.CreatedAt),
 			Song:       OneMoment.SongName,
-			SongId:     songId,
-			Module:     module,
+			Module:     OneMoment.Module,
 			Lauds:      dao.CountMLaudsById(int(OneMoment.ID)),
 			Lauded:     dao.HaveMLauded(UserId, int(OneMoment.ID)),
 			Comments:   dao.CountCommentsById(int(OneMoment.ID)),
 			Status:     tools.DecodeStrArr(OneMoment.State),
 			Creator:    dao.TransformUserInfo(User),
 		}
+
+		// 点歌\分享\无歌曲 单独处理 songId
+		switch OneMoment.Module {
+		case 0:
+			TmpMoment.SongId = OneMoment.SelectionId
+		case 1:
+			TmpMoment.SongId = OneMoment.ClassicId
+		case 2:
+			// 啥事不用干
+		default:
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库中出现非法字段"})
+			return
+		}
+
 		MomentsResp = append(MomentsResp, TmpMoment)
 	}
 
@@ -122,12 +129,12 @@ func PostMoment(ctx *gin.Context) {
 			return
 		}
 		Moment.SelectionId = resp.ID
-		Moment.Type = 0
+		Moment.Module = 0
 	case 1:
 		Moment.ClassicId = NewMoment.ClassicId
-		Moment.Type = 1
+		Moment.Module = 1
 	case 2:
-		Moment.Type = 2
+		Moment.Module = 2
 	default:// 出现错误
 		ctx.JSON(403, e.ErrMsgResponse{Message: "非法参数"})
 		//为了保证后面任务在接口使用时顺利进行---voloroloq 2021.11.1
@@ -167,10 +174,10 @@ func PostMoment(ctx *gin.Context) {
 
 // 查看动态的详情
 func GetMomentDetail(ctx *gin.Context) {
-	// url 参数的获取和合法性判断
 	momentIdStr := ctx.Param("id")
+
 	if momentIdStr == "" {
-		ctx.JSON(403, e.ErrMsgResponse{Message: "动态id参数未传入"})
+		ctx.JSON(403, e.ErrMsgResponse{Message: "id参数未传入"})
 		return
 	}
 	Id, err := strconv.Atoi(momentIdStr)
@@ -193,25 +200,30 @@ func GetMomentDetail(ctx *gin.Context) {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
 		return
 	}
-
-	// 如有点歌或分享，查表判断点歌类型 && 根据模式返回对应的 song_id
-	module, songId, err := dao.DiffMoudle(Moment.SelectionId, Moment.SongName)
-	if err != nil {
-		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
-	}
-
 	MomentDetail := respModel.MomentResp{
 		DynamicsId: int(Moment.ID),
 		Content:    Moment.Content,
 		CreatedAt:  tools.DecodeTime(Moment.CreatedAt),
 		Song:       Moment.SongName,
-		SongId:     songId,
-		Module:     module,
+		Module:     Moment.Module,
 		Lauds:      dao.CountMLaudsById(int(Moment.ID)),
 		Lauded:     dao.HaveMLauded(UserId, int(Moment.ID)),
 		Comments:   dao.CountCommentsById(int(Moment.ID)),
 		Status:     tools.DecodeStrArr(Moment.State),
 		Creator:    dao.TransformUserInfo(User),
+	}
+
+	// 点歌\分享\无歌曲 单独处理 songId
+	switch Moment.Module {
+	case 0:
+		MomentDetail.SongId = Moment.SelectionId
+	case 1:
+		MomentDetail.SongId = Moment.ClassicId
+	case 2:
+		// 啥事不用干
+	default:
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库中出现非法字段"})
+		return
 	}
 
 	ctx.JSON(200, MomentDetail)
