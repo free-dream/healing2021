@@ -29,7 +29,7 @@ func SetupRouter() *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(middleware.Timeout(time.Minute))
 	r.Use(middleware.Cors())
-	r.Use(middleware.IdentityCheck())
+
 	// 注册sessions组件，使用redis作为驱动
 	//gob.Register(tools.RedisUser{})
 	var err error
@@ -70,7 +70,7 @@ func SetupRouter() *gin.Engine {
 
 	// 业务路由
 	api := r.Group("/api")
-
+	r.Use(middleware.IdentityCheck())
 	// ws
 	api.GET("/ws", ws.WsHandler)
 	api.GET("/ws/history", ws.WsData)
