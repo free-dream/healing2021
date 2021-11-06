@@ -1112,7 +1112,8 @@ Content-Type: application/json
     "classic_id":int, 	//用于播放原唱
     "song_name": string,
     "singer": string,
-    "icon":text(url)   //歌曲图标
+    "icon":text(url),   //歌曲图标
+    "work_name":string	//作品名
 }
 ```
 

@@ -69,6 +69,7 @@ func GetOriginInfo(ClassicId int) (respModel.OriginInfoResp, error) {
 		SongName:  Origin.SongName,
 		Singer:    Origin.Singer,
 		Icon:      Origin.Icon,
+		WorkName: Origin.WorkName,
 	}
 	return OriginInfoResp, nil
 }
