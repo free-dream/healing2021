@@ -76,8 +76,8 @@ func WsHandler(ctx *gin.Context) {
 }
 
 type WsDataResp struct {
-	Sys []respModel.SysMsg `json:"sys"`
-	Usr []respModel.UsrMsg `json:"usr"`
+	Sys []respModel.Sysmsg `json:"sys"`
+	Usr []respModel.Usrmsg `json:"usr"`
 }
 
 // 返回用户历史消息
@@ -86,7 +86,10 @@ func WsData(ctx *gin.Context) {
 	// get uid
 	session := sessions.Default(ctx)
 	id := session.Get("user_id").(string)
-	intId, _ := strconv.Atoi(id)
+    // fake uid
+    //id := strconv.Itoa(TestUid)
+    //TestUid++ 
+	//intId, _ := strconv.Atoi(id)
 	uid := uint(intId)
 
 	var resp WsDataResp
