@@ -163,28 +163,32 @@ type SelectionMsgV2 struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 type CoverMsg struct {
-	ID        int    `json:"id"`
-	SongName  string `json:"song_name"`
-	CreatedAt string `json:"created_at"`
-	Likes     int    `json:"likes"`
+	ID          int    `json:"id"`
+	SelectionId int    `json:"selection_id"`
+	SongName    string `json:"song_name"`
+	CreatedAt   string `json:"created_at"`
+	Likes       int    `json:"likes"`
 }
 type CoverMsgV2 struct {
-	ID        int       `json:"id"`
-	SongName  string    `json:"song_name"`
-	CreatedAt time.Time `json:"created_at"`
+	ID          int       `json:"id"`
+	SelectionId int       `json:"selection_id"`
+	SongName    string    `json:"song_name"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 type PraiseMsg struct {
-	SongName  string `json:"song_name"`
-	CreatedAt string `json:"created_at"`
-	ID        int    `json:"id"`
-	CoverId   int    `json:"cover_id"`
-	Likes     int    `json:"likes"`
+	CoverId     int    `json:"cover_id"`
+	SongName    string `json:"song_name"`
+	CreatedAt   string `json:"created_at"`
+	ID          int    `json:"id"`
+	SelectionId int    `json:"selection_id"`
+	Likes       int    `json:"likes"`
 }
 type PraiseMsgV2 struct {
-	CoverId   int       `json:"cover_id"`
-	SongName  string    `json:"song_name"`
-	CreatedAt time.Time `json:"created_at"`
-	ID        int       `json:"id"`
+	CoverId     int       `json:"cover_id"`
+	SelectionId int       `json:"selection_id"`
+	SongName    string    `json:"song_name"`
+	CreatedAt   time.Time `json:"created_at"`
+	ID          int       `json:"id"`
 }
 type MomentMsg struct {
 	SongName  string   `json:"song_name"`
@@ -258,6 +262,7 @@ func getPraises(value interface{}, tableName string, condition string) interface
 		}
 		resp.ID = obj.ID
 		resp.CoverId = obj.CoverId
+		resp.SelectionId = obj.SelectionId
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		db.Table("praise").Where("cover_id=? and is_liked=?", resp.CoverId, 1).Count(&resp.Likes)
 		content[index] = resp
@@ -282,6 +287,7 @@ func getCovers(value interface{}, tableName string, condition string) interface{
 			panic(err)
 		}
 		resp.ID = obj.ID
+		resp.SelectionId = obj.SelectionId
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		resp.SongName = obj.SongName
 		db.Table("praise").Where("cover_id=? and is_liked=?", resp.ID, 1).Count(&resp.Likes)
