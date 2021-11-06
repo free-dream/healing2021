@@ -43,7 +43,7 @@ func SetupRouter() *gin.Engine {
 		Appsecret: "",
 		BaseUrl:   "https://healing2021.test.100steps.top",
 		StoreSession: func(ctx *gin.Context, wechatUser *ginwechat.WechatUser) error {
-
+			redirect, _ := ctx.GetQuery("redirect")
 			isExisted, user_id := controller.Login(wechatUser.OpenID)
 			session := sessions.Default(ctx)
 			session.Set("user_id", user_id)
@@ -55,6 +55,7 @@ func SetupRouter() *gin.Engine {
 				"is_existed":       isExisted,
 				"is_administrator": controller.GodJudger(wechatUser.Nickname),
 			})
+			ctx.Redirect(302, redirect)
 			return session.Save()
 		},
 	})
