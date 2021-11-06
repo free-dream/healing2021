@@ -86,7 +86,7 @@ func SelectionFetcher(ctx *gin.Context) {
 	id := sessions.Default(ctx).Get("user_id").(int)
 	if tag.Page == 1 {
 
-		resp, err := dao.GetSelections(strconv.Itoa(1), id, tag)
+		resp, err := dao.GetSelections(id, tag)
 		if err != nil {
 			panic(err)
 
