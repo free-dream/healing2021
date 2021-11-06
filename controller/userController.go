@@ -27,6 +27,19 @@ func Login(openid string) (int, int) {
 	}
 	return isExisted, id
 }
+func PhoneCaller(ctx *gin.Context) {
+	id, _ := ctx.GetQuery("user_id")
+	user_id, _ := strconv.Atoi(id)
+	err, phoneNumber := dao.GetPhoneNumber(user_id)
+	if err != nil {
+		ctx.JSON(404, gin.H{
+			"message": "无电话号码",
+		})
+	}
+	ctx.JSON(200, gin.H{
+		"phone_number": phoneNumber,
+	})
+}
 
 //判断用户是否是管理员,是否注册
 func Judger(ctx *gin.Context) {

@@ -78,7 +78,8 @@ func SetupRouter() *gin.Engine {
 	api.GET("/ws/history", ws.WsData)
 
 	//user 模块
-	api.GET("/phoneNumber")
+
+	api.GET("/phoneNumber", controller.PhoneCaller)
 	api.GET("/user", controller.Judger)
 	api.POST("/user", controller.Register)
 	api.POST("/hobby", controller.HobbyPoster)

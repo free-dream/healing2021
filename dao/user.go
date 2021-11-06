@@ -75,6 +75,15 @@ func CreateUser(user *statements.User) (int, int) {
 	return 1, int(user.ID)
 
 }
+func GetPhoneNumber(id int) (error, int) {
+	db := setting.MysqlConn()
+	phone_number := 0
+	err := db.Table("user").Where("id=? and phone_search=?", id, 0).Select("phone_number").Scan(&phone_number).Error
+	if err != nil {
+		return err, 0
+	}
+	return nil, phone_number
+}
 
 func RefineUser(param *statements.User, id int) error {
 	db := setting.MysqlConn()
