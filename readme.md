@@ -1446,8 +1446,7 @@ Content-Type: application/json
     "content": string,							// 动态的内容
     "status": ["status1", "status2"...],		// 状态列表元素都是string
         
-    "have_selection":int,						// 点歌or分享为1，否则为0
-    "is_normal":int,							// 经典点歌为0，童年分享为1
+    "have_song":int,						    // 经典点歌为0，，童年分享为1，无歌曲为2
    
     // 经典点歌填这四个
     "song_name":string,	
@@ -1489,7 +1488,7 @@ Content-Type: application/json
     "created_at": "2006-01-02 15:04:05",
     
     "song" : string,								// 歌名
-    "selection_id" : string, 						// 点歌id
+    "song_id" : string, 							// 歌曲id
     "module" : int,									// 1为经典，2为童年
     "lauds" : integer,								// 动态的点赞数
     "lauded": integer(0/1),							// 当前用户是否点赞该动态

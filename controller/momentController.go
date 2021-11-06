@@ -89,8 +89,7 @@ type MomentBase struct {
 	Content string   `json:"content"`
 	Status  []string `json:"status"`
 
-	HaveSelection int `json:"have_selection"`
-	IsNormal      int `json:"is_normal"`
+	HaveSong int `json:"have_selection"`
 
 	SongName string `json:"song_name"`
 	Language string `json:"language"`
@@ -103,56 +102,43 @@ type MomentBase struct {
 func PostMoment(ctx *gin.Context) {
 	// 参数绑定
 	var NewMoment MomentBase
+	var Moment statements.Moment
 	ctx.ShouldBind(&NewMoment)
-	var selectionId int
 
 	param := statements.Selection{}
 	//把userid拿出来用于任务---voloroloq 2021.11.1
 	userid := sessions.Default(ctx).Get("user_id").(int)
 	param.UserId = userid
-	//
-	// 跳转点歌(修改和使用了接口3.3的点歌，相应做修改时这边要同步操作)
-	if NewMoment.HaveSelection == 1 {
-		if NewMoment.IsNormal == 0 { // 经典点歌
-			//param.Module = 1
-			param.SongName = NewMoment.SongName
-			param.Language = NewMoment.Language
-			param.Remark = NewMoment.Remark
-			param.Style = NewMoment.Style
 
-			resp, err := dao.Select(param)
-			if err != nil {
-				ctx.JSON(500, e.ErrMsgResponse{Message: "点歌操作失败"})
-				return
-			}
-			selectionId = resp.ID
-		} else if NewMoment.IsNormal == 1 { // 童年点歌
-			//	param.Module = 2
-			momentResp, _ := dao.GetOriginInfo(NewMoment.ClassicId)
-			param.SongName = momentResp.SongName
-			param.Language = "中文"
-			param.Remark = ""
-			param.Style = "童年"
-
-			resp, err := dao.Select(param)
-			if err != nil {
-				ctx.JSON(500, e.ErrMsgResponse{Message: "点歌操作失败"})
-				return
-			}
-			selectionId = resp.ID
-		} else { // 出现错误
-			ctx.JSON(403, e.ErrMsgResponse{Message: "非法参数"})
-			//为了保证后面任务在接口使用时顺利进行---voloroloq 2021.11.1
+	switch NewMoment.HaveSong {
+	case 0:
+		param.SongName = NewMoment.SongName
+		param.Language = NewMoment.Language
+		param.Remark = NewMoment.Remark
+		param.Style = NewMoment.Style
+		resp, err := dao.Select(param)
+		if err != nil {
+			ctx.JSON(500, e.ErrMsgResponse{Message: "点歌操作失败"})
 			return
-			//
 		}
+		Moment.SelectionId = resp.ID
+		Moment.Type = 0
+	case 1:
+		Moment.ClassicId = NewMoment.ClassicId
+		Moment.Type = 1
+	case 2:
+		Moment.Type = 2
+	default:// 出现错误
+		ctx.JSON(403, e.ErrMsgResponse{Message: "非法参数"})
+		//为了保证后面任务在接口使用时顺利进行---voloroloq 2021.11.1
+		return
 	}
 
 	// 统计大家的状态、统计点歌情况
 	for _, state := range NewMoment.Status {
 		sandwich.PutInStates(state)
 	}
-	if NewMoment.HaveSelection == 1 && NewMoment.IsNormal == 0 {
+	if NewMoment.HaveSong == 0 {
 		sandwich.PutInHotSong(tools.EncodeSong(tools.HotSong{
 			SongName: param.SongName,
 			Language: param.Language,
@@ -160,24 +146,22 @@ func PostMoment(ctx *gin.Context) {
 		}))
 	}
 
-	// 转换参数
-	Moment := statements.Moment{
-		Content:     NewMoment.Content,
-		SongName:    NewMoment.SongName,
-		UserId:      param.UserId,
-		State:       tools.EncodeStrArr(NewMoment.Status),
-		SelectionId: selectionId,
-	}
+	// 添加参数
+	Moment.Content=NewMoment.Content
+	Moment.SongName=NewMoment.SongName
+	Moment.UserId=param.UserId
+	Moment.State=tools.EncodeStrArr(NewMoment.Status)
 
 	// 存入数据库
 	if ok := dao.CreateMoment(Moment); !ok {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入失败"})
 		return
 	}
+
 	//任务模块植入 2021.11.1
 	thistask := task.MT
 	thistask.AddRecord(userid)
-	//
+
 	ctx.JSON(200, e.ErrMsgResponse{Message: "动态发布成功"})
 }
 
@@ -210,7 +194,7 @@ func GetMomentDetail(ctx *gin.Context) {
 		return
 	}
 
-	// 如有点歌，查表判断点歌类型 && 根据模式返回对应的 song_id
+	// 如有点歌或分享，查表判断点歌类型 && 根据模式返回对应的 song_id
 	module, songId, err := dao.DiffMoudle(Moment.SelectionId, Moment.SongName)
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
