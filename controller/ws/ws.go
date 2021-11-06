@@ -89,7 +89,7 @@ func WsData(ctx *gin.Context) {
     // fake uid
     //id := strconv.Itoa(TestUid)
     //TestUid++ 
-	//intId, _ := strconv.Atoi(id)
+	intId, _ := strconv.Atoi(id)
 	uid := uint(intId)
 
 	var resp WsDataResp
