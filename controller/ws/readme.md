@@ -9,11 +9,12 @@ API:
 conn.SendSysMsg(respModel.SysMsg) error
 conn.SendUsrMsg(respModel.UsrMsg) error
 /* respModel.SysMsg Type参数说明
-0 : 歌曲评为热榜（填 songId）
-1 : 翻唱歌曲被点赞（填 songId）
-2 : 动态被点赞 （songId 填空串，2-4同理）
-3 : 动态被评论 （contentId 填相应动态、评论的id,2-4同理）
+0 : 歌曲评为热榜（songId 填入相应翻唱歌曲id，contentId 填0，0、1、5）
+1 : 翻唱歌曲被点赞
+2 : 动态被点赞 （songId 填空串，contentId 填相应动态、评论的id，2-4同理）
+3 : 动态被评论 
 4 : 评论被点赞
+5 ： 经典点歌被翻唱 
 */
 
 
