@@ -48,9 +48,31 @@ type draws struct {
 
 //POST /healing/lotterybox/draw
 func Draw(ctx *gin.Context) {
-	ret := new(draws)
 	userid := sessions.Default(ctx).Get("user_id").(int)
-	err := ctx.ShouldBindJSON(ret)
+
+	//确认是否已经抽奖
+	check, err := dao.DrawCheck(userid)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+		return
+	}
+	var msg *resp.DrawResp = nil
+	switch check {
+	case 0:
+		msg = &resp.DrawResp{
+			Msg: resp.Msg0,
+		}
+	case 1:
+		msg = &resp.DrawResp{
+			Msg: resp.Msg1,
+		}
+		ctx.JSON(200, msg)
+		return
+	}
+
+	//提取手机号
+	ret := new(draws)
+	err = ctx.ShouldBindJSON(ret)
 	if err != nil {
 		ctx.JSON(e.INVALID_PARAMS, e.ErrMsgResponse{Message: e.GetMsg(400)})
 		return
@@ -59,33 +81,37 @@ func Draw(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 	}
+	if msg != nil {
+		ctx.JSON(200, *msg)
+		return
+	}
 	ctx.JSON(200, e.ErrMsgResponse{Message: e.GetMsg(200)})
 }
 
-//GET /healing/lotterybox/drawcheck
-func DrawCheck(ctx *gin.Context) {
-	userid := sessions.Default(ctx).Get("user_id").(int)
-	check, err := dao.DrawCheck(userid)
-	if err != nil {
-		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
-		return
-	}
-	var msg resp.DrawResp
-	if check == 0 {
-		msg = resp.DrawResp{
-			Msg: resp.Msg0,
-		}
-	} else if check == 1 {
-		msg = resp.DrawResp{
-			Msg: resp.Msg1,
-		}
-	} else {
-		msg = resp.DrawResp{
-			Msg: resp.Msg2,
-		}
-	}
-	ctx.JSON(200, msg)
-}
+// //GET /healing/lotterybox/drawcheck
+// func DrawCheck(ctx *gin.Context) {
+// 	userid := sessions.Default(ctx).Get("user_id").(int)
+// 	check, err := dao.DrawCheck(userid)
+// 	if err != nil {
+// 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+// 		return
+// 	}
+// 	var msg resp.DrawResp
+// 	if check == 0 {
+// 		msg = resp.DrawResp{
+// 			Msg: resp.Msg0,
+// 		}
+// 	} else if check == 1 {
+// 		msg = resp.DrawResp{
+// 			Msg: resp.Msg1,
+// 		}
+// 	} else {
+// 		msg = resp.DrawResp{
+// 			Msg: resp.Msg2,
+// 		}
+// 	}
+// 	ctx.JSON(200, msg)
+// }
 
 //GET /healing/lotterybox/points
 func GetUserPoints(ctx *gin.Context) {

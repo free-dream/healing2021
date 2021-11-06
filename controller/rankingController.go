@@ -14,7 +14,7 @@ func GetRanking(ctx *gin.Context) {
 	//取出参数
 	school := ctx.Param("school")
 	//生成返回模块
-	rankresps := make([]resp.RankingResp, 10)
+	rankresps := make([]resp.RankingResp, 0)
 	//提取数据
 	raws, err := dao.GetRankingBySchool(school)
 	if err != nil {

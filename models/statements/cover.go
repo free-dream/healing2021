@@ -19,7 +19,6 @@ type Cover struct {
 	Style       string `gorm:"default:''" json:"style"`
 	Language    string `gorm:"default:''" json:"language"`
 	Module      int    `gorm:"default:0" json:"module"`
-	// Module 1经典 2童年
 }
 
 func CoverInit() {

@@ -30,15 +30,6 @@ func init() {
 	}
 }
 
-func RedisConnTest() {
-	client := RedisConn()
-	_, err := client.Ping().Result()
-	if err != nil {
-		panic(err)
-	}
-	client.Set("healing2020:rankCount", 0, 0)
-}
-
 func RedisConn() *redis.Client {
 	return RedisClient
 }

@@ -31,3 +31,16 @@ func GetCoverList(ClassicId int) ([]respModel.CoverResp, error) {
 	}
 	return CoverResp, nil
 }
+
+// 通过翻唱歌曲id 获得 翻唱者id、翻唱歌名信息
+type CoverInfo struct {
+	Singer   int    `gorm:"user_id"`
+	SongName string `gorm:"song_name"`
+}
+
+func GetCoverInfo(CoverId int) (int, string, error) {
+	MysqlDB := setting.MysqlConn()
+	coverInfo := CoverInfo{}
+	err := MysqlDB.Table("cover").Select("user_id,song_name").Where("id=?", CoverId).Scan(&coverInfo).Error
+	return coverInfo.Singer, coverInfo.SongName, err
+}

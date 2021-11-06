@@ -132,6 +132,16 @@ func GetAttr(selectionid int) (string, string, string, error) {
 	return selection.SongName, selection.Language, selection.Style, nil
 }
 
+//假点赞表
+func dummyLikes() (*statements.Praise, int, int) {
+	check1 := tools.GetRandomNumbers(10) + 1
+	check2 := tools.GetRandomNumbers(49) + 1
+	return &statements.Praise{
+		CoverId: check2,
+		UserId:  check1,
+	}, check1, check2
+}
+
 //生成dummy用户
 func dummyUser() *statements.User {
 	check1 := tools.GetRandomNumbers(4)

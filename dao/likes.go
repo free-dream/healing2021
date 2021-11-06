@@ -4,8 +4,23 @@ import (
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	db "git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/sandwich"
-	"github.com/jinzhu/gorm"
 )
+
+//自定义错误
+type LikesExistError struct{}
+
+func (l *LikesExistError) Error() string {
+	return "点赞/取消点赞失败,redis记录不匹配"
+}
+
+//重复点赞判断函数
+func IsLikesExistError(err error) bool {
+	if err.Error() == "点赞/取消点赞失败,redis记录不匹配" {
+		return true
+	} else {
+		return false
+	}
+}
 
 //基于直接点赞更新mysql，加锁
 func UpdateLikesByID(user int, target int, likes int, kind string) error {
@@ -24,30 +39,68 @@ func UpdateLikesByID(user int, target int, likes int, kind string) error {
 	if err = lock.Error; err != nil {
 		return err
 	}
-
-	// 检查原本是否已经点赞、取消点赞
+	// 检查原本是否已经点赞|取消点赞,要求redis缓存匹配
 	// 用户第一次进行点赞时没有记录能进行 update
 	// 若为取消点赞，应检查是否存有当前用户id,若为点赞，则反之
-	check := sandwich.Check(target, kind, user)
-	if likes == -1 && !check {
-		err := sandwich.CancelLike(target, kind, user)
-		return err
-	} else if likes == 1 && check {
-		err := sandwich.AddLike(target, kind, user)
-		return err
-	}
 
-	//更新数据库
-	if kind == "cover" {
-		err = lock.Model(&like).Where("cover_id = ? AND user_id = ?", target, user).UpdateColumn("is_liked", gorm.Expr("is_liked + ?", likes)).Error
-	} else if kind == "moment" {
-		err = lock.Model(&like).Where("moment_id = ? AND user_id = ?", target, user).UpdateColumn("is_liked", gorm.Expr("is_liked + ?", likes)).Error
-	} else if kind == "momentcomment" {
-		err = lock.Model(&like).Where("moment_comment_id = ? AND user_id = ?", target, user).UpdateColumn("is_liked", gorm.Expr("is_liked + ?", likes)).Error
+	check := sandwich.Check(target, kind, user)
+	if likes == -1 && check {
+		err = sandwich.CancelLike(target, kind, user)
+		if err != nil {
+			return err
+		}
+	} else if likes == 1 && !check {
+		err = sandwich.AddLike(target, kind, user)
+		if err != nil {
+			return err
+		}
 	} else {
-		panic("wrong type")
+		var err1 error = &LikesExistError{}
+		return err1
 	}
-	//更新失败就回滚
+	if likes == 1 { //创建点赞表,更新coverLikes字段
+		switch kind {
+		case "cover":
+			like = tables.Praise{
+				UserId:  user,
+				CoverId: target,
+				IsLiked: likes,
+			}
+			err = lock.Create(&like).Error
+		case "moment":
+			like = tables.Praise{
+				UserId:   user,
+				MomentId: target,
+				IsLiked:  likes,
+			}
+			err = lock.Create(&like).Error
+		case "momentcomment":
+			like = tables.Praise{
+				UserId:          user,
+				MomentCommentId: target,
+				IsLiked:         likes,
+			}
+			err = lock.Create(&like).Error
+		default:
+			panic("wrong type") //基本上不可能抵达,除非有意设计
+		}
+		//错误处理
+		if err != nil {
+			lock.Rollback()
+			return err
+		}
+	} else if likes == -1 { //删除点赞表
+		switch kind {
+		case "cover":
+			err = lock.Where("cover_id = ? AND user_id = ?", target, user).Unscoped().Delete(&like).Error
+		case "moment":
+			err = lock.Where("moment_id = ? AND user_id = ?", target, user).Unscoped().Delete(&like).Error
+		case "momentcomment":
+			err = lock.Where("moment_comment_id = ? AND user_id = ?", target, user).Unscoped().Delete(&like).Error
+		default:
+			panic("wrong type") //基本上不可能抵达,除非有意
+		}
+	}
 	if err != nil {
 		lock.Rollback()
 		return err
@@ -57,26 +110,4 @@ func UpdateLikesByID(user int, target int, likes int, kind string) error {
 		return err
 	}
 	return nil
-}
-
-//废案
-//备选方案，基于redis的更新，直接在goroutine加锁
-func RUpdateLikesByID(user int, target int, likes int, kind string) bool {
-	mysqlDb := db.MysqlConn()
-	var like tables.Praise
-	var err error
-	if kind == "cover" {
-		err = mysqlDb.Model(&like).Where("CoverId = ? AND UserId = ?", target, user).UpdateColumn("IsLiked", gorm.Expr("IsLiked + ?", likes)).Error
-	} else if kind == "moment" {
-		err = mysqlDb.Model(&like).Where("MomentId = ? AND UserId = ?", target, user).UpdateColumn("IsLiked", gorm.Expr("IsLiked + ?", likes)).Error
-	} else if kind == "momentcomment" {
-		err = mysqlDb.Model(&like).Where("MomentCommentId = ? AND UserId = ?", target, user).UpdateColumn("IsLiked", gorm.Expr("IsLiked + ?", likes)).Error
-	} else {
-		err = nil
-	}
-	if err == nil {
-		return true
-	} else {
-		panic("something wrong when get" + kind + " like record")
-	}
 }

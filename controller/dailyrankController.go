@@ -11,24 +11,25 @@ import (
 
 // GET /healing/dailyrank/all
 func GetAllrank(ctx *gin.Context) {
-	raws, err := dao.GetCoversByLikes()
-	respCovers := make([]resp.HotResp, 10)
-	// errHandler(err)
+	raws, likes, err := dao.GetCoversByLikes()
+	respCovers := make([]resp.HotResp, 0)
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 		return
 	}
-	for _, cover := range raws {
+	for i, cover := range raws {
 		nickname, err := dao.GetUserNickname(cover.UserId)
 		if err != nil {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 			return
 		}
 		respCover := resp.HotResp{
+			CoverId:  likes[i].CoverId,
 			Avatar:   cover.Avatar,
 			Nickname: nickname,
 			Posttime: cover.CreatedAt,
 			Songname: cover.SongName,
+			Likes:    likes[i].Likes,
 		}
 		respCovers = append(respCovers, respCover)
 	}
@@ -43,23 +44,25 @@ func GetDailyrank(ctx *gin.Context) {
 		ctx.JSON(403, e.ErrMsgResponse{Message: "查询参数出错"})
 		return
 	}
-	raws, err := dao.GetCoversByDate(date)
-	respCovers := make([]resp.HotResp, 10)
+	raws, likes, err := dao.GetCoversByDate(date)
+	respCovers := make([]resp.HotResp, 0)
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 		return
 	}
-	for _, cover := range raws {
+	for i, cover := range raws {
 		nickname, err := dao.GetUserNickname(cover.UserId)
 		if err != nil {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 			return
 		}
 		respCover := resp.HotResp{
+			CoverId:  likes[i].CoverId,
 			Avatar:   cover.Avatar,
 			Nickname: nickname,
 			Posttime: cover.CreatedAt,
 			Songname: cover.SongName,
+			Likes:    likes[i].Likes,
 		}
 		respCovers = append(respCovers, respCover)
 	}

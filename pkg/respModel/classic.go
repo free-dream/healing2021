@@ -22,4 +22,5 @@ type OriginInfoResp struct {
 	SongName  string `json:"song_name"`
 	Singer    string `json:"singer"`
 	Icon      string `json:"icon"`
+	WorkName string `json:"work_name"`
 }

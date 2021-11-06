@@ -26,7 +26,7 @@ type Token struct {
 	UpToken string `json:"uptoken"`
 }
 
-const g_bucket = "healing2020"
+const g_bucket = "healing2021"
 const g_wechat_media_download_url = "https://api.weixin.qq.com/cgi-bin/media/get/jssdk?access_token=%s&media_id=%s"
 
 var g_qiniu_upload_config storage.Config
@@ -63,7 +63,6 @@ func QiniuToken(c *gin.Context) {
 }
 
 func convertMediaIdArrToQiniuUrl(media_id_arr []string) (string, error) {
-	fmt.Println(media_id_arr)
 	new_name := media_id_arr[0] + fmt.Sprintf("%d", time.Now().Unix())
 	if err := downloadSpeexFromWechat(media_id_arr); err != nil {
 		return "", err

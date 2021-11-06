@@ -9,8 +9,8 @@ import (
 func Authentication() func(*gin.Context) {
 	return func(ctx *gin.Context) {
 		session := sessions.Default(ctx)
-		openid := session.Get("openid")
-		isAdministrator := dao.Authentication(openid.(string))
+		nickname := session.Get("nickname")
+		isAdministrator := dao.Authentication(nickname.(string))
 		if isAdministrator {
 			ctx.Next()
 		} else {

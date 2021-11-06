@@ -1,7 +1,6 @@
 package router
 
 import (
-	"encoding/gob"
 	"io"
 	"log"
 	"os"
@@ -32,7 +31,7 @@ func SetupRouter() *gin.Engine {
 	r.Use(middleware.Timeout(time.Minute))
 	r.Use(middleware.Cors())
 	// 注册sessions组件，使用redis作为驱动
-	gob.Register(tools.RedisUser{})
+	//gob.Register(tools.RedisUser{})
 	var err error
 	store, err = redis.NewStore(30, "tcp", tools.GetConfig("redis", "addr"), "", []byte("__100steps__100steps__100steps__"))
 	if err != nil {
@@ -42,14 +41,19 @@ func SetupRouter() *gin.Engine {
 	ginwechat.UpdateEngine(r, &ginwechat.Config{
 		Appid:     "wx293bc6f4ee88d87d",
 		Appsecret: "",
-		BaseUrl:   "https://healing2021.100steps.top",
+		BaseUrl:   "https://healing2021.test.100steps.top",
 		StoreSession: func(ctx *gin.Context, wechatUser *ginwechat.WechatUser) error {
+
+			isExisted, user_id := controller.Login(wechatUser.OpenID)
 			session := sessions.Default(ctx)
+			session.Set("user_id", user_id)
 			session.Set("openid", wechatUser.OpenID)
 			session.Set("headImgUrl", wechatUser.HeadImgUrl)
 			session.Set("nickname", wechatUser.Nickname)
 			ctx.JSON(200, gin.H{
-				"nickname": wechatUser.Nickname,
+				"nickname":         wechatUser.Nickname,
+				"is_existed":       isExisted,
+				"is_administrator": controller.GodJudger(wechatUser.Nickname),
 			})
 			return session.Save()
 		},
@@ -78,6 +82,7 @@ func SetupRouter() *gin.Engine {
 	//user 模块
 
 	api.POST("/user", controller.Register)
+	api.POST("/hobby", controller.HobbyPoster)
 	api.PUT("/user", controller.Updater)
 	api.GET("/user", controller.Fetcher)
 	api.POST("/background", controller.Refresher)
@@ -93,8 +98,8 @@ func SetupRouter() *gin.Engine {
 	api.POST("/healing/selection", controller.Selector) //植入任务 2021.11.1
 	//经典治愈——抽奖箱
 	// api.GET("healing/lotterybox/prizes", controller.GetPrizes)
+	// api.GET("/healing/lotterybox/drawcheck", controller.DrawCheck)
 	api.POST("/healing/lotterybox/draw", controller.Draw)
-	api.GET("/healing/lotterybox/drawcheck", controller.DrawCheck)
 	api.GET("/healing/lotterybox/lotteries", controller.GetLotteries)
 	api.GET("/healing/lotterybox/tasktable", controller.GetTasktable)
 	api.GET("/healing/lotterybox/points", controller.GetUserPoints)

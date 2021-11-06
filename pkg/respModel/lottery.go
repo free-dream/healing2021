@@ -1,9 +1,9 @@
 package respModel
 
 const (
-	Msg0 = "积分不足"
-	Msg1 = "请填写手机号码"
-	Msg2 = "已参与抽奖"
+	Msg0 = "抽奖成功，请耐心等待开奖"
+	Msg1 = "不能重复抽奖"
+	Msg2 = ""
 )
 
 //彩票信息

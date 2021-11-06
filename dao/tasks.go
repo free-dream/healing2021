@@ -3,16 +3,7 @@ package dao
 import (
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	db "git.100steps.top/100steps/healing2021_be/pkg/setting"
-	"github.com/jinzhu/gorm"
 )
-
-//基于给定数据更新task_table
-func UpdateTasks(userid int, taskid int, process int) {
-	mysqlDb := db.MysqlConn()
-	var tasktable tables.TaskTable
-	mysqlDb.Model(&tasktable).Where("user_id = ? AND task_id = ?", userid, taskid).UpdateColumn("Counter", gorm.Expr("IsLiked + ?", process))
-	// mysqlDb.Model(&tasktable).Where("UserId = ? AND TaskId = ?", userid, taskid).UpdateColumn("Check", check)
-}
 
 //基于给定数据生成tasktable,用于用户初始化
 func GenerateTasktable(tids []int, userid int) error {
@@ -28,7 +19,6 @@ func GenerateTasktable(tids []int, userid int) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -65,3 +55,41 @@ func GetTasks(taskid int) (tables.Task, error) {
 	}
 	return task, nil
 }
+
+//更新任务积分
+func UpdateTaskPoints(userid int, taskid int, points int, tpoints int) error {
+	mysqlDb := db.MysqlConn()
+	var user tables.User
+	var tasktable tables.TaskTable
+
+	err := mysqlDb.Where("id = ?", userid).First(&user).Error
+	if err != nil {
+		return err
+	}
+
+	err = mysqlDb.Where("task_id = ? AND user_id = ?", taskid, userid).Find(&tasktable).Error
+	if err != nil {
+		return err
+	}
+
+	user.Points = points
+	err = mysqlDb.Save(&user).Error
+	if err != nil {
+		return err
+	}
+
+	tasktable.Counter = tpoints
+	err = mysqlDb.Save(&tasktable).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// //基于给定数据更新task_table
+// func UpdateTasks(userid int, taskid int, process int) {
+// 	mysqlDb := db.MysqlConn()
+// 	var tasktable tables.TaskTable
+// 	mysqlDb.Model(&tasktable).Where("user_id = ? AND task_id = ?", userid, taskid).UpdateColumn("Counter", gorm.Expr("IsLiked + ?", process))
+// 	// mysqlDb.Model(&tasktable).Where("UserId = ? AND TaskId = ?", userid, taskid).UpdateColumn("Check", check)
+// }

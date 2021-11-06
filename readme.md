@@ -4,6 +4,7 @@
 * [\-\-\-\-\-下面的接口都要带上前缀"/api"\-\-\-\-\-](#-----下面的接口都要带上前缀api-----)
 * [2\. 用户模块](#2-用户模块)
   * [2\.1 用户注册](#21-用户注册)
+    * [2\.1\.1 用户爱好选择](#211-用户爱好选择)
   * [2\.2 个人信息更新](#22-个人信息更新)
   * [2\.3 获取自己信息(我的点歌与个人信息)](#23-获取自己信息我的点歌与个人信息)
   * [2\.4 更新个人背景](#24-更新个人背景)
@@ -20,9 +21,8 @@
     * [3\.2\.1 抽奖](#321-抽奖)
       * [3\.2\.1\.1 奖池信息获取](#3211-奖池信息获取)
       * [3\.2\.1\.2 抽奖](#3212-抽奖)
-      * [3\.2\.1\.3 拉取用户中奖记录](#3213-拉取用户中奖记录)
       * [3\.2\.1\.4 拉取对应用户的任务列表](#3214-拉取对应用户的任务列表)
-      * [3\.2\.1\.5 任务更新/领取积分](#3215-任务更新领取积分)
+      * [3\.2\.1\.5 获取当前用户的积分](#3215-获取当前用户的积分)
     * [3\.2\.2 排行榜](#322-排行榜)
       * [3\.2\.2\.1 学校积分排名](#3221-学校积分排名)
       * [3\.2\.2\.2 用户当前排名](#3222-用户当前排名)
@@ -31,7 +31,7 @@
       * [3\.2\.3\.2 总体热榜](#3232-总体热榜)
     * [3\.2\.4 搜索页面的相关接口](#324-搜索页面的相关接口)
       * [3\.2\.4\.1 搜索接口](#3241-搜索接口)
-      * [3\.2\.4\.2 搜索历史 (保留，可选，视前端需求)](#3242-搜索历史-保留可选视前端需求)
+      * [3\.2\.4\.2 搜索历史 (废案)](#3242-搜索历史-废案)
       * [3\.4\.2\.3 热榜](#3423-热榜)
   * [3\.3 点歌页接口](#33-点歌页接口)
 * [4\.追忆童年](#4追忆童年)
@@ -41,7 +41,6 @@
   * [4\.2 原翻唱页相关接口](#42-原翻唱页相关接口)
     * [4\.2\.1 获取原唱相关信息](#421-获取原唱相关信息)
     * [4\.2\.2  获取用户翻唱列表并排序](#422--获取用户翻唱列表并排序)
-    * [4\.2\.3 录音接口](#423-录音接口)
   * [4\.3 歌曲页相关接口](#43-歌曲页相关接口)
     * [4\.3\.1 点赞接口](#431-点赞接口)
     * [4\.3\.2 当前歌曲的信息获取](#432-当前歌曲的信息获取)
@@ -65,12 +64,14 @@
   * [7\.1 动态、评论删除](#71-动态评论删除)
 * [通用功能](#通用功能)
   * [8\.1点赞](#81点赞)
+      * [3\.2\.1\.3 拉取用户中奖记录(废案)](#3213-拉取用户中奖记录废案)
+      * [3\.2\.1\.3 抽奖确认(废案)](#3213-抽奖确认)
 
 # 1. 微信授权
 
 ## 1.1 授权
 
-GET /wx/jump/?redirect=  HTTP/1.1
+GET /wx/jump2wechat/?redirect=  HTTP/1.1
 
 成功：
 
@@ -80,6 +81,8 @@ Content-Type application/json
 ```json
 {
   "nickname": "string",
+  "is_existed": int,//0表示未注册，1表示注册过
+  "is_administrator": bool //判断是否是管理员，true是管理员，可以看到删除评论的按钮
 }
 ```
 
@@ -135,7 +138,6 @@ Content-Type: application/json
 "phone_number": "string", //选填
 "sex": int,// 1:男 2:女 3:其他
 "school": "string" //可以传缩写过来 scut
-"hobby":[]string
 
 }
 ```
@@ -155,6 +157,35 @@ Content-Type: application/json
 ```json
 {
   "message": "昵称/手机号已存在,无法注册"
+}
+```
+### 2.1.1 用户爱好选择
+
+POST /hobby HTTP/1.1
+
+成功：
+
+Content-Type: application/json
+
+```json
+{
+"hobby":[]string
+
+}
+```
+
+200 OK
+
+
+
+失败：
+
+Content-Type: application/json
+
+400 
+```json
+{
+  "message": "error param"
 }
 ```
 ## 2.2 个人信息更新
@@ -629,47 +660,11 @@ HTTP/1.1 200 OK
 
 Content-Type: application/json
 
+`{"message" : "抽奖成功，请耐心等待开奖"}`
+
+`{"message" : "不能重复抽奖"}`
+
 失败(例)：
-
-HTTP/1.1 403 Forbidden
-
-Content-Type: application/json
-
-`{"message" : "抽奖失败"}`
-
-#### 3.2.1.3 抽奖确认
-
-GET /healing/lotterybox/drawcheck HTTP 1.1
-
-**作为抽奖按钮的前置接口存在**
-
-成功:
-
-HTTP/1.1 200 OK
-
-Content-Type: application/json
-
-```json
-{
-    "msg":"积分不足"
-}
-```
-
-or
-
-```json
-{
-    "msg":"请填写手机号码"
-}
-```
-
-or
-
-```json
-{
-    "msg":"已参与抽奖
-}
-```
 
 HTTP/1.1 403 Forbidden
 
@@ -856,6 +851,7 @@ Content-Type: application/json
 ```json
 [//列表长度为10
     {
+        "cover_id":integer,	//翻唱id，跳转
         "avatar":string,	//用户头像url
         "nickname":string,	//用户名
         "post_time":string(datetime),	//时间
@@ -1116,7 +1112,8 @@ Content-Type: application/json
     "classic_id":int, 	//用于播放原唱
     "song_name": string,
     "singer": string,
-    "icon":text(url)   //歌曲图标
+    "icon":text(url),   //歌曲图标
+    "work_name":string	//作品名
 }
 ```
 
@@ -1701,7 +1698,7 @@ Content-Type: application/json
 
 ## 8.1点赞
 
-PUT/praise HTTP1.1
+PUT/like HTTP1.1
 
 成功时：
 
@@ -1756,3 +1753,45 @@ HTTP/1.1 403 Forbidden
 Content-Type: application/json
 
 `{"message" : "拉取中奖信息失败"}`
+
+
+
+#### 3.2.1.3 抽奖确认(废案)
+
+GET /healing/lotterybox/drawcheck HTTP 1.1
+
+**作为抽奖按钮的前置接口存在**
+
+成功:
+
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+```json
+{
+    "msg":"积分不足"
+}
+```
+
+or
+
+```json
+{
+    "msg":"请填写手机号码"
+}
+```
+
+or
+
+```json
+{
+    "msg":"已参与抽奖
+}
+```
+
+HTTP/1.1 403 Forbidden
+
+Content-Type: application/json
+
+`{"message" : "抽奖失败"}

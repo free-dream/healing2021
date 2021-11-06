@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"fmt"
 	"strconv"
 
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
@@ -21,10 +20,10 @@ func GetRankingBySchool(school string) ([]tables.User, error) {
 	var users []tables.User
 	var err error = nil
 	if school != "All" {
-		//按Record 倒序排列
-		err = mysqlDb.Where("School = ?", school).Order("Record desc").Limit(10).Find(&users).Error
+		//按Points倒序排列
+		err = mysqlDb.Where("School = ?", school).Order("Points desc").Limit(10).Find(&users).Error
 	} else if school == "All" {
-		err = mysqlDb.Order("Record desc").Limit(10).Find(&users).Error
+		err = mysqlDb.Order("Points desc").Limit(10).Find(&users).Error
 	}
 	if err != nil {
 		return nil, err
@@ -47,9 +46,6 @@ func GetRankByCUserId(userid int) (string, error) {
 			break
 		}
 	}
-	//
-	fmt.Println(i)
-	//
 	var resp string
 	if i <= 199 {
 		resp = strconv.Itoa(i + 1)

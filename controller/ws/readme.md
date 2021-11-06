@@ -8,6 +8,13 @@ API:
 // 用于发送系统消息和用户消息，详见产品文档
 conn.SendSysMsg(respModel.SysMsg) error
 conn.SendUsrMsg(respModel.UsrMsg) error
+/* respModel.SysMsg Type参数说明
+0 : 歌曲评为热榜（填 songId）
+1 : 翻唱歌曲被点赞（填 songId）
+2 : 动态被点赞 （songId 填空串，2-4同理）
+3 : 动态被评论 （contentId 填相应动态、评论的id,2-4同理）
+4 : 评论被点赞
+*/
 
 
 对外接口
@@ -64,9 +71,9 @@ GET("/ws/history")
 ### 内部组织：
 
 1. 连接部分
-  websocket包demo完成，连接后Conn作为全局变量，可提供给整个业务各个部分
+    websocket包demo完成，连接后Conn作为全局变量，可提供给整个业务各个部分
 2. Conn
-  Conn的核心websocket基本结构体的指针，设计上还集成了消息进出的两个管道，一个控制关闭的管道，两个负责控制关闭管道的并发安全
+    Conn的核心websocket基本结构体的指针，设计上还集成了消息进出的两个管道，一个控制关闭的管道，两个负责控制关闭管道的并发安全
 
 ```
 

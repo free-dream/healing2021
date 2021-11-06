@@ -7,7 +7,6 @@ import (
 
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
-	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"git.100steps.top/100steps/healing2021_be/task"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -60,8 +59,8 @@ func Selector(ctx *gin.Context) {
 		// return
 	}
 	userid := sessions.Default(ctx).Get("user_id").(int)
+
 	param.UserId = userid
-	param.Module = 1
 	resp, err := dao.Select(param)
 	if err != nil {
 		panic(err)
@@ -141,27 +140,27 @@ type RecordParams struct {
 
 //唱歌接口
 //@@@@@@@任务模块已植入此接口@@@@@@@
-func Recorder(c *gin.Context) {
+func Recorder(ctx *gin.Context) {
 	params := RecordParams{}
-	userID := tools.GetUser(c).ID
-	if err := c.ShouldBindJSON(&params); err != nil {
-		c.JSON(400, e.ErrMsgResponse{Message: err.Error()})
+	userID := sessions.Default(ctx).Get("user_id").(int)
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		ctx.JSON(400, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
 	url, err := convertMediaIdArrToQiniuUrl(params.Record)
 	if err != nil {
-		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
+		ctx.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
 
-	resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, int(userID))
+	resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, userID)
 	if err != nil {
-		c.JSON(403, e.ErrMsgResponse{Message: err.Error()})
+		ctx.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
 	//任务模块植入 2021.11.1
 	thistask := task.HT
-	thistask.AddRecord(int(userID))
+	thistask.AddRecord(userID)
 	//
-	c.JSON(200, resp)
+	ctx.JSON(200, resp)
 }
