@@ -52,7 +52,6 @@ func SetupRouter() *gin.Engine {
 			session.Set("headImgUrl", wechatUser.HeadImgUrl)
 			session.Set("nickname", wechatUser.Nickname)
 			ctx.Redirect(302, redirect)
-			ctx.Abort()
 			return session.Save()
 		},
 	})
