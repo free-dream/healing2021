@@ -1,9 +1,10 @@
 package controller
 
 import (
-	"strconv"
-
+	"git.100steps.top/100steps/healing2021_be/controller/ws"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
+	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
+	"strconv"
 
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
@@ -153,7 +154,17 @@ func Recorder(ctx *gin.Context) {
 		return
 	}
 
-	resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, userID)
+	id, resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, userID)
+	//推送到点歌用户
+
+	conn := ws.GetConn()
+	usrMsg := respModel.UsrMsg{}
+	usrMsg.Url = resp.File
+	usrMsg.Song = resp.SongName
+	usrMsg.Message = ""
+	usrMsg.FromUser = uint(userID)
+	usrMsg.ToUser = uint(id)
+	err = conn.SendUsrMsg(usrMsg)
 	if err != nil {
 		ctx.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
