@@ -135,7 +135,7 @@ func PostMoment(ctx *gin.Context) {
 		Moment.Module = 1
 	case 2:
 		Moment.Module = 2
-	default:// 出现错误
+	default: // 出现错误
 		ctx.JSON(403, e.ErrMsgResponse{Message: "非法参数"})
 		//为了保证后面任务在接口使用时顺利进行---voloroloq 2021.11.1
 		return
@@ -154,10 +154,10 @@ func PostMoment(ctx *gin.Context) {
 	}
 
 	// 添加参数
-	Moment.Content=NewMoment.Content
-	Moment.SongName=NewMoment.SongName
-	Moment.UserId=param.UserId
-	Moment.State=tools.EncodeStrArr(NewMoment.Status)
+	Moment.Content = NewMoment.Content
+	Moment.SongName = NewMoment.SongName
+	Moment.UserId = param.UserId
+	Moment.State = tools.EncodeStrArr(NewMoment.Status)
 
 	// 存入数据库
 	if ok := dao.CreateMoment(Moment); !ok {

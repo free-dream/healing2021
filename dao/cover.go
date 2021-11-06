@@ -47,7 +47,7 @@ func GetCoverInfo(CoverId int) (int, string, error) {
 }
 
 // 判断某用户是否点赞
-func HaveCoverLaud(UserId int, CoverId int)  int{
+func HaveCoverLaud(UserId int, CoverId int) int {
 	MysqlDB := setting.MysqlConn()
 	err := MysqlDB.Where("user_id=? and cover_id=? and is_liked=?", UserId, CoverId, 1).First(&statements.Praise{}).Error
 	if gorm.IsRecordNotFoundError(err) {

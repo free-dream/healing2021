@@ -23,7 +23,6 @@ func GetPlayer(ctx *gin.Context) {
 		return
 	}
 
-
 	UserId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
 	PlayerResp, err := dao.GetPlayerInfo(UserId, CoverId)
 	if err != nil {

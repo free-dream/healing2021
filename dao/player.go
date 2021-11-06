@@ -34,7 +34,7 @@ func GetPlayerInfo(UserId int, CoverId int) (respModel.PlayerResp, error) {
 		File:     Cover.File,
 		Name:     Cover.SongName,
 		WorkName: Classic.WorkName,
-		Check: HaveCoverLaud(UserId, int(Cover.ID)),
+		Check:    HaveCoverLaud(UserId, int(Cover.ID)),
 	}, nil
 }
 

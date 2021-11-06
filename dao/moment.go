@@ -93,7 +93,8 @@ func CountCommentsById(MomentId int) int {
 type CommentId struct {
 	Id int `gorm:"id"`
 }
-func CreateComment(Comment statements.MomentComment) (int,bool) {
+
+func CreateComment(Comment statements.MomentComment) (int, bool) {
 	MysqlDB := setting.MysqlConn()
 	if err := MysqlDB.Create(&Comment).Error; err != nil {
 		return 0, false
@@ -158,7 +159,8 @@ func HaveCLauded(UserId int, CommentId int) int {
 type MomentSenderId struct {
 	UserId int `gorm:"user_id"`
 }
-func GetMomentSenderId(MomentId int)  (int,error){
+
+func GetMomentSenderId(MomentId int) (int, error) {
 	momentSenderId := MomentSenderId{}
 	db := setting.MysqlConn()
 	err := db.Model(&statements.Moment{}).Where("id=?", MomentId).Scan(&momentSenderId).Error
@@ -169,7 +171,8 @@ func GetMomentSenderId(MomentId int)  (int,error){
 type CommentSenderId struct {
 	UserId int `gorm:"user_id"`
 }
-func GetCommentSenderId(CommentId int)  (int,error){
+
+func GetCommentSenderId(CommentId int) (int, error) {
 	commentSenderId := MomentSenderId{}
 	db := setting.MysqlConn()
 	err := db.Model(&statements.MomentComment{}).Where("id=?", CommentId).Scan(&commentSenderId).Error
