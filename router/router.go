@@ -51,8 +51,9 @@ func SetupRouter() *gin.Engine {
 			session.Set("openid", wechatUser.OpenID)
 			session.Set("headImgUrl", wechatUser.HeadImgUrl)
 			session.Set("nickname", wechatUser.Nickname)
+			err = session.Save()
 			ctx.Redirect(302, redirect)
-			return session.Save()
+			return err
 		},
 	})
 
