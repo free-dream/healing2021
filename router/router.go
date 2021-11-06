@@ -21,7 +21,6 @@ import (
 var store redis.Store
 
 func SetupRouter() *gin.Engine {
-
 	r := gin.Default()
 
 	f, _ := os.Create(tools.GetConfig("log", "location"))
@@ -67,12 +66,12 @@ func SetupRouter() *gin.Engine {
 	})
 
 	//假登录
-
 	if tools.IsDebug() {
 		r.POST("/user", controller.FakeLogin)
 		r.GET("/userEasy", controller.FakeLoginEasy)
 	}
 	r.Use(middleware.IdentityCheck())
+
 	// 业务路由
 	api := r.Group("/api")
 

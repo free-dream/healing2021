@@ -13,8 +13,8 @@ type Moment struct {
 	Content     string `gorm:"default:''"`
 	SongName    string `gorm:"default:''"`
 	SelectionId int    `gorm:"default:0;index"`
-	ClassicId int    `gorm:"default:0;index"`
-	Module int `gorm:"default:2;index"` // 0经典点歌，1童年分享，2无歌曲
+	ClassicId   int    `gorm:"default:0;index"`
+	Module      int    `gorm:"default:2;index"` // 0经典点歌，1童年分享，2无歌曲
 	State       string `gorm:"default:''"`
 }
 

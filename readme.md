@@ -1190,7 +1190,8 @@ Content-Type: application/json
 	"name":string,		//歌曲名
 	"nickname":string,	//翻唱者
     "icon":text(url),	//歌曲图标
-    "work_name":string	//作品名
+    "work_name":string,	//作品名
+	"check":int		//0表示当前用户未点赞，1表示当前用户已经点赞
 }
 ```
 

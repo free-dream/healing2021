@@ -46,19 +46,19 @@ func GetConn() *Connection {
 }
 
 func WsHandler(ctx *gin.Context) {
-    var (
-        wsConn *websocket.Conn
-        err error
-        data []byte
-    )
-    // get uid
-    session := sessions.Default(ctx)
-    id := session.Get("user_id").(int)
-    uid := strconv.Itoa(id)
-    // fake uid
-    //uid := strconv.Itoa(TestUid)
-    //TestUid++ 
-    //fmt.Printf("uid:%v\n",uid)
+	var (
+		wsConn *websocket.Conn
+		err    error
+		data   []byte
+	)
+	// get uid
+	session := sessions.Default(ctx)
+	id := session.Get("user_id").(int)
+	uid := strconv.Itoa(id)
+	// fake uid
+	//uid := strconv.Itoa(TestUid)
+	//TestUid++
+	//fmt.Printf("uid:%v\n",uid)
 
 	if isInit := wsInit(ctx.Writer, ctx.Request, wsConn, uid); isInit != true {
 		return
@@ -86,9 +86,9 @@ func WsData(ctx *gin.Context) {
 	// get uid
 	session := sessions.Default(ctx)
 	id := session.Get("user_id").(string)
-    // fake uid
-    //id := strconv.Itoa(TestUid)
-    //TestUid++ 
+	// fake uid
+	//id := strconv.Itoa(TestUid)
+	//TestUid++
 	intId, _ := strconv.Atoi(id)
 	uid := uint(intId)
 

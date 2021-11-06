@@ -89,21 +89,22 @@ func CountCommentsById(MomentId int) int {
 	return Tot
 }
 
-// 创建新评论
+// 创建新评论,返回创建好的评论的 id
 type CommentId struct {
 	Id int `gorm:"id"`
 }
-func CreateComment(Comment statements.MomentComment) (int,bool) {
+
+func CreateComment(Comment statements.MomentComment) (int, bool) {
 	MysqlDB := setting.MysqlConn()
 	if err := MysqlDB.Create(&Comment).Error; err != nil {
 		return 0, false
 	}
 
-	commentId := 0
+	var commentId CommentId
 	if err := MysqlDB.Where(&Comment).Scan(&commentId).Error; err != nil {
 		return 0, false
 	}
-	return commentId, true
+	return commentId.Id, true
 }
 
 // 拉取一个动态下的评论列表
@@ -158,7 +159,8 @@ func HaveCLauded(UserId int, CommentId int) int {
 type MomentSenderId struct {
 	UserId int `gorm:"user_id"`
 }
-func GetMomentSenderId(MomentId int)  (int,error){
+
+func GetMomentSenderId(MomentId int) (int, error) {
 	momentSenderId := MomentSenderId{}
 	db := setting.MysqlConn()
 	err := db.Model(&statements.Moment{}).Where("id=?", MomentId).Scan(&momentSenderId).Error
@@ -169,7 +171,8 @@ func GetMomentSenderId(MomentId int)  (int,error){
 type CommentSenderId struct {
 	UserId int `gorm:"user_id"`
 }
-func GetCommentSenderId(CommentId int)  (int,error){
+
+func GetCommentSenderId(CommentId int) (int, error) {
 	commentSenderId := MomentSenderId{}
 	db := setting.MysqlConn()
 	err := db.Model(&statements.MomentComment{}).Where("id=?", CommentId).Scan(&commentSenderId).Error

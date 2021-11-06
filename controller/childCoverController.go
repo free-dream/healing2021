@@ -3,6 +3,7 @@ package controller
 import (
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -22,7 +23,8 @@ func GetPlayer(ctx *gin.Context) {
 		return
 	}
 
-	PlayerResp, err := dao.GetPlayerInfo(CoverId)
+	UserId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
+	PlayerResp, err := dao.GetPlayerInfo(UserId, CoverId)
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 		return

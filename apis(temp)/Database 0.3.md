@@ -53,9 +53,11 @@ module == 1 为经典模式， module == 2 为童年模式
 | user_id           | int          |         |
 | like_num | int          |          |
 | content      | varchar(255) |          |
-| selection_id | int          |          |
+| selection_id | int          | 经典点歌 |
 | song_name    | varchar(255) |          |
-| states       | varchar(255) | 状态     |
+| state       | varchar(255) | 状态     |
+| module | int | 0经典点歌，1童年分享，2无歌曲 |
+| classicId | int | 童年分享 |
 
 
 ### moment_comment（评论）
