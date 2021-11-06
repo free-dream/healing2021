@@ -25,16 +25,16 @@ func UsrBackUp(msg respModel.UsrMsg, isSend int) error {
 	return db.Model(&statements.Usrmsg{}).Create(&msgClone).Error
 }
 
-func GetAllSysMsg(uid uint) ([]respModel.SysMsg, error) {
+func GetAllSysMsg(uid uint) ([]respModel.Sysmsg, error) {
 	db := setting.MysqlConn()
-	resp := make([]respModel.SysMsg, 1)
+	resp := make([]respModel.Sysmsg, 1)
 	err := db.Model(&statements.Sysmsg{}).Where("uid = ? and is_send = 1", uid).Order("created_at desc").Find(&resp).Error
 	return resp, err
 }
 
-func GetAllUsrMsg(uid uint) ([]respModel.UsrMsg, error) {
+func GetAllUsrMsg(uid uint) ([]respModel.Usrmsg, error) {
 	db := setting.MysqlConn()
-	resp := make([]respModel.UsrMsg, 1)
-	err := db.Model(&statements.Usrmsg{}).Where("uid = ? and is_send = 1", uid).Order("created_at desc").Find(&resp).Error
+	resp := make([]respModel.Usrmsg, 1)
+	err := db.Model(&statements.Usrmsg{}).Where("from_user = ? and is_send = 1", uid).Order("created_at desc").Find(&resp).Error
 	return resp, err
 }
