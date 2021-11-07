@@ -1,5 +1,6 @@
 package controller
 
+//dailyrank除了当日热榜需要更新之外其它可以直接缓存
 import (
 	"regexp"
 

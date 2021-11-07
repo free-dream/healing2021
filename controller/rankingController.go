@@ -16,14 +16,22 @@ import (
 func GetRanking(ctx *gin.Context) {
 	//取出参数
 	school := ctx.Param("school")
-	resptemp := sandwich.GetPoingsRanking(school)
-	if resptemp != "" {
-		ctx.JSON(200, resptemp)
+
+	//读取可能有的redis缓存,若有直接返回
+	var rankresps []resp.RankingResp
+	datatemp := sandwich.GetPoingsRanking(school)
+	if datatemp != "" {
+		data := []byte(datatemp)
+		err := json.Unmarshal(data, &rankresps)
+		if err != nil {
+			log.Fatal("pointsrank缓存数据格式化失败")
+		}
+		ctx.JSON(200, rankresps)
 		return
 	}
 
 	//生成返回模块
-	rankresps := make([]resp.RankingResp, 0)
+	rankresps = make([]resp.RankingResp, 0)
 	//提取数据
 	raws, err := dao.GetRankingBySchool(school)
 	if err != nil {
