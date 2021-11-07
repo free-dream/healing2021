@@ -77,12 +77,17 @@ func GetCURanking(userid int) string {
 	return data
 }
 
-//缓存积分排名，每小时更新
+//缓存积分排名，生存周期1h
 func CachePointsRanking(school string, data string) error {
 	db := setting.RedisConn()
 	key := prefix + "ranking"
 	err := db.HSet(key, school, data).Err()
-	return err
+	if err != nil {
+		return err
+	}
+	//设置过期时间
+	db.Expire(key, time.Hour)
+	return nil
 }
 
 //取用积分排名
@@ -93,12 +98,17 @@ func GetPointsRanking(school string) string {
 	return temp
 }
 
-//缓存每日排名
+//缓存每日排名,生命周期5min
 func CacheDailyRank(date string, data string) error {
 	db := setting.RedisConn()
 	key := prefix + "dailyrank"
 	err := db.HSet(key, date, data).Err()
-	return err
+	if err != nil {
+		return err
+	}
+	//设置过期时间
+	db.Expire(key, time.Minute*5)
+	return nil
 }
 
 //提取对应的每日排名
