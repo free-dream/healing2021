@@ -7,11 +7,15 @@ import (
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
 
-//设置redis任务缓存,此处还未设置expile time
+const (
+	prefix = "2021healing:"
+)
+
+//设置redis任务缓存
 func CacheTask(userid int, tid int, value interface{}) error {
 	redisDb := setting.RedisConn()
 	temp := make(map[string]interface{})
-	key := strconv.Itoa(userid) + "/task"
+	key := prefix + strconv.Itoa(userid) + "/task"
 	temp[strconv.Itoa(tid)] = value
 	err := redisDb.HMSet(key, temp).Err()
 	return err
@@ -20,7 +24,7 @@ func CacheTask(userid int, tid int, value interface{}) error {
 //更新任务记录
 func UpdateTask(userid int, tid int, value int64) error {
 	redisDb := setting.RedisConn()
-	key := strconv.Itoa(userid) + "/task"
+	key := prefix + strconv.Itoa(userid) + "/task"
 	err := redisDb.HIncrBy(key, strconv.Itoa(tid), value).Err()
 	return err
 }
@@ -28,7 +32,7 @@ func UpdateTask(userid int, tid int, value int64) error {
 //取用用户积分缓存
 func GetCachePoints(userid int) int {
 	redisDb := setting.RedisConn()
-	key := strconv.Itoa(userid) + "/points"
+	key := prefix + strconv.Itoa(userid) + "/points"
 	temp := redisDb.HMGet(key, "points").Val()
 	if len(temp) < 1 {
 		return -1
@@ -47,34 +51,45 @@ func GetCachePoints(userid int) int {
 //基于mysql更新用户积分缓存
 func UpdateCachePoints(userid int, points int) error {
 	redisDb := setting.RedisConn()
-	key := strconv.Itoa(userid) + "/task"
+	key := prefix + strconv.Itoa(userid) + "/task"
 	temp := make(map[string]interface{})
 	temp["points"] = points
 	err := redisDb.HMSet(key, temp).Err()
 	return err
 }
 
-//缓存当前用户排名,设置了8小时的有效期
+//缓存当前用户排名,设置了10min的expile时间
 func CacheCURanking(userid int, rank string) error {
 	db := setting.RedisConn()
-	key := strconv.Itoa(userid) + "rank"
-	err := db.Set(key, rank, time.Hour*8).Err()
+	key := prefix + strconv.Itoa(userid) + "rank"
+	err := db.Set(key, rank, time.Minute*10).Err()
 	return err
 }
 
 //获取当前用户排名
 func GetCURanking(userid int) string {
 	db := setting.RedisConn()
-	key := strconv.Itoa(userid) + "rank"
+	key := prefix + strconv.Itoa(userid) + "rank"
 	data := db.Get(key).Val()
 	return data
 }
 
-//首次调用缓存积分排名，其后每小时更新一次
-func CachePointsRanking() {}
+//首次调用缓存积分排名
+//不设置expile,而是调用cron整点删除一次redis
+func CachePointsRanking(school string, data string) error {
+	db := setting.RedisConn()
+	key := prefix + "ranking"
+	err := db.HSet(key, school, data).Err()
+	return err
+}
 
 //取用缓存
-func GetPoingsRanking() {}
+func GetPoingsRanking(school string) string {
+	db := setting.RedisConn()
+	key := prefix + "ranking"
+	temp := db.HGet(key, school).Val()
+	return temp
+}
 
 //使用redis作为换入区，保留20项记录
 func CacheSearch() {}
