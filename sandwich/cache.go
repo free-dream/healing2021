@@ -70,6 +70,18 @@ func GetCURanking(userid int) string {
 	return data
 }
 
+//首次调用缓存积分排名，其后每小时更新一次
+func CachePointsRanking() {}
+
+//取用缓存
+func GetPoingsRanking() {}
+
+//使用redis作为换入区，保留20项记录
+func CacheSearch() {}
+
+//取用缓存数据
+func GetSearch() {}
+
 // //下述接口暂时废案
 
 // /*翻唱排序系统初始化的时候缓存一次，之后定期更新*/

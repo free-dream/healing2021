@@ -59,9 +59,6 @@ func GetCacheTask(userid int, tid int) int {
 	redisDb := setting.RedisConn()
 	key := strconv.Itoa(userid) + "/task"
 	temp := redisDb.HMGet(key, strconv.Itoa(tid)).Val()
-	// if len(temp) < 1 {
-	// 	return -1
-	// }
 	if temp[0] == nil {
 		return -1
 	}
@@ -80,9 +77,6 @@ func ChangePoints(point float32, userid int, tid int) bool {
 	tempkey := strconv.Itoa(userid) + "/point"
 	temp := redisDb.HIncrBy(tempkey, "points", int64(point)).Val()
 	tempf := redisDb.HIncrBy(tempkey, strconv.Itoa(tid), int64(point)).Val()
-	// //redis缓存读取测试
-	// fmt.Println(redisDb.HMGet(tempkey, "points").Val())
-	// fmt.Println(redisDb.HMGet(tempkey, strconv.Itoa(tid)).Val())
 	//单独拉出一个协程更新数据库以保证数据一致性
 	//错误处理
 	ch := make(chan int)
@@ -98,11 +92,3 @@ func ChangePoints(point float32, userid int, tid int) bool {
 // 已实现于dao/task.go
 // //在用户首次登录时创建对应的任务表
 // func CreateTaskTable(userid int, taskid int) error {
-// 	mysqlDb := setting.MysqlConn()
-// 	usertask := state.TaskTable{
-// 		UserId: userid,
-// 		TaskId: taskid,
-// 	}
-// 	err := mysqlDb.Create(&usertask).Error
-// 	return err
-// }
