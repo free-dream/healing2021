@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"git.100steps.top/100steps/healing2021_be/dao"
@@ -19,15 +20,16 @@ func GetRanking(ctx *gin.Context) {
 
 	//读取可能有的redis缓存,若有直接返回
 	var rankresps []resp.RankingResp
-	datatemp := sandwich.GetPoingsRanking(school)
+	datatemp := sandwich.GetPointsRanking(school)
 	if datatemp != "" {
 		data := []byte(datatemp)
 		err := json.Unmarshal(data, &rankresps)
-		if err != nil {
+		if err == nil {
+			ctx.JSON(200, rankresps)
+			return
+		} else {
 			log.Fatal("pointsrank缓存数据格式化失败")
 		}
-		ctx.JSON(200, rankresps)
-		return
 	}
 
 	//生成返回模块
@@ -39,6 +41,8 @@ func GetRanking(ctx *gin.Context) {
 	}
 	for _, user := range raws {
 		temp := new(resp.RankingResp)
+		fmt.Println(user.ID)
+		temp.Userid = int(user.ID)
 		temp.Avatar = user.Avatar
 		temp.Nickname = user.Nickname
 		rankresps = append(rankresps, *temp)

@@ -10,6 +10,7 @@ type CoverRank struct {
 
 //排序的返回值
 type RankingResp struct {
+	Userid   int    `json:"userid"`
 	Avatar   string `json:"avatar"`
 	Nickname string `json:"nickname"`
 }
