@@ -9,6 +9,14 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+//奖品是真实概率数据
+//目前设计三个奖项，一等奖 2%，二等奖 8%，三等奖 20%
+const (
+	PRIZE1 = "蓝牙耳机/八音盒"
+	PRIZE2 = "有线耳机"
+	PRIZE3 = "小玩偶/台灯"
+)
+
 func TableInit() {
 	statements.AdvertisementInit()
 	statements.ClassicInit()
@@ -25,9 +33,57 @@ func TableInit() {
 	statements.UserInit()
 	statements.SysmsgInit()
 	statements.UsrmsgInit()
+	//任务和奖品初始化,不用删
+	AddTask()
+	AddLotteries()
 }
 
-// 假用户
+/*-------------------------系统启动时初始化奖品和任务表---------------------------*/
+//真奖品
+func Lottery(name string, possilbity float64) *statements.Lottery {
+	lottery := statements.Lottery{
+		Name:        name,
+		Possibility: possilbity,
+	}
+	return &lottery
+}
+
+//真任务
+func Task(text string, max int) *statements.Task {
+	task := statements.Task{
+		Text: text,
+		Max:  max,
+	}
+	return &task
+}
+
+//任务记录
+func CreateTask() {
+	db := setting.DB
+	db.Exec("truncate table task")
+	db.Create(Task("点歌一次", 8))
+	db.Create(Task("治愈一次", -1))
+	db.Create(Task("发动态一次", 8))
+}
+
+//向记录中增加奖品记录,奖品记录为真
+func CreateLottery() {
+	db := setting.DB
+	db.Exec("truncate table lottery")
+	db.Create(Lottery(PRIZE1, 0.02))
+	db.Create(Lottery(PRIZE2, 0.08))
+	db.Create(Lottery(PRIZE3, 0.2))
+}
+
+func AddTask() {
+	CreateTask()
+}
+
+func AddLotteries() {
+	CreateLottery()
+}
+
+/*-------------------------------其下为假数据----------------------------------*/
 func CreateFakeUser(nickname string, openid string, avatar string) { /*hobby map[string]string) */
 	User := statements.User{
 		Openid:   openid,
@@ -166,30 +222,6 @@ func AddFakePraises() {
 			break
 		}
 	}
-}
-
-//任务记录
-func CreateTask() {
-	db := setting.DB
-	db.Create(fakeTasks("点歌一次", 8))
-	db.Create(fakeTasks("治愈一次", -1))
-	db.Create(fakeTasks("发动态一次", 8))
-}
-
-func AddTask() {
-	CreateTask()
-}
-
-//向记录中增加奖品记录,奖品记录为真
-func CreateLottery() {
-	db := setting.DB
-	db.Create(fakeLotteries(PRIZE1, 0.02))
-	db.Create(fakeLotteries(PRIZE2, 0.08))
-	db.Create(fakeLotteries(PRIZE3, 0.2))
-}
-
-func AddLotteries() {
-	CreateLottery()
 }
 
 //假动态

@@ -14,8 +14,7 @@ type Selection struct {
 	Language string `gorm:"default:''" json:"language"`
 	Style    string `gorm:"default:''" json:"style"`
 	UserId   int    `gorm:"default:0;index" json:"user_id"`
-	//临时添加，测试后决定是否保留
-	Avatar string `gorm:"default:''" json:"avatar"`
+	Avatar   string `gorm:"default:''" json:"avatar"`
 }
 
 func SelectionInit() {
