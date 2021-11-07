@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 
 	"git.100steps.top/100steps/healing2021_be/dao"
@@ -41,7 +40,6 @@ func GetRanking(ctx *gin.Context) {
 	}
 	for _, user := range raws {
 		temp := new(resp.RankingResp)
-		fmt.Println(user.ID)
 		temp.Userid = int(user.ID)
 		temp.Avatar = user.Avatar
 		temp.Nickname = user.Nickname

@@ -97,7 +97,7 @@ func GetPointsRanking(school string) string {
 func CacheDailyRank(date string, data string) error {
 	db := setting.RedisConn()
 	key := prefix + "dailyrank"
-	err := db.HSet(key, date, date).Err()
+	err := db.HSet(key, date, data).Err()
 	return err
 }
 

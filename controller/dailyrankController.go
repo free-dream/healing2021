@@ -26,7 +26,7 @@ func GetAllrank(ctx *gin.Context) {
 			ctx.JSON(200, respCovers)
 			return
 		} else {
-			log.Fatal("日榜redis缓存读取错误")
+			panic(err)
 		}
 	}
 
@@ -47,9 +47,9 @@ func GetAllrank(ctx *gin.Context) {
 			CoverId:  likes[i].CoverId,
 			Avatar:   cover.Avatar,
 			Nickname: nickname,
-			Posttime: cover.CreatedAt,
-			Songname: cover.SongName,
+			Posttime: cover.CreatedAt.String(),
 			Likes:    likes[i].Likes,
+			Songname: cover.SongName,
 		}
 		respCovers = append(respCovers, respCover)
 	}
@@ -107,7 +107,7 @@ func GetDailyrank(ctx *gin.Context) {
 			CoverId:  likes[i].CoverId,
 			Avatar:   cover.Avatar,
 			Nickname: nickname,
-			Posttime: cover.CreatedAt,
+			Posttime: cover.CreatedAt.String(),
 			Songname: cover.SongName,
 			Likes:    likes[i].Likes,
 		}
