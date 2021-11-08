@@ -86,11 +86,9 @@ func WsData(ctx *gin.Context) {
 	// get uid
 	session := sessions.Default(ctx)
 	id := session.Get("user_id").(string)
+    uid := str2uint(id)
 	// fake uid
-	//id := strconv.Itoa(TestUid)
-	//TestUid++
-	intId, _ := strconv.Atoi(id)
-	uid := uint(intId)
+	//uid := uint(2)
 
 	var resp WsDataResp
 	var err error
@@ -105,6 +103,8 @@ func WsData(ctx *gin.Context) {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "can not get data"})
 		return
 	}
-	ctx.JSON(200, e.ErrMsgResponse{Message: "ok"})
+    dao.SysUpdate(uid)
+    dao.UsrUpdate(uid)
+	ctx.JSON(200, resp)
 	return
 }

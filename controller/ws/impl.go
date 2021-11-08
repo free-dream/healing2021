@@ -317,6 +317,11 @@ func uint2str(u uint) string {
 	return strconv.Itoa(i)
 }
 
+func str2uint(s string) uint {
+    i, _ := strconv.Atoi(s)
+    return uint(i)
+}
+
 func filter(param string, pattern string) bool {
 	if ok, _ := regexp.Match(pattern, []byte(param)); !ok {
 		return false
