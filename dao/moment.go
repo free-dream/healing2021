@@ -17,8 +17,9 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 		if err := MysqlDB.Order("created_at DESC").Offset(Page * 10).Limit(10).Find(&AllMoment).Error; err != nil {
 			return AllMoment, false
 		}
-	} else if Method == "recommend" {
+	} else if Method == "recommend" { // To:这里有 bug!!!
 		// 按点赞排序
+		// 先查点赞表找到对应的动态
 		if err := MysqlDB.Order("like_num DESC").Offset(Page * 10).Limit(10).Find(&AllMoment).Error; err != nil {
 			return AllMoment, false
 		}
@@ -101,7 +102,8 @@ func CreateComment(Comment statements.MomentComment) (int, bool) {
 	}
 
 	var commentId CommentId
-	if err := MysqlDB.Where(&Comment).Scan(&commentId).Error; err != nil {
+	if err := MysqlDB.Model(&statements.MomentComment{}).Where("user_id=? and moment_id=? and comment=?", Comment.UserId, Comment.MomentId, Comment.Comment).Scan(&commentId).Error; err != nil {
+		fmt.Println(err)
 		return 0, false
 	}
 	return commentId.Id, true

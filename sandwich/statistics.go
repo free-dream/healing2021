@@ -9,9 +9,9 @@ import (
 // redis 添加两个 Zset 来统计搜索热词和热门状态
 
 // ZSet 对应的键
-const ourStates = "ourStates"
-const hotSearch = "hotSearch"
-const hotSong = "hotSong"
+const ourStates = "healing2021:ourStates"
+const hotSearch = "healing2021:hotSearch"
+const hotSong = "healing2021:hotSong"
 
 // 放入状态
 func PutInStates(States string) {
