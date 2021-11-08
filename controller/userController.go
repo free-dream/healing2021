@@ -89,7 +89,7 @@ func Register(ctx *gin.Context) {
 		}
 	}
 
-	dao.RefineUser(&user, id)
+	dao.RefineUser(user, id)
 	ctx.JSON(200, "OK")
 
 }

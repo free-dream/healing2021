@@ -86,7 +86,7 @@ func GetPhoneNumber(id int) (error, int) {
 	return nil, phone_number
 }
 
-func RefineUser(param *statements.User, id int) error {
+func RefineUser(param statements.User, id int) error {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
 	user := statements.User{
@@ -98,14 +98,8 @@ func RefineUser(param *statements.User, id int) error {
 	}
 
 	db.Table("user").Where("id=?", id).Select("nickname,real_name,phone_number,sex,school").Update(&user)
-	/*value, err := json.Marshal(param.Hobby)
-	if err != nil {
-		panic(err)
-		// return 0, err
-	}
-	setting.RedisClient.HSet("hobby", strconv.Itoa(int(user.ID)), value)*/
-	value, _ := json.Marshal(user.Openid)
-	redisCli.SAdd("healing2021:openid", value)
+	//value, _ := json.Marshal(param.Openid)
+	redisCli.SAdd("healing2021:openid", param.Openid)
 	return nil
 
 }
