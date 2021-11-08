@@ -16,7 +16,7 @@ func Login(openid string) (int, int) {
 	user := statements.User{
 		Openid: openid,
 	}
-	isExisted, id := dao.CreateUser(&user)
+	isExisted, id := dao.CreateUser(user)
 	//根据给定的数组生成任务表
 	var err1 error
 	check, err1 := dao.CheckTasks(id)
@@ -89,7 +89,7 @@ func Register(ctx *gin.Context) {
 		}
 	}
 
-	dao.RefineUser(&user, id)
+	dao.RefineUser(user, id)
 	ctx.JSON(200, "OK")
 
 }

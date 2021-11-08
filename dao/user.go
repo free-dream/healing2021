@@ -64,16 +64,17 @@ func FakeCreateUser(user *statements.User) (int, error) {
 	}
 
 }
-func CreateUser(user *statements.User) (int, int) {
+func CreateUser(user statements.User) (int, int) {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
 	if !redisCli.SIsMember("healing2021:openid", user.Openid).Val() {
 
 		db.Table("user").Create(&user)
 		return 0, int(user.ID)
+	} else {
+		db.Table("user").Where("openid=?", user.Openid).Scan(&user)
+		return 1, int(user.ID)
 	}
-	db.Table("user").Where("openid=?", user.Openid).Scan(&user)
-	return 1, int(user.ID)
 
 }
 func GetPhoneNumber(id int) (error, int) {
@@ -86,7 +87,7 @@ func GetPhoneNumber(id int) (error, int) {
 	return nil, phone_number
 }
 
-func RefineUser(param *statements.User, id int) error {
+func RefineUser(param statements.User, id int) error {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
 	user := statements.User{
@@ -98,14 +99,8 @@ func RefineUser(param *statements.User, id int) error {
 	}
 
 	db.Table("user").Where("id=?", id).Select("nickname,real_name,phone_number,sex,school").Update(&user)
-	/*value, err := json.Marshal(param.Hobby)
-	if err != nil {
-		panic(err)
-		// return 0, err
-	}
-	setting.RedisClient.HSet("hobby", strconv.Itoa(int(user.ID)), value)*/
-	value, _ := json.Marshal(user.Openid)
-	redisCli.SAdd("healing2021:openid", value)
+	//value, _ := json.Marshal(param.Openid)
+	redisCli.SAdd("healing2021:openid", param.Openid)
 	return nil
 
 }
