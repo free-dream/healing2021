@@ -47,7 +47,7 @@ func Like(ctx *gin.Context) {
 	//重复点赞判断/数据库写入检查
 	if ok != nil {
 		if dao.IsLikesExistError(ok) {
-			ctx.JSON(200, e.ErrMsgResponse{Message: "不允许重复点赞"})
+			ctx.JSON(405, e.ErrMsgResponse{Message: "不允许重复点赞"})
 			return
 		}
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入错误"})

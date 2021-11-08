@@ -146,9 +146,9 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 	var err error
 	if tag.Label == "recommend" {
 		var hobby []string
-		by, err := redisCli.HGet("healing2021:hobby", strconv.Itoa(id)).Bytes()
-		if err != nil {
-			return nil, err
+		by, err1 := redisCli.HGet("healing2021:hobby", strconv.Itoa(id)).Bytes()
+		if err1 != nil {
+			return nil, err1
 		}
 		err = json.Unmarshal(by, &hobby) //解析json
 		if err != nil {
@@ -236,13 +236,14 @@ type CoverDetails struct {
 
 func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 	db := setting.MysqlConn()
+
 	redisCli := setting.RedisConn()
 	index := 0
 	var resp []CoverDetails
 
 	if tag.Label == "recommend" {
 		var hobby []string
-		by, err := redisCli.HGet("hobby", strconv.Itoa(id)).Bytes()
+		by, err := redisCli.HGet("healing2021:hobby", strconv.Itoa(id)).Bytes()
 		if err != nil {
 			panic(err)
 		}
@@ -255,16 +256,16 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 		}
 		var size int
 		for _, value := range hobby {
-			lenth := redisCli.LLen("cover" + module + value).Val()
+			lenth := redisCli.LLen("healing2021:cover." + module + "." + value).Val()
 			size += int(lenth)
 		}
 		resp = make([]CoverDetails, size)
 		for _, value := range hobby {
-			if redisCli.Exists("cover"+module+value).Val() == 0 {
+			if redisCli.Exists("healing2021:cover."+module+"."+value).Val() == 0 {
 				continue
 			}
-			lenth := redisCli.LLen("cover" + module + value).Val()
-			for _, content := range redisCli.LRange("cover"+module+value, 0, lenth).Val() {
+			lenth := redisCli.LLen("healing2021:cover." + module + "." + value).Val()
+			for _, content := range redisCli.LRange("healing2021:cover."+module+"."+value, 0, lenth).Val() {
 				by = []byte(content)
 				err = json.Unmarshal(by, &resp[index])
 				index++

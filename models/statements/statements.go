@@ -2,6 +2,7 @@ package statements
 
 import (
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
+	"git.100steps.top/100steps/healing2021_be/sandwich"
 )
 
 func TableClean() {
@@ -20,4 +21,5 @@ func TableClean() {
 	db.Exec("truncate table user")
 	db.Exec("truncate table sysmsg")
 	db.Exec("truncate table usrmsg")
+	sandwich.Clean()
 }

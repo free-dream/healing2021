@@ -54,11 +54,10 @@ func FakeLogin(ctx *gin.Context) {
 
 func FakeLoginEasy(ctx *gin.Context) {
 	session := sessions.Default(ctx)
-	redirect, _ := ctx.GetQuery("redirect")
+	//redirect, _ := ctx.GetQuery("redirect")
 	session.Set("avatar", "我的头像 url")
-	session.Set("openid", 123456)
+	session.Set("openid", "123456")
 	session.Set("user_id", 1)
 	session.Save()
-	ctx.Redirect(302, redirect)
-	ctx.Abort()
+	ctx.JSON(200, "OK")
 }

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"strconv"
 
@@ -15,7 +16,7 @@ func Login(openid string) (int, int) {
 	user := statements.User{
 		Openid: openid,
 	}
-	isExisted, id := dao.CreateUser(&user)
+	isExisted, id := dao.CreateUser(user)
 	//根据给定的数组生成任务表
 	var err1 error
 	check, err1 := dao.CheckTasks(id)
@@ -88,22 +89,24 @@ func Register(ctx *gin.Context) {
 		}
 	}
 
-	dao.RefineUser(&user, id)
+	dao.RefineUser(user, id)
 	ctx.JSON(200, "OK")
 
 }
 
 func HobbyPoster(ctx *gin.Context) {
-	var hobby []string
+	hobby := dao.Hobby{}
 	id := sessions.Default(ctx).Get("user_id").(int)
 	err := ctx.ShouldBindJSON(&hobby)
 	if err != nil {
+		fmt.Println(err)
 		ctx.JSON(400, gin.H{
+
 			"message": "error param",
 		})
 		return
 	}
-	err = dao.HobbyStore(hobby, id)
+	err = dao.HobbyStore(hobby.Hobby, id)
 	if err != nil {
 		panic(err)
 	}
