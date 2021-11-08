@@ -27,11 +27,35 @@ func Login(openid string) (int, int) {
 	}
 	return isExisted, id
 }
+func PhoneCaller(ctx *gin.Context) {
+	id, _ := ctx.GetQuery("user_id")
+	user_id, _ := strconv.Atoi(id)
+	err, phoneNumber := dao.GetPhoneNumber(user_id)
+	if err != nil {
+		ctx.JSON(404, gin.H{
+			"message": "无电话号码",
+		})
+	}
+	ctx.JSON(200, gin.H{
+		"phone_number": phoneNumber,
+	})
+}
 
-//判断用户是否是管理员
-func GodJudger(nickname string) bool {
-	isAdministrator := dao.Authentication(nickname)
-	return isAdministrator
+//判断用户是否是管理员,是否注册
+func Judger(ctx *gin.Context) {
+	session := sessions.Default(ctx)
+	user_id := session.Get("user_id").(int)
+	is_existed := session.Get("is_existed").(int)
+	avatar := session.Get("headImgUrl").(string)
+	nickname := session.Get("nickname").(string)
+	is_administrator := dao.Authentication(nickname)
+	ctx.JSON(200, gin.H{
+		"user_id":          user_id,
+		"is_existed":       is_existed,
+		"avatar":           avatar,
+		"nickname":         nickname,
+		"is_administrator": is_administrator,
+	})
 }
 
 //用户注册,新增生成任务表机制
@@ -120,7 +144,6 @@ func Updater(ctx *gin.Context) {
 func Fetcher(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	id := session.Get("user_id").(int)
-
 	user := dao.GetUser(id)
 	ctx.JSON(200, user)
 

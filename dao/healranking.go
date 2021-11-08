@@ -13,7 +13,7 @@ const (
 	c = ">1000"
 )
 
-//基于学校获取排名，仅有sql版
+//基于学校获取排名
 func GetRankingBySchool(school string) ([]tables.User, error) {
 	mysqlDb := db.MysqlConn()
 

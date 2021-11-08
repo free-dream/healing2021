@@ -29,6 +29,7 @@ func SetupRouter() *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(middleware.Timeout(time.Minute))
 	r.Use(middleware.Cors())
+
 	// 注册sessions组件，使用redis作为驱动
 	//gob.Register(tools.RedisUser{})
 	var err error
@@ -42,19 +43,17 @@ func SetupRouter() *gin.Engine {
 		Appsecret: "",
 		BaseUrl:   "https://healing2021.test.100steps.top",
 		StoreSession: func(ctx *gin.Context, wechatUser *ginwechat.WechatUser) error {
-
+			redirect, _ := ctx.GetQuery("redirect")
 			isExisted, user_id := controller.Login(wechatUser.OpenID)
 			session := sessions.Default(ctx)
+			session.Set("is_existed", isExisted)
 			session.Set("user_id", user_id)
 			session.Set("openid", wechatUser.OpenID)
 			session.Set("headImgUrl", wechatUser.HeadImgUrl)
 			session.Set("nickname", wechatUser.Nickname)
-			ctx.JSON(200, gin.H{
-				"nickname":         wechatUser.Nickname,
-				"is_existed":       isExisted,
-				"is_administrator": controller.GodJudger(wechatUser.Nickname),
-			})
-			return session.Save()
+			err = session.Save()
+			ctx.Redirect(302, redirect)
+			return err
 		},
 	})
 
@@ -69,9 +68,9 @@ func SetupRouter() *gin.Engine {
 		r.POST("/user", controller.FakeLogin)
 		r.GET("/userEasy", controller.FakeLoginEasy)
 	}
-	r.Use(middleware.IdentityCheck())
 
 	// 业务路由
+	r.Use(middleware.IdentityCheck())
 	api := r.Group("/api")
 
 	// ws
@@ -80,10 +79,12 @@ func SetupRouter() *gin.Engine {
 
 	//user 模块
 
+	api.GET("/phoneNumber", controller.PhoneCaller)
+	api.GET("/user", controller.Judger)
 	api.POST("/user", controller.Register)
 	api.POST("/hobby", controller.HobbyPoster)
 	api.PUT("/user", controller.Updater)
-	api.GET("/user", controller.Fetcher)
+	api.GET("/userMsg", controller.Fetcher)
 	api.POST("/background", controller.Refresher)
 	api.GET("/callee", controller.GetOther)
 	//qiniu

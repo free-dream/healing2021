@@ -26,14 +26,6 @@ const (
 	TARGET3 = "bbt21bc"
 )
 
-//奖品是真实概率数据
-//目前设计三个奖项，一等奖 2%，二等奖 8%，三等奖 20%
-const (
-	PRIZE1 = "蓝牙耳机/八音盒"
-	PRIZE2 = "有线耳机"
-	PRIZE3 = "小玩偶/台灯"
-)
-
 //测试用歌曲名
 const (
 	G1 = "稻香"
@@ -167,24 +159,6 @@ func dummyUser() *statements.User {
 	}
 
 	return &user
-}
-
-//真奖品
-func fakeLotteries(name string, possilbity float64) *statements.Lottery {
-	lottery := statements.Lottery{
-		Name:        name,
-		Possibility: possilbity,
-	}
-	return &lottery
-}
-
-//真任务
-func fakeTasks(text string, max int) *statements.Task {
-	task := statements.Task{
-		Text: text,
-		Max:  max,
-	}
-	return &task
 }
 
 //基于用户创建点歌

@@ -3,11 +3,13 @@ package controller
 import (
 	"strconv"
 
+	"git.100steps.top/100steps/healing2021_be/controller/ws"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
+	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
 
+	"git.100steps.top/100steps/healing2021_be/controller/task"
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
-	"git.100steps.top/100steps/healing2021_be/task"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -86,7 +88,7 @@ func SelectionFetcher(ctx *gin.Context) {
 	id := sessions.Default(ctx).Get("user_id").(int)
 	if tag.Page == 1 {
 
-		resp, err := dao.GetSelections(strconv.Itoa(1), id, tag)
+		resp, err := dao.GetSelections(id, tag)
 		if err != nil {
 			panic(err)
 
@@ -153,7 +155,17 @@ func Recorder(ctx *gin.Context) {
 		return
 	}
 
-	resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, userID)
+	id, resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, userID)
+	//推送到点歌用户
+
+	conn := ws.GetConn()
+	usrMsg := respModel.UsrMsg{}
+	usrMsg.Url = resp.File
+	usrMsg.Song = resp.SongName
+	usrMsg.Message = ""
+	usrMsg.FromUser = uint(userID)
+	usrMsg.ToUser = uint(id)
+	err = conn.SendUsrMsg(usrMsg)
 	if err != nil {
 		ctx.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return

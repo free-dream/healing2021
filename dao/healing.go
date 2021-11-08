@@ -139,7 +139,7 @@ func Pager(key string, page int) (interface{}, error) {
 //获取点歌页
 //module1表示治愈系，2表示童年，但返回参数可能不同
 //可参考
-func GetSelections(module string, id int, tag Tags) (interface{}, error) {
+func GetSelections(id int, tag Tags) (interface{}, error) {
 	redisCli := setting.RedisConn()
 	index := 0
 	var resp []SelectionDetails
@@ -159,16 +159,16 @@ func GetSelections(module string, id int, tag Tags) (interface{}, error) {
 		}
 		var size int
 		for _, value := range hobby {
-			lenth := redisCli.LLen("healing2021:selection." + module + "." + value).Val()
+			lenth := redisCli.LLen("healing2021:selection." + value).Val()
 			size += int(lenth)
 		}
 		resp = make([]SelectionDetails, size)
 		for _, value := range hobby {
-			if redisCli.Exists("healing2021:selection."+module+"."+value).Val() == 0 {
+			if redisCli.Exists("healing2021:selection."+value).Val() == 0 {
 				continue
 			}
-			lenth := redisCli.LLen("healing2021:selection." + module + "." + value).Val()
-			for _, content := range redisCli.LRange("healing2021:selection."+module+"."+value, 0, lenth).Val() {
+			lenth := redisCli.LLen("healing2021:selection." + value).Val()
+			for _, content := range redisCli.LRange("healing2021:selection."+value, 0, lenth).Val() {
 				by = []byte(content)
 				err = json.Unmarshal(by, &resp[index])
 				index++
@@ -191,10 +191,10 @@ func GetSelections(module string, id int, tag Tags) (interface{}, error) {
 			return resp, nil
 		}
 	} else {
-		lenth := redisCli.LLen("healing2021:selection." + module + "." + tag.Label).Val()
+		lenth := redisCli.LLen("healing2021:selection." + tag.Label).Val()
 		resp = make([]SelectionDetails, lenth)
 		for index < int(lenth) {
-			for _, content := range redisCli.LRange("healing2021:selection."+module+"."+tag.Label, 0, lenth).Val() {
+			for _, content := range redisCli.LRange("healing2021:selection."+tag.Label, 0, lenth).Val() {
 				by := []byte(content)
 				err = json.Unmarshal(by, &resp[index])
 				if err != nil {
@@ -332,7 +332,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 }
 
 //治愈系对应的录音
-func CreateRecord(module int, id string, file string, uid int) (CoverDetails, error) {
+func CreateRecord(module int, id string, file string, uid int) (int, CoverDetails, error) {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
 	intId, _ := strconv.Atoi(id)
@@ -341,7 +341,7 @@ func CreateRecord(module int, id string, file string, uid int) (CoverDetails, er
 	var selection statements.Selection
 	result1 := db.Model(&statements.Selection{}).Where("id=?", selectionId).First(&selection)
 	if result1.Error != nil {
-		return CoverDetails{}, errors.New("selection_id is invalid")
+		return 0, CoverDetails{}, errors.New("selection_id is invalid")
 	}
 	var cover statements.Cover
 	cover.SelectionId = strconv.Itoa(selectionId)
@@ -354,10 +354,12 @@ func CreateRecord(module int, id string, file string, uid int) (CoverDetails, er
 	coverDetails := CoverDetails{}
 	err := db.Model(&statements.Cover{}).Create(&cover).Error
 	db.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
+	user_id := 0
+	db.Table("selection").Select("user_id").Where("cover_id=?", coverDetails.ID).Scan(&user_id)
 	coverDetails.CreatedAt = tools.DecodeTime(cover.CreatedAt)
 	value, err := json.Marshal(coverDetails)
 	if err != nil {
-		return coverDetails, err
+		return 0, coverDetails, err
 	}
 	if cover.Style != "" {
 		redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Style, string(value))
@@ -367,7 +369,7 @@ func CreateRecord(module int, id string, file string, uid int) (CoverDetails, er
 	}
 	redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+"all", string(value))
 
-	return coverDetails, err
+	return user_id, coverDetails, err
 }
 
 func Select(selection statements.Selection) (SelectionDetails, error) {

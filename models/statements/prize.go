@@ -11,7 +11,6 @@ type Prize struct {
 	gorm.Model
 	UserId int    `gorm:"default:0;index" json:"user_id"`
 	Tel    string `gorm:"default:0" json:"tel"`
-	// Date   time.Time `gorm:"default:null" json:"date"`
 }
 
 func PrizeInit() {

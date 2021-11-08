@@ -10,10 +10,10 @@
     password = ""
     port = "127.0.0.1:3306"
 
-    # redis待设置
+    # redis db设置为0,请确认服务器redis.conf的redisdb个数
     [redis]
     addr = "127.0.0.1:6379"
-    db = "??"
+    db = "0"
 
     ; [start]
     ; port = ":10087"

@@ -78,13 +78,6 @@ GET /wx/jump2wechat/?redirect=  HTTP/1.1
 Content-Type application/json
 
 200 OK
-```json
-{
-  "nickname": "string",
-  "is_existed": int,//0表示未注册，1表示注册过
-  "is_administrator": bool //判断是否是管理员，true是管理员，可以看到删除评论的按钮
-}
-```
 
 需要先访问此接口接受redirect参数
 
@@ -226,7 +219,7 @@ Content-Type: application/json
 
 ## 2.3 获取自己信息(我的点歌与个人信息)
 
-GET /user HTTP1.1
+GET /userMsg HTTP1.1
 
 成功：
 
@@ -289,6 +282,17 @@ Content-Type: application/json
 
 ```json
 {"message" : "获取头像失败"}
+```
+### 2.3.1 获取用户登录信息
+GET /user
+200 OK
+Content-Type: application/json
+```json
+        "user_id":          int,
+		"is_existed":       int,
+		"avatar":           string,
+		"nickname":         string,
+		"is_administrator": bool,
 ```
 
 ## 2.4 更新个人背景
@@ -606,6 +610,16 @@ Content-Type: application/json
 GET /like HTTP 1.1
 
 统一使用通用模块的点赞操作，详见接口8.1
+
+### 3.1.6 电话治愈
+GET /phoneNumber HTTP 1.1
+query
+"user_id"
+成功：
+
+Content-Type: application/json
+
+`{"phone_number" : "string"}`
 
 ## 3.2 功能性接口(包括抽奖、排行榜、热榜)
 
