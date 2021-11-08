@@ -27,14 +27,9 @@ func (s *SelectionTask) CheckMax(userid int) bool {
 }
 
 //更新任务缓存和数据
-func (s *SelectionTask) AddRecord(userid int) bool {
+func (s *SelectionTask) AddRecord(userid int) error {
 	if s.CheckMax(userid) {
-		if ChangePoints(SELECTION, userid, s.TID) {
-			err := sandwich.UpdateTask(userid, s.TID, 1)
-			if err == nil {
-				return true
-			}
-		}
+		return ChangePoints(userid, s.TID, SELECTION)
 	}
-	return false
+	return nil
 }

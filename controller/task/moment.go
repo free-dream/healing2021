@@ -27,14 +27,9 @@ func (s *MomentTask) CheckMax(userid int) bool {
 }
 
 //更新任务缓存和数据
-func (s *MomentTask) AddRecord(userid int) bool {
+func (s *MomentTask) AddRecord(userid int) error {
 	if s.CheckMax(userid) {
-		if ChangePoints(MOMENT, userid, s.TID) {
-			err := sandwich.UpdateTask(userid, s.TID, 1)
-			if err == nil {
-				return true
-			}
-		}
+		return ChangePoints(userid, s.TID, MOMENT)
 	}
-	return false
+	return nil
 }

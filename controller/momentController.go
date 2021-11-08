@@ -92,7 +92,7 @@ func GetMomentList(ctx *gin.Context) {
 }
 
 // 发布动态
-// @@@@@@@任务模块已植入此接口函数@@@@@@@
+// ----------任务模块已植入此接口函数----------
 type MomentBase struct {
 	Content string   `json:"content"`
 	Status  []string `json:"status"`
@@ -138,7 +138,7 @@ func PostMoment(ctx *gin.Context) {
 		Moment.Module = 2
 	default: // 出现错误
 		ctx.JSON(403, e.ErrMsgResponse{Message: "非法参数"})
-		//为了保证后面任务在接口使用时顺利进行---voloroloq 2021.11.1
+		//为了保证后面任务在接口使用时顺利进行，return---voloroloq 2021.11.1
 		return
 	}
 
@@ -169,6 +169,7 @@ func PostMoment(ctx *gin.Context) {
 	//任务模块植入 2021.11.1
 	thistask := task.MT
 	thistask.AddRecord(userid)
+	//
 
 	ctx.JSON(200, e.ErrMsgResponse{Message: "动态发布成功"})
 }

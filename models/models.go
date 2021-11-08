@@ -89,7 +89,7 @@ func CreateFakeUser(nickname string, openid string, avatar string) { /*hobby map
 		Openid:   openid,
 		Nickname: nickname,
 		Avatar:   avatar,
-		Points:   20,
+		Points:   0,
 	}
 
 	db := setting.DB
@@ -297,9 +297,7 @@ func AddFakeClassic() {
 
 // 造点测试用的假数据
 func FakeData() {
-	AddTask()
 	AddFakeUsers()
-	AddLotteries()
 	AddFakeMoments()
 	AddFakeComments()
 	AddFakeSelections()

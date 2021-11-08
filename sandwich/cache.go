@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	prefix = "2021healing:"
+	prefix = "healing2021:"
 )
 
 //设置redis任务缓存
@@ -21,12 +21,16 @@ func CacheTask(userid int, tid int, value interface{}) error {
 	return err
 }
 
-//更新任务记录
-func UpdateTask(userid int, tid int, value int64) error {
+//更新任务记录,保留一个返回更新后的积分便于扩展
+func UpdateTask(userid int, tid int, value int64) (int, error) {
 	redisDb := setting.RedisConn()
 	key := prefix + strconv.Itoa(userid) + "/task"
-	err := redisDb.HIncrBy(key, strconv.Itoa(tid), value).Err()
-	return err
+	temp := redisDb.HIncrBy(key, strconv.Itoa(tid), value)
+	if err := temp.Err(); err != nil {
+		return -1, err
+	}
+	val := temp.Val()
+	return int(val), nil
 }
 
 //取用用户积分缓存
