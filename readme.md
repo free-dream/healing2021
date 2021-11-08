@@ -1739,6 +1739,14 @@ Content-Type: application/json
 {"message" : "服务端出错"}
 ```
 
+HTTP/1.1 405 Forbidden
+
+Content-Type: application/json
+
+```
+{"message" : "不允许重复点赞"}
+```
+
 ## 
 
 #### 3.2.1.3 拉取用户中奖记录(废案)
