@@ -76,9 +76,8 @@ func Register(ctx *gin.Context) {
 	}
 	user.Openid = openid
 	//user.Avatar = headImgUrl
-	head, err := strconv.Atoi(user.PhoneNumber[0:3])
-	length := len(user.PhoneNumber)
-	if err != nil || head < 130 || head >= 200 || length != 11 {
+	body, err := strconv.Atoi(user.PhoneNumber)
+	if err != nil || body <= 13000000000 || body >= 20000000000 {
 
 		ctx.JSON(403, gin.H{
 			"message": "手机号格式错误",
