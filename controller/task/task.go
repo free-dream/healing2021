@@ -1,10 +1,17 @@
 package task
 
 import (
+	"log"
 	"strconv"
+	"sync"
 
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
+	"git.100steps.top/100steps/healing2021_be/sandwich"
+)
+
+const (
+	prefix = "healing2021:"
 )
 
 //本次任务目前都是一次性的，没有计数要求 2021.11.1
@@ -47,21 +54,11 @@ type MetaCTask interface {
 	Check(int) bool
 }
 
-//错误处理，暂定
-func errHandler(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
 //取用redis任务缓存
 func GetCacheTask(userid int, tid int) int {
 	redisDb := setting.RedisConn()
-	key := strconv.Itoa(userid) + "/task"
+	key := prefix + strconv.Itoa(userid) + "/task"
 	temp := redisDb.HMGet(key, strconv.Itoa(tid)).Val()
-	// if len(temp) < 1 {
-	// 	return -1
-	// }
 	if temp[0] == nil {
 		return -1
 	}
@@ -74,35 +71,22 @@ func GetCacheTask(userid int, tid int) int {
 }
 
 //同时更新总点数和任务点数
-func ChangePoints(point float32, userid int, tid int) bool {
-	redisDb := setting.RedisConn()
-
-	tempkey := strconv.Itoa(userid) + "/point"
-	temp := redisDb.HIncrBy(tempkey, "points", int64(point)).Val()
-	tempf := redisDb.HIncrBy(tempkey, strconv.Itoa(tid), int64(point)).Val()
-	// //redis缓存读取测试
-	// fmt.Println(redisDb.HMGet(tempkey, "points").Val())
-	// fmt.Println(redisDb.HMGet(tempkey, strconv.Itoa(tid)).Val())
+func ChangePoints(userid int, tid int, points float32) error {
+	_, err := sandwich.UpdateTask(userid, tid, int64(points))
+	//仅log，不能影响主业务
+	if err != nil {
+		log.Printf("user%d的task%dredis缓存报错", userid, tid)
+	}
 	//单独拉出一个协程更新数据库以保证数据一致性
-	//错误处理
-	ch := make(chan int)
+	wg := sync.WaitGroup{}
+	wg.Add(1)
 	go func() {
-		err := dao.UpdateTaskPoints(userid, tid, int(temp), int(tempf))
-		errHandler(err)
-		<-ch
+		err = dao.UpdateTaskPoints(userid, tid, int(points), int(points))
+		wg.Done()
 	}()
-	ch <- 0
-	return true
+	wg.Wait()
+	return err
 }
 
-// 已实现于dao/task.go
-// //在用户首次登录时创建对应的任务表
+// 在用户首次登录时创建对应的任务表已实现于dao/task.go
 // func CreateTaskTable(userid int, taskid int) error {
-// 	mysqlDb := setting.MysqlConn()
-// 	usertask := state.TaskTable{
-// 		UserId: userid,
-// 		TaskId: taskid,
-// 	}
-// 	err := mysqlDb.Create(&usertask).Error
-// 	return err
-// }

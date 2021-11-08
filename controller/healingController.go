@@ -1,14 +1,15 @@
 package controller
 
 import (
+	"strconv"
+
 	"git.100steps.top/100steps/healing2021_be/controller/ws"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
-	"strconv"
 
+	"git.100steps.top/100steps/healing2021_be/controller/task"
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
-	"git.100steps.top/100steps/healing2021_be/task"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -51,7 +52,7 @@ func AdsPlayer(ctx *gin.Context) {
 }
 
 //点歌接口
-//@@@@@@@任务模块已接入此接口@@@@@@@
+//----------任务模块已接入此接口----------
 func Selector(ctx *gin.Context) {
 	param := statements.Selection{}
 	err := ctx.ShouldBindJSON(&param)
@@ -141,7 +142,7 @@ type RecordParams struct {
 }
 
 //唱歌接口
-//@@@@@@@任务模块已植入此接口@@@@@@@
+//----------任务模块已植入此接口----------
 func Recorder(ctx *gin.Context) {
 	params := RecordParams{}
 	userID := sessions.Default(ctx).Get("user_id").(int)
@@ -170,7 +171,7 @@ func Recorder(ctx *gin.Context) {
 	}
 	//任务模块植入 2021.11.1
 	thistask := task.HT
-	thistask.AddRecord(userID)
-	//
+	err = thistask.AddRecord(userID)
+
 	ctx.JSON(200, resp)
 }

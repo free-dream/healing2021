@@ -11,7 +11,7 @@ import (
 //确认是否重复点赞、无法取消点赞
 func Check(targetid int, targettype string, userid int) bool {
 	redisDb := setting.RedisConn()
-	tempkey := "user" + strconv.Itoa(userid) + targettype
+	tempkey := prefix + "user" + strconv.Itoa(userid) + targettype
 	check := redisDb.SIsMember(tempkey, targetid).Val()
 	return check
 }
@@ -19,7 +19,7 @@ func Check(targetid int, targettype string, userid int) bool {
 //取消点赞
 func CancelLike(targetid int, targettype string, userid int) error {
 	redisDb := setting.RedisConn()
-	tempkey := "user" + strconv.Itoa(userid) + targettype
+	tempkey := prefix + "user" + strconv.Itoa(userid) + targettype
 	err := redisDb.SRem(tempkey, targetid).Err()
 	return err
 }
@@ -27,7 +27,7 @@ func CancelLike(targetid int, targettype string, userid int) error {
 //允许点赞
 func AddLike(targetid int, targettype string, userid int) error {
 	redisDb := setting.RedisConn()
-	tempkey := "user" + strconv.Itoa(userid) + targettype
+	tempkey := prefix + "user" + strconv.Itoa(userid) + targettype
 	err := redisDb.SAdd(tempkey, targetid).Err()
 	return err
 }

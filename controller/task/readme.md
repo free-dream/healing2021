@@ -1,6 +1,6 @@
-# 任务模块初步设计
+# 任务模块指引
 
-## 核心：taskid映射的任务表（可拓展）
+## taskid对应的任务表（可拓展）
 
 **标记在源码内，以const形式存在，可修正** 
 
@@ -14,7 +14,7 @@
 
 ## 使用
 
-在对应controller下读取userid,后调用task模块的对象使用方法,实现接口约定的方法
+在对应controller下读取userid,后调用task模块的对象使用方法,实现接口约定的函数
 
 ## Mysql设计
 **源码见models文件夹 task.go / task_table.go**

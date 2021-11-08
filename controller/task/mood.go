@@ -8,7 +8,7 @@ const (
 	MTID            = 3
 )
 
-//分享心情任务,产品暂时没有需求，挂起
+//分享心情任务,产品暂时没有需求
 type MoodTask struct {
 	TID int
 }
@@ -27,14 +27,9 @@ func (s *MoodTask) CheckMax(userid int) bool {
 }
 
 //更新任务缓存和数据
-func (s *MoodTask) AddRecord(userid int) bool {
+func (s *MoodTask) AddRecord(userid int) error {
 	if s.CheckMax(userid) {
-		if ChangePoints(MOOD, userid, s.TID) {
-			err := sandwich.UpdateTask(userid, s.TID, 1)
-			if err == nil {
-				return true
-			}
-		}
+		return ChangePoints(userid, s.TID, MOOD)
 	}
-	return false
+	return nil
 }

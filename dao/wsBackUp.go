@@ -28,13 +28,25 @@ func UsrBackUp(msg respModel.UsrMsg, isSend int) error {
 func GetAllSysMsg(uid uint) ([]respModel.Sysmsg, error) {
 	db := setting.MysqlConn()
 	resp := make([]respModel.Sysmsg, 1)
-	err := db.Model(&statements.Sysmsg{}).Where("uid = ? and is_send = 1", uid).Order("created_at desc").Find(&resp).Error
+	err := db.Model(&statements.Sysmsg{}).Where("uid = ?", uid).Order("created_at desc").Find(&resp).Error
 	return resp, err
 }
 
 func GetAllUsrMsg(uid uint) ([]respModel.Usrmsg, error) {
 	db := setting.MysqlConn()
 	resp := make([]respModel.Usrmsg, 1)
-	err := db.Model(&statements.Usrmsg{}).Where("from_user = ? and is_send = 1", uid).Order("created_at desc").Find(&resp).Error
+	err := db.Model(&statements.Usrmsg{}).Where("from_user = ?", uid).Order("created_at desc").Find(&resp).Error
 	return resp, err
+}
+
+func SysUpdate(uid uint) error {
+    db := setting.MysqlConn()
+    err := db.Model(&statements.Sysmsg{}).Where("uid = ?", uid).Update("is_send", 1).Error
+    return err
+}
+
+func UsrUpdate(uid uint) error {
+    db := setting.MysqlConn()
+    err := db.Model(&statements.Usrmsg{}).Where("from_user = ?", uid).Update("is_send", 1).Error
+    return err
 }

@@ -18,6 +18,6 @@ func (h *HealingTask) CheckMax(userid int) bool {
 }
 
 //直接调用，不用检查是否超出上限
-func (h *HealingTask) AddRecord(userid int) bool {
-	return ChangePoints(HEALING, userid, h.TID)
+func (h *HealingTask) AddRecord(userid int) error {
+	return ChangePoints(userid, h.TID, HEALING)
 }
