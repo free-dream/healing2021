@@ -101,7 +101,8 @@ func CreateComment(Comment statements.MomentComment) (int, bool) {
 	}
 
 	var commentId CommentId
-	if err := MysqlDB.Where(&Comment).Scan(&commentId).Error; err != nil {
+	if err := MysqlDB.Model(&statements.MomentComment{}).Where("user_id=? and moment_id=? and comment=?", Comment.UserId, Comment.MomentId, Comment.Comment).Scan(&commentId).Error; err != nil {
+		fmt.Println(err)
 		return 0, false
 	}
 	return commentId.Id, true

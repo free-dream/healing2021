@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"github.com/gin-contrib/sessions"
@@ -20,6 +21,9 @@ func FakeLogin(ctx *gin.Context) {
 		// return
 	}
 	id, err1 := dao.FakeCreateUser(&user)
+	// 测试
+	fmt.Println(id)
+	//
 	if err1 != nil {
 		ctx.JSON(403, gin.H{
 			"message": "昵称重复",
