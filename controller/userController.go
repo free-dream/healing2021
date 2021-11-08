@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"strconv"
 
@@ -94,16 +95,18 @@ func Register(ctx *gin.Context) {
 }
 
 func HobbyPoster(ctx *gin.Context) {
-	var hobby []string
+	hobby := dao.Hobby{}
 	id := sessions.Default(ctx).Get("user_id").(int)
 	err := ctx.ShouldBindJSON(&hobby)
 	if err != nil {
+		fmt.Println(err)
 		ctx.JSON(400, gin.H{
+
 			"message": "error param",
 		})
 		return
 	}
-	err = dao.HobbyStore(hobby, id)
+	err = dao.HobbyStore(hobby.Hobby, id)
 	if err != nil {
 		panic(err)
 	}

@@ -112,13 +112,9 @@ func SelectionFetcher(ctx *gin.Context) {
 }
 func CoverFetcher(ctx *gin.Context) {
 	tag := dao.Tags{}
-	err := ctx.ShouldBindQuery(&tag)
-	if err != nil {
-		ctx.JSON(400, gin.H{
-			"message": "error param",
-		})
-		return
-	}
+	tag.Page, _ = strconv.Atoi(ctx.Query("page"))
+	tag.RankWay, _ = strconv.Atoi(ctx.Query("rankWay"))
+	tag.Label = ctx.Query("label")
 	id := sessions.Default(ctx).Get("user_id").(int)
 	if tag.Page == 1 {
 		resp, err := dao.GetCovers(strconv.Itoa(1), id, tag)

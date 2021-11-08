@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"math/rand"
@@ -88,7 +89,7 @@ func GetPhoneNumber(id int) (error, int) {
 func RefineUser(param *statements.User, id int) error {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
-	user = statements.User{
+	user := statements.User{
 		Nickname:    param.Nickname,
 		RealName:    param.RealName,
 		PhoneNumber: param.PhoneNumber,
@@ -107,6 +108,10 @@ func RefineUser(param *statements.User, id int) error {
 	redisCli.SAdd("healing2021:openid", value)
 	return nil
 
+}
+
+type Hobby struct {
+	Hobby []string `json:"hobby"`
 }
 
 func HobbyStore(hobby []string, id int) error {
@@ -213,14 +218,14 @@ type MomentMsgV2 struct {
 
 func GetUser(id int) interface{} {
 	db := setting.MysqlConn()
-	user := UserMsg{}
+	usr := UserMsg{}
 	resp := make(map[string]interface{})
-	db.Table("user").Select("id,avatar,nickname,school,signature,sex").Where("id=?", id).Scan(&user)
-	resp["message"] = user
-	resp["mySelections"] = getSelections(user.ID, "selection", "user_id=?")
-	resp["mySongs"] = getCovers(user.ID, "cover", "user_id=?")
-	resp["moments"] = getMoments(user.ID, "moment", "user_id=?")
-	resp["myLikes"] = getPraises(user.ID, "praise", "praise.user_id=?")
+	db.Table("user").Select("id,avatar,nickname,school,signature,sex").Where("id=?", id).Scan(&usr)
+	resp["message"] = usr
+	resp["mySelections"] = getSelections(usr.ID, "selection", "user_id=?")
+	resp["mySongs"] = getCovers("cover", "user_id=?", usr.ID, 0)
+	resp["moments"] = getMoments(usr.ID, "moment", "user_id=?")
+	resp["myLikes"] = getPraises(usr.ID, "praise", "praise.user_id=?")
 
 	return resp
 }
@@ -233,15 +238,15 @@ func UpdateBackground(openid string, background string) error {
 
 func GetCallee(id int) interface{} {
 	db := setting.MysqlConn()
-	user := UserMsg{}
+	usr := UserMsg{}
 	resp := make(map[string]interface{})
-	db.Table("user").Where("id=?", id).Scan(&user)
-	resp["message"] = user
-	resp["mySelections"] = getSelections(user.ID, "selection", "user_id=?")
+	db.Table("user").Where("id=?", id).Scan(&usr)
+	resp["message"] = usr
+	resp["mySelections"] = getSelections(usr.ID, "selection", "user_id=?")
 
-	resp["mySongs"] = getCovers(user.ID, "cover", "user_id=? and is_anon=?")
-	resp["moments"] = getMoments(user.ID, "moment", "user_id=?")
-	resp["myLikes"] = getPraises(user.ID, "praise", "praise.user_id=?")
+	resp["mySongs"] = getCovers("cover", "user_id=? and is_anon=?", usr.ID, 1)
+	resp["moments"] = getMoments(usr.ID, "moment", "user_id=?")
+	resp["myLikes"] = getPraises(usr.ID, "praise", "praise.user_id=?")
 
 	return resp
 
@@ -275,11 +280,18 @@ func getPraises(value interface{}, tableName string, condition string) interface
 	}
 	return content
 }
-func getCovers(value interface{}, tableName string, condition string) interface{} {
+func getCovers(tableName string, condition string, value int, module int) interface{} {
 	db := setting.MysqlConn()
 	obj := CoverMsgV2{}
 	resp := CoverMsg{}
-	rows, err := db.Table(tableName).Where(condition, value, 0).Rows()
+	var rows *sql.Rows
+	var err error
+	if module == 0 {
+		rows, err = db.Table(tableName).Where(condition, value).Rows()
+	} else {
+		rows, err = db.Table(tableName).Where(condition, value, 0).Rows()
+	}
+
 	index := 0
 	content := make(map[int]interface{})
 	if err != nil {

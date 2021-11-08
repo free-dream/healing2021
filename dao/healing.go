@@ -146,9 +146,9 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 	var err error
 	if tag.Label == "recommend" {
 		var hobby []string
-		by, err := redisCli.HGet("healing2021:hobby", strconv.Itoa(id)).Bytes()
-		if err != nil {
-			return nil, err
+		by, err1 := redisCli.HGet("healing2021:hobby", strconv.Itoa(id)).Bytes()
+		if err1 != nil {
+			return nil, err1
 		}
 		err = json.Unmarshal(by, &hobby) //解析json
 		if err != nil {
@@ -236,6 +236,7 @@ type CoverDetails struct {
 
 func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 	db := setting.MysqlConn()
+
 	redisCli := setting.RedisConn()
 	index := 0
 	var resp []CoverDetails
