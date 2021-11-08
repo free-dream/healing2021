@@ -573,7 +573,8 @@ POST /healing/cover
 {
     "selection_id":int,//点歌id
     "record":[]string,//拼接的录音url
-    module:int 1表示治愈系翻唱
+    module:int, 1表示治愈系翻唱,2表示童年
+    "is_anon": bool,      
 }
 ```
 

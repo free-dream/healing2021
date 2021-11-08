@@ -243,7 +243,7 @@ func GetCallee(id int) interface{} {
 	resp["message"] = user
 	resp["mySelections"] = getSelections(user.ID, "selection", "user_id=?")
 
-	resp["mySongs"] = getCovers(user.ID, "cover", "user_id=?")
+	resp["mySongs"] = getCovers(user.ID, "cover", "user_id=? and is_anon=?")
 	resp["moments"] = getMoments(user.ID, "moment", "user_id=?")
 	resp["myLikes"] = getPraises(user.ID, "praise", "praise.user_id=?")
 
@@ -283,7 +283,7 @@ func getCovers(value interface{}, tableName string, condition string) interface{
 	db := setting.MysqlConn()
 	obj := CoverMsgV2{}
 	resp := CoverMsg{}
-	rows, err := db.Table(tableName).Where(condition, value).Rows()
+	rows, err := db.Table(tableName).Where(condition, value, 0).Rows()
 	index := 0
 	content := make(map[int]interface{})
 	if err != nil {

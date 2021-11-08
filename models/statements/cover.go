@@ -19,6 +19,7 @@ type Cover struct {
 	Style       string `gorm:"default:''" json:"style"`
 	Language    string `gorm:"default:''" json:"language"`
 	Module      int    `gorm:"default:0" json:"module"`
+	IsAnon      bool   `gorm:"default:0" json:"is_anon"`
 }
 
 func CoverInit() {

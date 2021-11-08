@@ -351,7 +351,9 @@ func CreateRecord(module int, id string, file string, uid int, isAnon bool) (int
 	cover.Style = selection.Style
 	cover.Language = selection.Language
 	cover.Module = module
+	cover.IsAnon = isAnon
 	coverDetails := CoverDetails{}
+
 	err := db.Model(&statements.Cover{}).Create(&cover).Error
 	db.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
 	user_id := 0
