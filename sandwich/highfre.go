@@ -8,6 +8,15 @@ import (
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
 
+//重启时清空redis点赞
+func Clean() {
+	redisdb := setting.RedisConn()
+	keys := redisdb.Keys("healing2021*").Val()
+	for _, key := range keys {
+		redisdb.Del(key)
+	}
+}
+
 //确认是否重复点赞、无法取消点赞
 func Check(targetid int, targettype string, userid int) bool {
 	redisDb := setting.RedisConn()
@@ -27,7 +36,7 @@ func CancelLike(targetid int, targettype string, userid int) error {
 //允许点赞
 func AddLike(targetid int, targettype string, userid int) error {
 	redisDb := setting.RedisConn()
-	tempkey := prefix + "user" + strconv.Itoa(userid) + targettype
+	tempkey := prefix + "user" + strconv.Itoa(userid) + "like" + targettype
 	err := redisDb.SAdd(tempkey, targetid).Err()
 	return err
 }

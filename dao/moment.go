@@ -9,6 +9,9 @@ import (
 )
 
 // 获取指定的一页(十条)动态
+type ForPraiseMRecord struct {
+	MomentId int `gorm:"moment_id"`
+}
 func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment, bool) {
 	MysqlDB := setting.MysqlConn()
 	var AllMoment []statements.Moment
@@ -17,11 +20,30 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 		if err := MysqlDB.Order("created_at DESC").Offset(Page * 10).Limit(10).Find(&AllMoment).Error; err != nil {
 			return AllMoment, false
 		}
-	} else if Method == "recommend" { // To:这里有 bug!!!
+	} else if Method == "recommend" { // Todo:这里有 bug!!!
 		// 按点赞排序
 		// 先查点赞表找到对应的动态
-		if err := MysqlDB.Order("like_num DESC").Offset(Page * 10).Limit(10).Find(&AllMoment).Error; err != nil {
+		var  MomentRecords []ForPraiseMRecord
+		var  MomentRecord ForPraiseMRecord
+		rows, err := MysqlDB.Model(&statements.Praise{}).Select("moment_id, count(is_liked)").Where("moment_id<>?", 0).Group("moment_id").Order("count(is_liked) DESC").Offset(Page * 10).Limit(10).Rows()
+		if err != nil {
 			return AllMoment, false
+		}
+		defer rows.Close()
+		for rows.Next() {
+			// 全扫描进结构体
+			MysqlDB.ScanRows(rows, &MomentRecord)
+			MomentRecords = append(MomentRecords, MomentRecord)
+		}
+
+		//fmt.Println(len(MomentRecords))
+		for _, record := range MomentRecords {
+			moment := statements.Moment{}
+			fmt.Println(record)
+			if err := MysqlDB.Where("id=?", record.MomentId).First(&moment).Error; err != nil {
+				return AllMoment, false
+			}
+			AllMoment = append(AllMoment, moment)
 		}
 	} else {
 		// 模糊查找
