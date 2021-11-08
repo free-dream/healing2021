@@ -72,13 +72,13 @@ func UpdateTaskPoints(userid int, taskid int, points int, tpoints int) error {
 		return err
 	}
 
-	user.Points += points
+	user.Points = points + user.Points
 	err = mysqlDb.Save(&user).Error
 	if err != nil {
 		return err
 	}
 
-	tasktable.Counter += tpoints
+	tasktable.Counter = tpoints + tasktable.Counter
 	err = mysqlDb.Save(&tasktable).Error
 	if err != nil {
 		return err

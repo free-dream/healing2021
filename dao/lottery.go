@@ -14,7 +14,6 @@ const (
 )
 
 var (
-	RedisDb = db.RedisConn()
 	MysqlDb = db.MysqlConn()
 )
 
