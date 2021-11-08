@@ -85,8 +85,8 @@ type WsDataResp struct {
 func WsData(ctx *gin.Context) {
 	// get uid
 	session := sessions.Default(ctx)
-	id := session.Get("user_id").(string)
-    uid := str2uint(id)
+	id := session.Get("user_id").(int)
+    uid := uint(id)
 	// fake uid
 	//uid := uint(2)
 
