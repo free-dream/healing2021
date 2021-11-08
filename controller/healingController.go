@@ -77,7 +77,7 @@ func Selector(ctx *gin.Context) {
 //首页控制
 func SelectionFetcher(ctx *gin.Context) {
 	tag := dao.Tags{}
-	err := ctx.ShouldBindJSON(&tag)
+	err := ctx.ShouldBindQuery(&tag)
 	if err != nil {
 		ctx.JSON(400, gin.H{
 			"message": "error param",
@@ -106,7 +106,7 @@ func SelectionFetcher(ctx *gin.Context) {
 }
 func CoverFetcher(ctx *gin.Context) {
 	tag := dao.Tags{}
-	err := ctx.ShouldBindJSON(&tag)
+	err := ctx.ShouldBindQuery(&tag)
 	if err != nil {
 		ctx.JSON(400, gin.H{
 			"message": "error param",
@@ -137,6 +137,7 @@ type RecordParams struct {
 	SelectionId string   `json:"selection_id" binding:"required"`
 	Record      []string `json:"record" binding:"required"`
 	Module      int      `json:"module"`
+	IsAnon      bool     `json:"is_anon"`
 }
 
 //唱歌接口
@@ -153,13 +154,11 @@ func Recorder(ctx *gin.Context) {
 		ctx.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
-
-	id, resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, userID)
+	id, resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, userID, params.IsAnon)
 	//推送到点歌用户
-
 	conn := ws.GetConn()
 	usrMsg := respModel.UsrMsg{}
-	usrMsg.Url = resp.File
+	usrMsg.Url = url
 	usrMsg.Song = resp.SongName
 	usrMsg.Message = ""
 	usrMsg.FromUser = uint(userID)

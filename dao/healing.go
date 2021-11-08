@@ -239,7 +239,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 	redisCli := setting.RedisConn()
 	index := 0
 	var resp []CoverDetails
-	var err error
+
 	if tag.Label == "recommend" {
 		var hobby []string
 		by, err := redisCli.HGet("hobby", strconv.Itoa(id)).Bytes()
@@ -298,7 +298,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 		for index < int(lenth) {
 			for _, content := range redisCli.LRange("healing2021:cover."+module+"."+tag.Label, 0, lenth).Val() {
 				by := []byte(content)
-				err = json.Unmarshal(by, &resp[index])
+				err := json.Unmarshal(by, &resp[index])
 				if err != nil {
 					return nil, err
 				}
@@ -316,7 +316,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			for i, _ := range resp {
 				db.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
-			return resp, err
+			return resp, nil
 		} else {
 			sort.Slice(resp, func(i, j int) bool {
 				return resp[i].CreatedAt > resp[j].CreatedAt
@@ -324,7 +324,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			for i, _ := range resp {
 				db.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
-			return resp, err
+			return resp, nil
 		}
 
 	}
@@ -332,7 +332,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 }
 
 //治愈系对应的录音
-func CreateRecord(module int, id string, file string, uid int) (int, CoverDetails, error) {
+func CreateRecord(module int, id string, file string, uid int, isAnon bool) (int, CoverDetails, error) {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
 	intId, _ := strconv.Atoi(id)
@@ -356,18 +356,20 @@ func CreateRecord(module int, id string, file string, uid int) (int, CoverDetail
 	db.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
 	user_id := 0
 	db.Table("selection").Select("user_id").Where("cover_id=?", coverDetails.ID).Scan(&user_id)
-	coverDetails.CreatedAt = tools.DecodeTime(cover.CreatedAt)
-	value, err := json.Marshal(coverDetails)
-	if err != nil {
-		return 0, coverDetails, err
+	if !isAnon {
+		coverDetails.CreatedAt = tools.DecodeTime(cover.CreatedAt)
+		value, err1 := json.Marshal(coverDetails)
+		if err1 != nil {
+			return 0, coverDetails, err1
+		}
+		if cover.Style != "" {
+			redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Style, string(value))
+		}
+		if cover.Language != "" {
+			redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Language, string(value))
+		}
+		redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+"all", string(value))
 	}
-	if cover.Style != "" {
-		redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Style, string(value))
-	}
-	if cover.Language != "" {
-		redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Language, string(value))
-	}
-	redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+"all", string(value))
 
 	return user_id, coverDetails, err
 }
