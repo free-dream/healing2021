@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"strconv"
 
 	"git.100steps.top/100steps/healing2021_be/controller/ws"
@@ -78,13 +79,17 @@ func Selector(ctx *gin.Context) {
 //首页控制
 func SelectionFetcher(ctx *gin.Context) {
 	tag := dao.Tags{}
-	err := ctx.ShouldBindQuery(&tag)
-	if err != nil {
+	tag.Page, _ = strconv.Atoi(ctx.Query("page"))
+	tag.RankWay, _ = strconv.Atoi(ctx.Query("rankWay"))
+	tag.Label = ctx.Query("label")
+	fmt.Println(tag)
+	/**if err != nil {
+		fmt.Println(err)
 		ctx.JSON(400, gin.H{
 			"message": "error param",
 		})
 		return
-	}
+	}*/
 	id := sessions.Default(ctx).Get("user_id").(int)
 	if tag.Page == 1 {
 

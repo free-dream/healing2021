@@ -88,7 +88,6 @@ func GetPhoneNumber(id int) (error, int) {
 func RefineUser(param *statements.User, id int) error {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
-	count := 0
 	user = statements.User{
 		Nickname:    param.Nickname,
 		RealName:    param.RealName,
@@ -96,10 +95,7 @@ func RefineUser(param *statements.User, id int) error {
 		Sex:         param.Sex,
 		School:      param.School,
 	}
-	db.Table("user").Where("nickname=?", user.Nickname).Count(&count)
-	if count != 0 {
-		return errors.New("error")
-	}
+
 	db.Table("user").Where("id=?", id).Select("nickname,real_name,phone_number,sex,school").Update(&user)
 	/*value, err := json.Marshal(param.Hobby)
 	if err != nil {

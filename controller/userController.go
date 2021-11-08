@@ -76,21 +76,20 @@ func Register(ctx *gin.Context) {
 	}
 	user.Openid = openid
 	//user.Avatar = headImgUrl
-	body, err := strconv.Atoi(user.PhoneNumber)
-	if err != nil || body <= 13000000000 || body >= 20000000000 {
+	if user.PhoneNumber != "" {
+		body, err := strconv.Atoi(user.PhoneNumber)
 
-		ctx.JSON(403, gin.H{
-			"message": "手机号格式错误",
-		})
-		return
+		if err != nil || body <= 13000000000 || body >= 20000000000 {
+
+			ctx.JSON(403, gin.H{
+				"message": "手机号格式错误",
+			})
+			return
+		}
 	}
-	err = dao.RefineUser(&user, id)
-	if err != nil {
-		ctx.JSON(403, gin.H{
-			"message": "昵称已存在，无法注册",
-		})
-		return
-	}
+
+	dao.RefineUser(&user, id)
+	ctx.JSON(200, "OK")
 
 }
 
@@ -102,6 +101,7 @@ func HobbyPoster(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{
 			"message": "error param",
 		})
+		return
 	}
 	err = dao.HobbyStore(hobby, id)
 	if err != nil {
