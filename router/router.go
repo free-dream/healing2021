@@ -44,9 +44,8 @@ func SetupRouter() *gin.Engine {
 		BaseUrl:   "https://healing2021.test.100steps.top",
 		StoreSession: func(ctx *gin.Context, wechatUser *ginwechat.WechatUser) error {
 			redirect, _ := ctx.GetQuery("redirect")
-			isExisted, user_id := controller.Login(wechatUser.OpenID)
+			user_id := controller.Login(wechatUser.OpenID)
 			session := sessions.Default(ctx)
-			session.Set("is_existed", isExisted)
 			session.Set("user_id", user_id)
 			session.Set("openid", wechatUser.OpenID)
 			session.Set("headImgUrl", wechatUser.HeadImgUrl)

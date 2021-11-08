@@ -43,9 +43,10 @@ func FakeLogin(ctx *gin.Context) {
 	//
 
 	session := sessions.Default(ctx)
-	session.Set("avatar", user.Avatar)
+	session.Set("headImgUrl", user.Avatar)
 	session.Set("openid", user.Openid)
 	session.Set("user_id", id)
+
 	session.Save()
 	ctx.JSON(200, gin.H{
 		"message": "登录成功",

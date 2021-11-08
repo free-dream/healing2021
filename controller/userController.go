@@ -12,11 +12,11 @@ import (
 )
 
 //用户登录
-func Login(openid string) (int, int) {
+func Login(openid string) int {
 	user := statements.User{
 		Openid: openid,
 	}
-	isExisted, id := dao.CreateUser(user)
+	id := dao.CreateUser(user)
 	//根据给定的数组生成任务表
 	var err1 error
 	check, err1 := dao.CheckTasks(id)
@@ -26,7 +26,7 @@ func Login(openid string) (int, int) {
 			panic(err)
 		}
 	}
-	return isExisted, id
+	return id
 }
 func PhoneCaller(ctx *gin.Context) {
 	id, _ := ctx.GetQuery("user_id")
@@ -46,7 +46,8 @@ func PhoneCaller(ctx *gin.Context) {
 func Judger(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	user_id := session.Get("user_id").(int)
-	is_existed := session.Get("is_existed").(int)
+
+	is_existed := dao.Exist(session.Get("openid").(string))
 	avatar := session.Get("headImgUrl").(string)
 	nickname := session.Get("nickname").(string)
 	is_administrator := dao.Authentication(nickname)

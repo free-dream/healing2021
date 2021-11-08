@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"strconv"
 
 	"git.100steps.top/100steps/healing2021_be/controller/ws"
@@ -82,7 +81,6 @@ func SelectionFetcher(ctx *gin.Context) {
 	tag.Page, _ = strconv.Atoi(ctx.Query("page"))
 	tag.RankWay, _ = strconv.Atoi(ctx.Query("rankWay"))
 	tag.Label = ctx.Query("label")
-	fmt.Println(tag)
 	/**if err != nil {
 		fmt.Println(err)
 		ctx.JSON(400, gin.H{
@@ -101,7 +99,7 @@ func SelectionFetcher(ctx *gin.Context) {
 		ctx.JSON(200, resp)
 
 	} else {
-		resp, err := dao.Pager("home"+strconv.Itoa(id), tag.Page)
+		resp, err := dao.Pager("healing2021:home."+strconv.Itoa(id), tag.Page)
 		if err != nil {
 			panic(err)
 
@@ -125,7 +123,7 @@ func CoverFetcher(ctx *gin.Context) {
 		ctx.JSON(200, resp)
 
 	} else {
-		resp, err := dao.Pager("home"+strconv.Itoa(id), tag.Page)
+		resp, err := dao.Pager("healing2021:home."+strconv.Itoa(id), tag.Page)
 		if err != nil {
 			panic(err)
 			// return
