@@ -64,16 +64,17 @@ func FakeCreateUser(user *statements.User) (int, error) {
 	}
 
 }
-func CreateUser(user *statements.User) (int, int) {
+func CreateUser(user statements.User) (int, int) {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
 	if !redisCli.SIsMember("healing2021:openid", user.Openid).Val() {
 
 		db.Table("user").Create(&user)
 		return 0, int(user.ID)
+	} else {
+		db.Table("user").Where("openid=?", user.Openid).Scan(&user)
+		return 1, int(user.ID)
 	}
-	db.Table("user").Where("openid=?", user.Openid).Scan(&user)
-	return 1, int(user.ID)
 
 }
 func GetPhoneNumber(id int) (error, int) {
