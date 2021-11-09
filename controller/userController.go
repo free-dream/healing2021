@@ -49,19 +49,19 @@ func Judger(ctx *gin.Context) {
 
 	is_existed := dao.Exist(session.Get("openid").(string))
 	avatar := session.Get("headImgUrl").(string)
-	//nickname := session.Get("nickname").(string)
+	nickname := session.Get("nickname").(string)
 	hobby, err := dao.GetHobby(user_id)
 	if err != nil {
 		panic(err)
 	}
-	//is_administrator := dao.Authentication(nickname)
+	is_administrator := dao.Authentication(nickname)
 	ctx.JSON(200, gin.H{
-		"user_id":    user_id,
-		"is_existed": is_existed,
-		"avatar":     avatar,
-		//"nickname":         nickname,
-		//"is_administrator": is_administrator,
-		"hobby": hobby,
+		"user_id":          user_id,
+		"is_existed":       is_existed,
+		"avatar":           avatar,
+		"nickname":         nickname,
+		"is_administrator": is_administrator,
+		"hobby":            hobby,
 	})
 }
 
@@ -70,7 +70,7 @@ func Register(ctx *gin.Context) {
 	//登录奖励机制,需要时可实现于task内
 	session := sessions.Default(ctx)
 	openid := session.Get("openid").(string)
-	//headImgUrl := session.Get("headImgUrl").(string)
+	headImgUrl := session.Get("headImgUrl").(string)
 	id := session.Get("user_id").(int)
 
 	user := statements.User{}
@@ -82,7 +82,7 @@ func Register(ctx *gin.Context) {
 		return
 	}
 	user.Openid = openid
-	//user.Avatar = headImgUrl
+	user.Avatar = headImgUrl
 	if user.PhoneNumber != "" {
 		body, err1 := strconv.Atoi(user.PhoneNumber)
 
