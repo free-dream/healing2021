@@ -193,12 +193,13 @@ Content-Type: application/json
 **下列全为可选项。**
 
 ```json
+
 {
     "avatar": "string" //头像url,
     "nickname": "string",
-    "avatar_visible": int,     	// 1：隐藏头像，0：不隐藏
-    "phone_search": int,     	// 0：允许通过手机号查找，1：不允许
-    "real_name_search": int,      	// 0：允许通过姓名查找，1：不允许
+    "avatar_visible": string,     	// 1：隐藏头像，0：不隐藏
+    "phone_search": string,     	// 0：允许通过手机号查找，1：不允许
+    "real_name_search": string,      	// 0：允许通过姓名查找，1：不允许
     "signature": "string"  		//个性签名（可不填）
 }
 ```
@@ -445,8 +446,6 @@ Content-Type: application/json
 
 ***轮播图接口更新可能依赖于多于一张表***
 
-包括可能存在的广告商(笑)
-
 GET /healing/bulletin HTTP 1.1
 
 成功:
@@ -474,7 +473,7 @@ Content-Type: application/json
 
 `{"message" : "请求列表失败"}`
 
-### 3.1.2 点歌(唱歌)请求获取
+### 3.1.2 点歌列表获取
 
 GET /healing/selections/list HTTP 1.1
 
@@ -495,14 +494,15 @@ Content-Type: application/json
 
 ```json
 [
-	{
+	selection_list:[{
 		"nickname":string,	//可匿名
         "id":int,//对应点歌id
         "song_name":string,
         "user_id":integer,	//点歌用户的id
         "created_at":string(datetime),	//“2006-01-02 15:04:05”
         "avatar":string
-	}
+	}],
+  "page_num":int,
     ...
 ]
 ```
@@ -543,7 +543,7 @@ Content-Type: application/json
 
 ```json
 [
-    {
+   cover_list:[{
        "nickname":string,	//可匿名
         "id":int,//对应翻唱歌id
         "song_name":string,
@@ -551,7 +551,8 @@ Content-Type: application/json
         "created_at":string(datetime),	//“2006-01-02 15:04:05”
         "avatar":string,
         "file":string//歌曲url
-    }
+    }],
+  page_num:int
     
 ]
 ```
@@ -658,8 +659,6 @@ Content-Type: application/json
 
 #### 3.2.1.2 抽奖
 
-**先调用抽奖确认，弹窗出现再触发抽奖**
-
 POST  /healing/lotterybox/draw HTTP 1.1
 
 ```json
@@ -750,9 +749,9 @@ Content-Type: application/json
 
 GET /healing/rank/:school
 
-***school指学校名称，中间有一次对换，例如华工==华南理工大学==scut***
+***全部使用学校全名***
 
-***特别地，全部==all也视为学校名***
+***特别地，全部==All***
 
 
 
@@ -1123,7 +1122,7 @@ Content-Type: application/json
 
 ```json
 {// 成功就一定会返回且仅返回一条记录
-    "classic_id":int, 	//用于播放原唱
+    "classic_url":string, 	//用于播放原唱
     "song_name": string,
     "singer": string,
     "icon":text(url),   //歌曲图标

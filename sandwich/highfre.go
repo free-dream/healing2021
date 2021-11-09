@@ -9,6 +9,7 @@ import (
 )
 
 //重启时清空redis点赞
+
 func Clean() {
 	redisdb := setting.RedisConn()
 	keys := redisdb.Keys("healing2021*").Val()

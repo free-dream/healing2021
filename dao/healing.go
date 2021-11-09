@@ -3,7 +3,6 @@ package dao
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"math/rand"
 	"sort"
 	"strconv"
@@ -112,26 +111,34 @@ func Cache(key string, resp interface{}) {
 		panic(err)
 	}
 	err = redisCli.HSet(key, "cache", value).Err()
-	fmt.Println(err)
+
 }
 
 //分页器
 //从分页器里面取出
-func Pager(key string, page int) (interface{}, error) {
+func Pager(key string, page int) (interface{}, error, int) {
 	redisCli := setting.RedisConn()
 	var resp []interface{}
 	by, err := redisCli.HGet(key, "cache").Bytes()
 	if err != nil {
-		return nil, err
+		return nil, err, 0
 	}
 	err = json.Unmarshal(by, &resp)
 	if err != nil {
-		return nil, err
+		return nil, err, 0
+	}
+	var pageNum int
+	if len(resp)%10 == 0 {
+		pageNum = len(resp) / 10
+	} else {
+		pageNum = len(resp)/10 + 1
 	}
 	if len(resp)/10 > page {
-		return resp[(page-1)*10 : (page-1)*10+10], nil
+
+		return resp[(page-1)*10 : (page-1)*10+10], nil, pageNum
 	} else {
-		return resp[(page-1)*10:], nil
+
+		return resp[(page-1)*10:], nil, pageNum
 	}
 
 }

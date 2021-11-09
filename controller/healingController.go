@@ -99,12 +99,15 @@ func SelectionFetcher(ctx *gin.Context) {
 		ctx.JSON(200, resp)
 
 	} else {
-		resp, err := dao.Pager("healing2021:home."+strconv.Itoa(id), tag.Page)
+		resp, err, pageNum := dao.Pager("healing2021:home."+strconv.Itoa(id), tag.Page)
 		if err != nil {
 			panic(err)
 
 		}
-		ctx.JSON(200, resp)
+		ctx.JSON(200, gin.H{
+			"selection_list": resp,
+			"page_num":       pageNum,
+		})
 	}
 
 }
@@ -123,12 +126,15 @@ func CoverFetcher(ctx *gin.Context) {
 		ctx.JSON(200, resp)
 
 	} else {
-		resp, err := dao.Pager("healing2021:home."+strconv.Itoa(id), tag.Page)
+		resp, err, pageNum := dao.Pager("healing2021:home."+strconv.Itoa(id), tag.Page)
 		if err != nil {
 			panic(err)
 			// return
 		}
-		ctx.JSON(200, resp)
+		ctx.JSON(200, gin.H{
+			"cover_list": resp,
+			"page_num":   pageNum,
+		})
 	}
 
 }

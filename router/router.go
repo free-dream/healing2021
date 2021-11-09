@@ -44,12 +44,10 @@ func SetupRouter() *gin.Engine {
 		BaseUrl:   "https://healing2021.test.100steps.top",
 		StoreSession: func(ctx *gin.Context, wechatUser *ginwechat.WechatUser) error {
 			redirect, _ := ctx.GetQuery("redirect")
-			user_id := controller.Login(wechatUser.OpenID)
+			user_id := controller.Login(wechatUser.OpenID, wechatUser.Nickname, wechatUser.HeadImgUrl)
 			session := sessions.Default(ctx)
 			session.Set("user_id", user_id)
 			session.Set("openid", wechatUser.OpenID)
-			session.Set("headImgUrl", wechatUser.HeadImgUrl)
-			session.Set("nickname", wechatUser.Nickname)
 			err = session.Save()
 			ctx.Redirect(302, redirect)
 			return err
@@ -69,9 +67,10 @@ func SetupRouter() *gin.Engine {
 	}
 
 	// 业务路由
-	r.Use(middleware.IdentityCheck())
-	api := r.Group("/api")
 
+	api := r.Group("/api")
+	//中间件登陆拦截
+	api.Use(middleware.IdentityCheck())
 	// ws
 	api.GET("/ws", ws.WsHandler)
 	api.GET("/ws/history", ws.WsData)

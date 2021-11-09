@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"github.com/gin-contrib/sessions"
@@ -22,7 +21,6 @@ func FakeLogin(ctx *gin.Context) {
 	}
 	id, err1 := dao.FakeCreateUser(&user)
 	// 测试
-	fmt.Println(id)
 	//
 	if err1 != nil {
 		ctx.JSON(403, gin.H{
@@ -46,6 +44,7 @@ func FakeLogin(ctx *gin.Context) {
 	session.Set("headImgUrl", user.Avatar)
 	session.Set("openid", user.Openid)
 	session.Set("user_id", id)
+	session.Set("nickname", user.Nickname)
 
 	session.Save()
 	ctx.JSON(200, gin.H{
@@ -56,7 +55,7 @@ func FakeLogin(ctx *gin.Context) {
 func FakeLoginEasy(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	//redirect, _ := ctx.GetQuery("redirect")
-	session.Set("avatar", "我的头像 url")
+	session.Set("headImgUrl", "我的头像 url")
 	session.Set("openid", "123456")
 	session.Set("user_id", 1)
 	session.Save()
