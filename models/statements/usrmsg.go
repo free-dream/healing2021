@@ -9,7 +9,7 @@ import (
 
 type Usrmsg struct {
 	FromUser uint `gorm:"not null"`
-	ToUser   uint `gorm:"not null"`
+	ToUser   uint `gorm:"not null;index"`
 	Url      string
 	Song     string
 	Message  string
