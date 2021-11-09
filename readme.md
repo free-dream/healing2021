@@ -163,7 +163,6 @@ Content-Type: application/json
 ```json
 {
 "hobby":[]string
-
 }
 ```
 

@@ -86,7 +86,7 @@ func WsData(ctx *gin.Context) {
 	// get uid
 	session := sessions.Default(ctx)
 	id := session.Get("user_id").(int)
-    uid := uint(id)
+	uid := uint(id)
 	// fake uid
 	//uid := uint(2)
 
@@ -103,8 +103,8 @@ func WsData(ctx *gin.Context) {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "can not get data"})
 		return
 	}
-    dao.SysUpdate(uid)
-    dao.UsrUpdate(uid)
+	dao.SysUpdate(uid)
+	dao.UsrUpdate(uid)
 	ctx.JSON(200, resp)
 	return
 }

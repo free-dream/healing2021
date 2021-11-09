@@ -12,6 +12,7 @@ import (
 type ForPraiseMRecord struct {
 	MomentId int `gorm:"moment_id"`
 }
+
 func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment, bool) {
 	MysqlDB := setting.MysqlConn()
 	var AllMoment []statements.Moment
@@ -23,8 +24,8 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 	} else if Method == "recommend" { // Todo:这里有 bug!!!
 		// 按点赞排序
 		// 先查点赞表找到对应的动态
-		var  MomentRecords []ForPraiseMRecord
-		var  MomentRecord ForPraiseMRecord
+		var MomentRecords []ForPraiseMRecord
+		var MomentRecord ForPraiseMRecord
 		rows, err := MysqlDB.Model(&statements.Praise{}).Select("moment_id, count(is_liked)").Where("moment_id<>?", 0).Group("moment_id").Order("count(is_liked) DESC").Offset(Page * 10).Limit(10).Rows()
 		if err != nil {
 			return AllMoment, false

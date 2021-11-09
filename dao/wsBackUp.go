@@ -40,13 +40,13 @@ func GetAllUsrMsg(uid uint) ([]respModel.Usrmsg, error) {
 }
 
 func SysUpdate(uid uint) error {
-    db := setting.MysqlConn()
-    err := db.Model(&statements.Sysmsg{}).Where("uid = ?", uid).Update("is_send", 1).Error
-    return err
+	db := setting.MysqlConn()
+	err := db.Model(&statements.Sysmsg{}).Where("uid = ?", uid).Update("is_send", 1).Error
+	return err
 }
 
 func UsrUpdate(uid uint) error {
-    db := setting.MysqlConn()
-    err := db.Model(&statements.Usrmsg{}).Where("from_user = ?", uid).Update("is_send", 1).Error
-    return err
+	db := setting.MysqlConn()
+	err := db.Model(&statements.Usrmsg{}).Where("from_user = ?", uid).Update("is_send", 1).Error
+	return err
 }
