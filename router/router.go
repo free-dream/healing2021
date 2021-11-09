@@ -75,7 +75,6 @@ func SetupRouter() *gin.Engine {
 	api.GET("/ws/history", ws.WsData)
 
 	//user 模块
-
 	api.GET("/phoneNumber", controller.PhoneCaller)
 	api.GET("/user", controller.Judger)
 	api.POST("/user", controller.Register)
@@ -84,8 +83,10 @@ func SetupRouter() *gin.Engine {
 	api.GET("/userMsg", controller.Fetcher)
 	api.POST("/background", controller.Refresher)
 	api.GET("/callee", controller.GetOther)
+
 	//qiniu
 	api.GET("/qiniu/token", controller.QiniuToken)
+
 	//经典治愈 模块
 	api.GET("/healingPage", controller.HealingPageFetcher)
 	api.GET("/healing/bulletin", controller.AdsPlayer)
@@ -93,6 +94,7 @@ func SetupRouter() *gin.Engine {
 	api.GET("/healing/covers/list", controller.CoverFetcher)
 	api.POST("/healing/cover", controller.Recorder)     //植入任务 2021.11.1
 	api.POST("/healing/selection", controller.Selector) //植入任务 2021.11.1
+
 	//经典治愈——抽奖箱
 	// api.GET("healing/lotterybox/prizes", controller.GetPrizes)
 	// api.GET("/healing/lotterybox/drawcheck", controller.DrawCheck)
@@ -100,14 +102,18 @@ func SetupRouter() *gin.Engine {
 	api.GET("/healing/lotterybox/lotteries", controller.GetLotteries)
 	api.GET("/healing/lotterybox/tasktable", controller.GetTasktable)
 	api.GET("/healing/lotterybox/points", controller.GetUserPoints)
+
 	//经典治愈——排行榜
 	api.GET("/healing/rank/:school", controller.GetRanking)
 	api.GET("/healing/rank/user", controller.GetMyRank)
+
 	//经典治愈——每日热榜
 	api.GET("/healing/dailyrank/:date", controller.GetDailyrank)
 	api.GET("/healing/dailyrank/all", controller.GetAllrank)
+
 	//经典治愈——搜索
 	api.POST("/healing/search", controller.Search)
+
 	// childhood 模块
 	api.GET("/childhood/rank", controller.GetRank)
 	api.GET("/childhood/list", controller.GetList)
@@ -115,6 +121,7 @@ func SetupRouter() *gin.Engine {
 	api.GET("/childhood/original/covers", controller.GetOriginalSingerList)
 	api.GET("/healing/covers/player", controller.GetPlayer)
 	api.POST("/healing/covers/jump", controller.JumpSongs)
+
 	// 广场 模块
 	api.GET("/dynamics/list/:method", controller.GetMomentList)
 	api.POST("/dynamics/send", controller.PostMoment) //植入任务 2021.11.1
@@ -127,6 +134,7 @@ func SetupRouter() *gin.Engine {
 
 	//通用操作 模块
 	api.PUT("/like", controller.Like)
+
 	// 管理员操作 模块
 	api.Use(middleware.Authentication())
 	api.POST("/administrators", controller.DeleteContent)

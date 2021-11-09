@@ -163,7 +163,6 @@ Content-Type: application/json
 ```json
 {
 "hobby":[]string
-
 }
 ```
 
@@ -1067,13 +1066,13 @@ Content-Type: application/json
 ]
 ```
 
-失败(例)：
+失败（说明后台挂了）：
 
-HTTP/1.1 403 Forbidden
+HTTP/1.1 500Forbidden
 
 Content-Type: application/json
 
-`{"message" : "列表不存在"}`
+`{"message" : "数据库操作失败"}`
 
 ### 4.1.2 获取歌曲列表
 
@@ -1086,7 +1085,7 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 ```json
-[
+[// 一次性把所有的童年歌曲信息都发出去了
     {
        	"classic_id":int, 	//用于跳转到对应的原翻唱页
     	"name":string,		//歌曲名
@@ -1097,13 +1096,13 @@ Content-Type: application/json
 ]
 ```
 
-失败(例)：
+失败（说明后台挂了）：
 
-HTTP/1.1 403 Forbidden
+HTTP/1.1 500Forbidden
 
 Content-Type: application/json
 
-`{"message" : "列表不存在"}
+`{"message" : "数据库操作失败"}`
 
 ## 4.2 原翻唱页相关接口
 
@@ -1124,7 +1123,7 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 ```json
-{
+{// 成功就一定会返回且仅返回一条记录
     "classic_id":int, 	//用于播放原唱
     "song_name": string,
     "singer": string,
@@ -1133,13 +1132,21 @@ Content-Type: application/json
 }
 ```
 
-失败(例)：
+失败（说明参数缺失或者非法）：
 
-HTTP/1.1 403 Forbidden
+HTTP/1.1 400 Forbidden
 
 Content-Type: application/json
 
-`{"message" : "不存在对应的歌曲"}`
+`{"message" : "传入参数非法"}`
+
+失败（说明后台挂了）：
+
+HTTP/1.1 500Forbidden
+
+Content-Type: application/json
+
+`{"message" : "数据库操作失败"}`
 
 ### 4.2.2  获取用户翻唱列表并排序
 
@@ -1158,7 +1165,7 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 ```json
-[
+[// 当这首歌曲暂未有人翻唱时，返回值会是 null
     {
         "cover_id":int,			// 用于进入歌曲页
         "nickname": string,		// 用户昵称
@@ -1169,13 +1176,21 @@ Content-Type: application/json
 ]
 ```
 
-失败(例)：
+失败（说明参数缺失或者非法）：
 
-HTTP/1.1 403 Forbidden
+HTTP/1.1 400 Forbidden
 
 Content-Type: application/json
 
-`{"message" : "不存在对应的歌曲"}`
+`{"message" : "传入参数非法"}`
+
+失败（说明后台挂了）：
+
+HTTP/1.1 500Forbidden
+
+Content-Type: application/json
+
+`{"message" : "数据库操作失败"}`
 
 ## 4.3 歌曲页相关接口
 
@@ -1210,6 +1225,22 @@ Content-Type: application/json
 	"check":int		//0表示当前用户未点赞，1表示当前用户已经点赞
 }
 ```
+
+失败（说明参数缺失或者非法）：
+
+HTTP/1.1 400 Forbidden
+
+Content-Type: application/json
+
+`{"message" : "传入参数非法"}`
+
+失败（说明后台挂了）：
+
+HTTP/1.1 500Forbidden
+
+Content-Type: application/json
+
+`{"message" : "数据库操作失败"}`
 
 ### 4.3.2  歌曲跳转(翻唱)
 
@@ -1259,7 +1290,23 @@ HTTP/1.1 403 Forbidden
 
 Content-Type: application/json
 
-`{"message" : "不存在对应的歌曲"}`
+`{"message" : "Check参数错误"}`
+
+失败（说明参数缺失或者非法）：
+
+HTTP/1.1 400 Forbidden
+
+Content-Type: application/json
+
+`{"message" : "参数不完整"}`
+
+失败（说明后台挂了）：
+
+HTTP/1.1 500Forbidden
+
+Content-Type: application/json
+
+`{"message" : "数据库操作失败"}`
 
 # <span id="">5. 消息推送</span>
 
@@ -1405,7 +1452,7 @@ Content-Type: application/json
 
 GET /dynamics/list/{method}  HTTP1.1
 
-其中 method 可取： "new"/"recommend"/"search"
+其中 method 可取： "new"(时间排序)/"recommend"（点赞数+评论数排序）/"search"（动态中含有关键字）
 
 当选用的 method 为 "search" 时,在 url 后加上 ?keyword=xxx 即可拉取含有关键字的 状态、歌曲名 的动态列表
 
@@ -1418,7 +1465,7 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 ```json
-[
+[// 当根本没有任何人发过动态时响应为空 null, 没有动态含有关键字时 search 为空 null
     {
         "dynamics_id": integer,
         "content": string,								// 动态的内容
@@ -1444,13 +1491,25 @@ Content-Type: application/json
 ]
 ```
 
-失败时(例子)：
+失败时：
 
 HTTP/1.1 403 Forbidden
 
 Content-Type: application/json
 
-`{"message" : "动态不存在!"}`
+`{"message" : "page参数非法"}`
+
+HTTP/1.1 404 Forbidden (method参数不正确)
+
+失败（说明后台挂了）：
+
+HTTP/1.1 500Forbidden
+
+Content-Type: application/json
+
+`{"message" : "数据库操作失败"}
+
+
 
 ## <span id="">6.2 发布动态</span>
 
@@ -1480,13 +1539,25 @@ Content-Type: application/json
 
 HTTP/1.1 200 OK
 
-失败时(例子)：
+`{"message" : "评论发布成功"}`
+
+失败时：
 
 HTTP/1.1 403 Forbidden
 
 Content-Type: application/json
 
-`{"message" : "动态发布失败"}`
+`{"message" : "评论参数不完整"}`
+
+失败（说明后台挂了）：
+
+HTTP/1.1 500Forbidden
+
+Content-Type: application/json
+
+`{"message" : "数据库操作失败"}
+
+`{"message" : "系统消息发送失败"}
 
 ## <span id="">6.3 查看动态的详情</span>
 
@@ -1522,13 +1593,23 @@ Content-Type: application/json
 
 ```
 
-失败时(例子)：
+失败时：
 
 HTTP/1.1 403 Forbidden
 
 Content-Type: application/json
 
-`{"message" : "该动态不存在!"}`
+`{"message" : "id参数未传入"}`
+
+`{"message" : "id参数非法"}`（传入的不是数字）
+
+HTTP/1.1 500 Forbidden
+
+Content-Type: application/json
+
+`{"message" : "数据库操作失败"}`
+
+`{"message" : "数据库中出现非法字段"}`
 
 ## <span id="">6.4 给动态添加评论</span>
 
@@ -1549,7 +1630,7 @@ Content-Type: application/json
 
 HTTP/1.1 200 OK
 
-失败时(例子)：
+失败时：
 
 HTTP/1.1 403 Forbidden
 
@@ -1570,7 +1651,7 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 ```json
-[
+[// 动态没有评论时为 null
     {
         "comment_id": integer,
         "content": string,
