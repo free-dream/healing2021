@@ -49,14 +49,19 @@ func Judger(ctx *gin.Context) {
 
 	is_existed := dao.Exist(session.Get("openid").(string))
 	avatar := session.Get("headImgUrl").(string)
-	nickname := session.Get("nickname").(string)
-	is_administrator := dao.Authentication(nickname)
+	//nickname := session.Get("nickname").(string)
+	hobby, err := dao.GetHobby(user_id)
+	if err != nil {
+		panic(err)
+	}
+	//is_administrator := dao.Authentication(nickname)
 	ctx.JSON(200, gin.H{
-		"user_id":          user_id,
-		"is_existed":       is_existed,
-		"avatar":           avatar,
-		"nickname":         nickname,
-		"is_administrator": is_administrator,
+		"user_id":    user_id,
+		"is_existed": is_existed,
+		"avatar":     avatar,
+		//"nickname":         nickname,
+		//"is_administrator": is_administrator,
+		"hobby": hobby,
 	})
 }
 
@@ -79,9 +84,9 @@ func Register(ctx *gin.Context) {
 	user.Openid = openid
 	//user.Avatar = headImgUrl
 	if user.PhoneNumber != "" {
-		body, err := strconv.Atoi(user.PhoneNumber)
+		body, err1 := strconv.Atoi(user.PhoneNumber)
 
-		if err != nil || body <= 13000000000 || body >= 20000000000 {
+		if err1 != nil || body <= 13000000000 || body >= 20000000000 {
 
 			ctx.JSON(403, gin.H{
 				"message": "手机号格式错误",
@@ -90,7 +95,10 @@ func Register(ctx *gin.Context) {
 		}
 	}
 
-	dao.RefineUser(user, id)
+	err = dao.RefineUser(user, id)
+	if err != nil {
+		panic(err)
+	}
 	ctx.JSON(200, "OK")
 
 }
@@ -153,14 +161,14 @@ func Fetcher(ctx *gin.Context) {
 }
 
 //更新背景
-type obj struct {
+type Obj struct {
 	Background string `json:"background" binding:"required"`
 }
 
 func Refresher(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	openid := session.Get("openid").(string)
-	obj := obj{}
+	obj := Obj{}
 	err := ctx.ShouldBindJSON(&obj)
 
 	if err != nil {

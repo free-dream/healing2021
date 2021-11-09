@@ -126,7 +126,18 @@ func HobbyStore(hobby []string, id int) error {
 	}
 	return nil
 }
+func GetHobby(id int) ([]string, error) {
+	var resp []string
+	redisCli := setting.RedisConn()
+	value, _ := redisCli.HGet("healing2021:hobby", strconv.Itoa(id)).Bytes()
+	if len(value) != 0 {
 
+		err := json.Unmarshal(value, &resp)
+		return resp, err
+	}
+	return resp, nil
+
+}
 func UpdateUser(user *statements.User, id int, avatar string) (string, error) {
 	db := setting.MysqlConn()
 	other := statements.User{}
