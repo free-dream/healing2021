@@ -49,7 +49,7 @@ func Judger(ctx *gin.Context) {
 	user_id := session.Get("user_id").(int)
 	is_existed := dao.Exist(session.Get("openid").(string))
 	resp, err := dao.GetBasicMessage(user_id)
-	session.Set("headImhUrl", resp.Avatar)
+	session.Set("headImgUrl", resp.Avatar)
 	session.Set("nickname", resp.Nickname)
 	session.Save()
 	if err != nil {
