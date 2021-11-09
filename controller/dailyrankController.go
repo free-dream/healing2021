@@ -72,7 +72,7 @@ func GetDailyrank(ctx *gin.Context) {
 	//参数检查
 	model := regexp.MustCompile("[0-1][0-9]-[0-3][0-9]")
 	if !model.MatchString(date) {
-		ctx.JSON(403, e.ErrMsgResponse{Message: "查询参数出错"})
+		ctx.JSON(400, e.ErrMsgResponse{Message: "查询参数出错"})
 		return
 	}
 
