@@ -100,6 +100,7 @@ func RefineUser(param statements.User, id int) error {
 		PhoneNumber: param.PhoneNumber,
 		Sex:         param.Sex,
 		School:      param.School,
+		Avatar:      param.Avatar,
 	}
 
 	db.Table("user").Where("id=?", id).Select("nickname,real_name,phone_number,sex,school").Update(&user)
