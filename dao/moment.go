@@ -21,7 +21,7 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 		if err := MysqlDB.Order("created_at DESC").Offset(Page * 10).Limit(10).Find(&AllMoment).Error; err != nil {
 			return AllMoment, false
 		}
-	} else if Method == "recommend" { // Todo:这里有 bug!!!
+	} else if Method == "recommend" { // Todo:这里要加上评论(用内联表)
 		// 按点赞排序
 		// 先查点赞表找到对应的动态
 		var MomentRecords []ForPraiseMRecord
@@ -57,11 +57,24 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 }
 
 // 创建新动态
+//type MomentId struct {
+//	Id int `gorm:"id"`
+//}
 func CreateMoment(Moment statements.Moment) bool {
 	MysqlDB := setting.MysqlConn()
 	if err := MysqlDB.Create(&Moment).Error; err != nil {
 		return false
 	}
+
+	// 只是设想，目前状况时发表动态实在是太慢了，还是少加为好
+	// 塞一条 is_like=0 的点赞记录
+	//var momentId MomentId
+	//if err := MysqlDB.Model(&statements.MomentComment{}).Where("user_id=? and moment_id=?", Comment.UserId, Comment.MomentId, Comment.Comment).Scan(&commentId).Error; err != nil {
+	//	fmt.Println(err)
+	//	return false
+	//}
+	//UpdateLikesByID(0, momentId.Id,1,  "moment")
+
 	return true
 }
 
