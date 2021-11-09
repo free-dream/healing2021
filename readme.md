@@ -475,7 +475,7 @@ Content-Type: application/json
 
 `{"message" : "请求列表失败"}`
 
-### 3.1.2 点歌(唱歌)请求获取
+### 3.1.2 点歌列表获取
 
 GET /healing/selections/list HTTP 1.1
 
@@ -496,14 +496,15 @@ Content-Type: application/json
 
 ```json
 [
-	{
+	selection_list:[{
 		"nickname":string,	//可匿名
         "id":int,//对应点歌id
         "song_name":string,
         "user_id":integer,	//点歌用户的id
         "created_at":string(datetime),	//“2006-01-02 15:04:05”
         "avatar":string
-	}
+	}],
+  "page_num":int,
     ...
 ]
 ```
@@ -544,7 +545,7 @@ Content-Type: application/json
 
 ```json
 [
-    {
+   cover_list:[{
        "nickname":string,	//可匿名
         "id":int,//对应翻唱歌id
         "song_name":string,
@@ -552,7 +553,8 @@ Content-Type: application/json
         "created_at":string(datetime),	//“2006-01-02 15:04:05”
         "avatar":string,
         "file":string//歌曲url
-    }
+    }],
+  page_num:int
     
 ]
 ```

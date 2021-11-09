@@ -47,7 +47,6 @@ func PhoneCaller(ctx *gin.Context) {
 func Judger(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	user_id := session.Get("user_id").(int)
-
 	is_existed := dao.Exist(session.Get("openid").(string))
 	resp, err := dao.GetBasicMessage(user_id)
 	session.Set("headImhUrl", resp.Avatar)
