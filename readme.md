@@ -446,8 +446,6 @@ Content-Type: application/json
 
 ***轮播图接口更新可能依赖于多于一张表***
 
-包括可能存在的广告商(笑)
-
 GET /healing/bulletin HTTP 1.1
 
 成功:
@@ -661,8 +659,6 @@ Content-Type: application/json
 
 #### 3.2.1.2 抽奖
 
-**先调用抽奖确认，弹窗出现再触发抽奖**
-
 POST  /healing/lotterybox/draw HTTP 1.1
 
 ```json
@@ -753,9 +749,9 @@ Content-Type: application/json
 
 GET /healing/rank/:school
 
-***school指学校名称，中间有一次对换，例如华工==华南理工大学==scut***
+***全部使用学校全名***
 
-***特别地，全部==all也视为学校名***
+***特别地，全部==All***
 
 
 
