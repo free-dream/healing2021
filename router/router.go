@@ -123,6 +123,7 @@ func SetupRouter() *gin.Engine {
 	api.GET("/childhood/original/covers", controller.GetOriginalSingerList)
 	api.GET("/healing/covers/player", controller.GetPlayer)
 	api.POST("/healing/covers/jump", controller.JumpSongs)
+
 	// 广场 模块
 	api.GET("/dynamics/list/:method", controller.GetMomentList)
 	api.POST("/dynamics/send", controller.PostMoment) //植入任务 2021.11.1

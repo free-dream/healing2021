@@ -27,7 +27,7 @@ func GetMomentList(ctx *gin.Context) {
 
 	// 模式判断和处理
 	if Method != "new" && Method != "recommend" && Method != "search" {
-		ctx.JSON(403, e.ErrMsgResponse{Message: "模式选择出错"})
+		ctx.JSON(404, e.ErrMsgResponse{Message: "模式选择出错"})
 		return
 	}
 
@@ -45,7 +45,7 @@ func GetMomentList(ctx *gin.Context) {
 	// 从数据库中得到经过筛选的一页 Momment 列表
 	AllMoment, ok := dao.GetMomentPage(Method, Keyword, Page)
 	if !ok {
-		ctx.JSON(403, e.ErrMsgResponse{Message: "数据库查询失败"})
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败"})
 		return
 	}
 
@@ -55,7 +55,7 @@ func GetMomentList(ctx *gin.Context) {
 		UserId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
 		User, ok := dao.GetUserById(OneMoment.UserId)
 		if !ok {
-			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败"})
 			return
 		}
 
@@ -191,7 +191,7 @@ func GetMomentDetail(ctx *gin.Context) {
 	// 数据库单条查找
 	Moment, ok := dao.GetMomentById(Id)
 	if !ok {
-		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查找失败"})
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败"})
 		return
 	}
 
@@ -199,7 +199,7 @@ func GetMomentDetail(ctx *gin.Context) {
 	UserId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
 	User, ok_ := dao.GetUserById(Moment.UserId)
 	if !ok_ {
-		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库查询失败"})
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败"})
 		return
 	}
 	MomentDetail := respModel.MomentResp{
@@ -256,7 +256,7 @@ func PostComment(ctx *gin.Context) {
 	commentId := 0
 	ok := false
 	if commentId, ok = dao.CreateComment(Comment); !ok {
-		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入失败"})
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败"})
 		return
 	}
 

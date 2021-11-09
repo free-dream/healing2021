@@ -19,7 +19,7 @@ func GetPlayer(ctx *gin.Context) {
 	CoverIdStr := ctx.Query("cover_id")
 	CoverId, err := strconv.Atoi(CoverIdStr)
 	if err != nil {
-		ctx.JSON(403, e.ErrMsgResponse{Message: "传入参数非法"})
+		ctx.JSON(400, e.ErrMsgResponse{Message: "传入参数非法"})
 		return
 	}
 
@@ -38,7 +38,7 @@ func JumpSongs(ctx *gin.Context) {
 	Param := PlayerParam{}
 	err := ctx.ShouldBind(&Param)
 	if err != nil {
-		ctx.JSON(403, e.ErrMsgResponse{Message: "参数不完整"})
+		ctx.JSON(400, e.ErrMsgResponse{Message: "参数不完整"})
 		return
 	}
 
