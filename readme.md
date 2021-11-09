@@ -1122,7 +1122,7 @@ Content-Type: application/json
 
 ```json
 {// 成功就一定会返回且仅返回一条记录
-    "classic_id":int, 	//用于播放原唱
+    "classic_url":string, 	//用于播放原唱
     "song_name": string,
     "singer": string,
     "icon":text(url),   //歌曲图标
