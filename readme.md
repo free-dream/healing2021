@@ -194,12 +194,13 @@ Content-Type: application/json
 **下列全为可选项。**
 
 ```json
+
 {
     "avatar": "string" //头像url,
     "nickname": "string",
-    "avatar_visible": int,     	// 1：隐藏头像，0：不隐藏
-    "phone_search": int,     	// 0：允许通过手机号查找，1：不允许
-    "real_name_search": int,      	// 0：允许通过姓名查找，1：不允许
+    "avatar_visible": string,     	// 1：隐藏头像，0：不隐藏
+    "phone_search": string,     	// 0：允许通过手机号查找，1：不允许
+    "real_name_search": string,      	// 0：允许通过姓名查找，1：不允许
     "signature": "string"  		//个性签名（可不填）
 }
 ```

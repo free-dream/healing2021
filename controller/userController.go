@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"strconv"
 
@@ -12,9 +11,11 @@ import (
 )
 
 //用户登录
-func Login(openid string) int {
+func Login(openid string, nickname string, avatar string) int {
 	user := statements.User{
-		Openid: openid,
+		Openid:   openid,
+		Nickname: nickname,
+		Avatar:   avatar,
 	}
 	id := dao.CreateUser(user)
 	//根据给定的数组生成任务表
@@ -48,20 +49,25 @@ func Judger(ctx *gin.Context) {
 	user_id := session.Get("user_id").(int)
 
 	is_existed := dao.Exist(session.Get("openid").(string))
-	avatar := session.Get("headImgUrl").(string)
-	nickname := session.Get("nickname").(string)
-	hobby, err := dao.GetHobby(user_id)
+	resp, err := dao.GetBasicMessage(user_id)
+	session.Set("headImhUrl", resp.Avatar)
+	session.Set("nickname", resp.Nickname)
+	session.Save()
 	if err != nil {
 		panic(err)
 	}
-	is_administrator := dao.Authentication(nickname)
+	is_administrator := dao.Authentication(resp.Nickname)
 	ctx.JSON(200, gin.H{
 		"user_id":          user_id,
 		"is_existed":       is_existed,
-		"avatar":           avatar,
-		"nickname":         nickname,
+		"avatar":           resp.Avatar,
+		"nickname":         resp.Nickname,
 		"is_administrator": is_administrator,
-		"hobby":            hobby,
+		"hobby":            resp.Hobby,
+		"avatar_visible":   resp.AvatarVisible,
+		"phone_search":     resp.PhoneSearch,
+		"real_name_search": resp.RealNameSearch,
+		"signature":        resp.Signature,
 	})
 }
 
@@ -108,7 +114,6 @@ func HobbyPoster(ctx *gin.Context) {
 	id := sessions.Default(ctx).Get("user_id").(int)
 	err := ctx.ShouldBindJSON(&hobby)
 	if err != nil {
-		fmt.Println(err)
 		ctx.JSON(400, gin.H{
 
 			"message": "error param",
@@ -125,7 +130,8 @@ func Updater(ctx *gin.Context) {
 	//用户更新
 	session := sessions.Default(ctx)
 	id := session.Get("user_id").(int)
-	avatar := session.Get("avatar").(string)
+	openid := session.Get("openid").(string)
+	avatar := session.Get("headImgUrl").(string)
 	user := statements.User{}
 	err := ctx.ShouldBind(&user)
 	if err != nil {
@@ -135,7 +141,7 @@ func Updater(ctx *gin.Context) {
 		})
 		return
 	}
-
+	user.Openid = openid
 	avatar, err = dao.UpdateUser(&user, id, avatar)
 	if err != nil {
 		ctx.JSON(403, gin.H{
@@ -145,6 +151,9 @@ func Updater(ctx *gin.Context) {
 		return
 
 	}
+	session.Set("headImgUrl", avatar)
+	session.Set("nickname", user.Nickname)
+	session.Save()
 	ctx.JSON(200, gin.H{
 		"avatar": avatar,
 	})

@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"math/rand"
 	"strconv"
 	"time"
 
@@ -67,6 +66,7 @@ func FakeCreateUser(user *statements.User) (int, error) {
 func CreateUser(user statements.User) int {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
+	redisCli.HSet("healing2021:avatar", user.Openid, user.Avatar)
 	if !redisCli.SIsMember("healing2021:openid", user.Openid).Val() {
 
 		db.Table("user").Create(&user)
@@ -127,13 +127,26 @@ func HobbyStore(hobby []string, id int) error {
 	}
 	return nil
 }
-func GetHobby(id int) ([]string, error) {
-	var resp []string
+
+type BasicMsg struct {
+	Hobby          []string `json:"hobby"`
+	AvatarVisible  int      `json:"avatar_visible"`
+	PhoneSearch    int      `json:"phone_search"`
+	RealNameSearch int      `json:"real_name_search"`
+	Signature      string   `json:"signature"`
+	Avatar         string   `json:"avatar"`
+	Nickname       string   `json:"nickname"`
+}
+
+func GetBasicMessage(id int) (BasicMsg, error) {
+	resp := BasicMsg{}
+	db := setting.MysqlConn()
+	db.Table("user").Select("avatar,nickname,avatar_visible,phone_search,real_name_search,signature").Where("id=?", id).Scan(&resp)
 	redisCli := setting.RedisConn()
 	value, _ := redisCli.HGet("healing2021:hobby", strconv.Itoa(id)).Bytes()
 	if len(value) != 0 {
 
-		err := json.Unmarshal(value, &resp)
+		err := json.Unmarshal(value, &resp.Hobby)
 		return resp, err
 	}
 	return resp, nil
@@ -141,6 +154,7 @@ func GetHobby(id int) ([]string, error) {
 }
 func UpdateUser(user *statements.User, id int, avatar string) (string, error) {
 	db := setting.MysqlConn()
+	redisCli := setting.RedisConn()
 	other := statements.User{}
 	db.Table("user").Where("nickname=?", user.Nickname).Scan(&other)
 	if int(other.ID) != id && other.ID != 0 {
@@ -151,7 +165,9 @@ func UpdateUser(user *statements.User, id int, avatar string) (string, error) {
 	message["nickname"] = user.Nickname
 	message["avatar_visible"] = user.AvatarVisible
 	if user.AvatarVisible == 1 {
-		avatar = tools.GetAvatarUrl(rand.Intn(2))
+		avatar = tools.GetAvatarUrl(1)
+	} else {
+		avatar = redisCli.HGet("healing2021:avatar", user.Openid).Val()
 	}
 	message["avatar"] = avatar
 	message["phone_search"] = user.PhoneSearch

@@ -3,7 +3,6 @@ package dao
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"math/rand"
 	"sort"
 	"strconv"
@@ -112,7 +111,7 @@ func Cache(key string, resp interface{}) {
 		panic(err)
 	}
 	err = redisCli.HSet(key, "cache", value).Err()
-	fmt.Println(err)
+
 }
 
 //分页器
