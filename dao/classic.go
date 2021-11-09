@@ -63,9 +63,14 @@ func GetOriginInfo(ClassicId int) (respModel.OriginInfoResp, error) {
 		return respModel.OriginInfoResp{}, err
 	}
 
+	classURL, err := GetClassicUrlById(ClassicId)
+	if err != nil {
+		return respModel.OriginInfoResp{}, err
+	}
+
 	// 格式转换
 	OriginInfoResp := respModel.OriginInfoResp{
-		ClassicId: ClassicId,
+		ClassicURL: classURL,
 		SongName:  Origin.SongName,
 		Singer:    Origin.Singer,
 		Icon:      Origin.Icon,
@@ -75,13 +80,25 @@ func GetOriginInfo(ClassicId int) (respModel.OriginInfoResp, error) {
 }
 
 // 通过歌名找 classic_id (要求给的童年歌曲歌名不能重复)
-type ClassicIdInfo struct {
-	ClassicId int `gorm:"classic_id"`
+type ClassicId struct {
+	Id int `gorm:"classic_id"`
 }
 
 func GetClassicIdByName(SongName string) (int, error) {
 	db := setting.MysqlConn()
-	ClassicId := ClassicIdInfo{}
+	ClassicId := ClassicId{}
 	err := db.Model(&statements.Classic{}).Where("song_name=?", SongName).Scan(&ClassicId).Error
-	return ClassicId.ClassicId, err
+	return ClassicId.Id, err
+}
+
+// 通过 classic_id 找 url
+type ClassicUrl struct {
+	URL string `gorm:"classic_url"`
+}
+
+func GetClassicUrlById(ClassicId int) (string, error) {
+	db := setting.MysqlConn()
+	ClassicUrl := ClassicUrl{}
+	err := db.Model(&statements.Classic{}).Where("id=?", ClassicId).Scan(&ClassicUrl).Error
+	return ClassicUrl.URL, err
 }
