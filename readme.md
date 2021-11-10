@@ -437,7 +437,7 @@ Content-Type: application/json
 
 ***轮播图接口更新可能依赖于多于一张表***
 
-GET /healing/bulletin HTTP 1.1
+GET /healing/devotion HTTP 1.1
 query
 
 
@@ -449,25 +449,25 @@ Content-Type: application/json
 
 ```json
 [
-   "阿细":index:
+   "阿细":{index:
     {
       "devotion_id": int
       "song_name": string,
       "file": string,
-      "likes": int,
+      "likes": int
       
-    }
+    }},
   "梁山山":{
-    "devotion_id": int
-    "song_name": string,
-    "file": string,
-    "likes": int,
+    index: {
+      "devotion_id": int
+      "song_name": string,
+      "file": string,
+      "likes": int
+    }
   }
-  
-	
 ]
 ```
-//返回list 元素为字典
+//index不止一个
 
 失败(例)：
 
