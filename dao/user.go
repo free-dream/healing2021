@@ -269,9 +269,12 @@ func UpdateBackground(openid string, background string) error {
 func GetCallee(id int, module int) interface{} {
 
 	resp := make(map[string]interface{})
-
+	db := setting.MysqlConn()
 	switch module {
 	case 1:
+		user := UserMsg{}
+		db.Table("user").Select("nickname,signature,sex,avatar,school,id").Where("id=?", id).Scan(&user)
+		resp["message"] = user
 		resp["mySelections"] = getSelections(id, "selection", "user_id=?")
 	case 2:
 		resp["mySongs"] = getCovers("cover", "user_id=? and is_anon=?", id, 1)

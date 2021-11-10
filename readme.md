@@ -378,6 +378,12 @@ Content-Type: application/json
 
 ```json
 {
+  "message": {
+    "avatar": "string",
+    "nickname": "string",
+    "school": "string",
+    "signature": "string",
+  },
   "mySelections": {
       index:{
     "song_name": "string",
