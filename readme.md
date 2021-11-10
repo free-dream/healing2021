@@ -220,6 +220,8 @@ Content-Type: application/json
 ## 2.3 获取自己信息(我的点歌与个人信息)
 
 GET /userMsg HTTP1.1
+query
+"module": int//点歌1 唱歌2 点赞3 动态4
 
 成功：
 
@@ -231,12 +233,6 @@ Content-Type: application/json
 
 ```json
 {
-   "message":{
-  "avatar": "string",
-  "nickname": "string",
-  "school": "string",
-  "signature": "string",
-},
   "mySelections": {
       index:{
     "song_name": "string",
@@ -370,6 +366,7 @@ Query
 ```json
 {
   "calleeId": int //被访问用户的id
+  "module": int//点歌1 唱歌2 点赞3 动态4
 }
 ```
 
@@ -381,12 +378,6 @@ Content-Type: application/json
 
 ```json
 {
-   "message":{
-  "avatar": "string",
-  "nickname": "string",
-  "school": "string",
-  "signature": "string",
-},
   "mySelections": {
       index:{
     "song_name": "string",
@@ -442,11 +433,13 @@ Content-Type: application/json
 
 ## 3.1 治愈页面关联接口
 
-### 3.1.1 轮播图接口
+### 3.1.1 轮播图歌手接口
 
 ***轮播图接口更新可能依赖于多于一张表***
 
 GET /healing/bulletin HTTP 1.1
+query
+
 
 成功:
 
@@ -456,14 +449,25 @@ Content-Type: application/json
 
 ```json
 [
+   "阿细":index:
     {
-        "picture":text(url),	//广告或曲目对应的图片
-        "address":text(url),	//对应的链接，广告外链或者翻唱界面
-        "weight":int,//权重
+      "devotion_id": int
+      "song_name": string,
+      "file": string,
+      "likes": int,
+      
     }
+  "梁山山":{
+    "devotion_id": int
+    "song_name": string,
+    "file": string,
+    "likes": int,
+  }
+  
 	
 ]
 ```
+//返回list 元素为字典
 
 失败(例)：
 

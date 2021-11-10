@@ -36,6 +36,7 @@ func TableInit() {
 	statements.UserInit()
 	statements.SysmsgInit()
 	statements.UsrmsgInit()
+	statements.DevotionInit()
 	//任务和奖品初始化,不用删
 	AddTask()
 	AddLotteries()
