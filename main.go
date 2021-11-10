@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"git.100steps.top/100steps/healing2021_be/cron"
 	"git.100steps.top/100steps/healing2021_be/models"
-	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"git.100steps.top/100steps/healing2021_be/router"
@@ -12,7 +11,6 @@ import (
 	"io/ioutil"
 	"log"
 	"syscall"
-	"time"
 )
 
 // @Title healing2021
@@ -20,12 +18,12 @@ import (
 // @Description 2021治愈系
 
 func main() {
-	if tools.IsDebug() {
+	/*if tools.IsDebug() {
 		statements.TableClean()
 		time.Sleep(time.Second * 2)
 		models.FakeData()
 	}
-
+	*/
 	models.TableInit()
 
 	routers := router.SetupRouter()
