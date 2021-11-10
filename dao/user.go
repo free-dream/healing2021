@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"strconv"
@@ -81,14 +80,14 @@ func Exist(openid string) bool {
 	redisCli := setting.RedisConn()
 	return redisCli.SIsMember("healing2021:openid", openid).Val()
 }
-func GetPhoneNumber(id int) (error, int) {
+func GetPhoneNumber(id int) (error, string) {
 	db := setting.MysqlConn()
-	phone_number := 0
-	err := db.Table("user").Where("id=? and phone_search=?", id, 0).Select("phone_number").Scan(&phone_number).Error
+	user := statements.User{}
+	err := db.Table("user").Where("id=? and phone_search=?", id, 0).Select("phone_number").Scan(&user.PhoneNumber).Error
 	if err != nil {
-		return err, 0
+		return err, ""
 	}
-	return nil, phone_number
+	return nil, user.PhoneNumber
 }
 
 func RefineUser(param statements.User, id int) error {
@@ -311,7 +310,7 @@ func getCovers(tableName string, condition string, value int, module int) interf
 	db := setting.MysqlConn()
 	obj := CoverMsgV2{}
 	resp := CoverMsg{}
-	var rows *sql.Rows
+	rows, _ := db.Rows()
 	var err error
 	if module == 0 {
 		rows, err = db.Table(tableName).Where(condition, value).Rows()
