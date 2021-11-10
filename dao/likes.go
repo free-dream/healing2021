@@ -1,6 +1,8 @@
 package dao
 
 import (
+	"fmt"
+
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	db "git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/sandwich"
@@ -50,11 +52,17 @@ func UpdateLikesByID(user int, target int, likes int, kind string) error {
 			return err
 		}
 	} else if likes == 1 && !check {
+		//
+		fmt.Println("增加redis记录")
+		//
 		err = sandwich.AddLike(target, kind, user)
 		if err != nil {
 			return err
 		}
 	} else {
+		//
+		fmt.Println("触发重复点赞错误")
+		//
 		var err1 error = &LikesExistError{}
 		return err1
 	}

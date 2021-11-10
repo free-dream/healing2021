@@ -3,6 +3,7 @@ package sandwich
 import (
 	// "git.100steps.top/100steps/healing2021_be/models/statements"
 
+	"fmt"
 	"strconv"
 
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
@@ -23,6 +24,9 @@ func Check(targetid int, targettype string, userid int) bool {
 	redisDb := setting.RedisConn()
 	tempkey := prefix + "user" + strconv.Itoa(userid) + targettype
 	check := redisDb.SIsMember(tempkey, targetid).Val()
+	//测试
+	fmt.Println(check)
+	//
 	return check
 }
 
@@ -37,7 +41,7 @@ func CancelLike(targetid int, targettype string, userid int) error {
 //允许点赞
 func AddLike(targetid int, targettype string, userid int) error {
 	redisDb := setting.RedisConn()
-	tempkey := prefix + "user" + strconv.Itoa(userid) + "like" + targettype
+	tempkey := prefix + "user" + strconv.Itoa(userid) + targettype
 	err := redisDb.SAdd(tempkey, targetid).Err()
 	return err
 }
