@@ -300,7 +300,7 @@ func AddFakeClassic() {
 
 // 造点测试用的假数据
 func FakeData() {
-	//AddFakeUsers()
+	AddFakeUsers()
 	AddFakeMoments()
 	AddFakeComments()
 	AddFakeSelections()
