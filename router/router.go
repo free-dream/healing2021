@@ -33,11 +33,14 @@ func SetupRouter() *gin.Engine {
 	// 注册sessions组件，使用redis作为驱动
 	//gob.Register(tools.RedisUser{})
 	var err error
-	store, err = redis.NewStore(30, "tcp", tools.GetConfig("redis", "addr"), "", []byte("__100steps__100steps__100steps__"))
+
+	store, err = redis.NewStoreWithDB(30, "tcp", tools.GetConfig("redis", "addr"), "", tools.GetConfig("redis", "db"), []byte("__100steps__100steps__100steps__"))
+
 	if err != nil {
 		log.Panicln(err.Error())
 	}
 	r.Use(sessions.Sessions("healing2021_session", store))
+
 	ginwechat.UpdateEngine(r, &ginwechat.Config{
 		Appid:     "wx293bc6f4ee88d87d",
 		Appsecret: "",
