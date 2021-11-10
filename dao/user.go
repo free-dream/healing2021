@@ -83,7 +83,7 @@ func Exist(openid string) bool {
 func GetPhoneNumber(id int) (error, string) {
 	db := setting.MysqlConn()
 	user := statements.User{}
-	err := db.Table("user").Where("id=? and phone_search=?", id, 0).Select("phone_number").Scan(&user.PhoneNumber).Error
+	err := db.Table("user").Where("id=? and phone_search=?", id, 0).Select("phone_number").Scan(&user).Error
 	if err != nil {
 		return err, ""
 	}

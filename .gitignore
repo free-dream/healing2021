@@ -13,3 +13,4 @@ gin-bin
 media
 log
 /.vscode
+/*.csv

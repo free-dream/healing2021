@@ -1,11 +1,13 @@
 package models
 
 import (
-	"strconv"
-
+	"encoding/csv"
+	"fmt"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
+	"os"
+	"strconv"
 
 	"github.com/jinzhu/gorm"
 )
@@ -305,4 +307,28 @@ func FakeData() {
 	AddFakeCovers()
 	AddFakePraises()
 	AddFakeClassic()
+}
+func AddClassic() {
+	csc, err := os.Open("classic.csv")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer csc.Close()
+	readCsv := csv.NewReader(csc)
+	readAll, err := readCsv.ReadAll()
+	db := setting.MysqlConn()
+	for _, list := range readAll {
+		classic := statements.Classic{
+			SongName: list[1],
+			WorkName: list[2],
+			File:     list[3],
+			Icon:     list[4],
+			Singer:   list[5],
+		}
+		err = db.Table("classic").Create(&classic).Error
+		if err != nil {
+			fmt.Println(classic)
+		}
+	}
+
 }
