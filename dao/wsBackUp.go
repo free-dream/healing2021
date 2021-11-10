@@ -35,8 +35,8 @@ func GetAllSysMsg(uid uint) ([]respModel.Sysmsg, error) {
 func GetAllUsrMsg(uid uint) ([]respModel.Usrmsg, error) {
 	db := setting.MysqlConn()
 	resp := make([]respModel.Usrmsg, 1)
-	err := db.Model(&statements.Usrmsg{}).Where("from_user = ?", uid).Order("created_at desc").Find(&resp).Error
-	return resp, err
+	err := db.Model(&statements.Usrmsg{}).Where("to_user = ? or from_user = ?", uid, uid).Order("to_user, created_at desc").Find(&resp).Error
+    return resp, err
 }
 
 func SysUpdate(uid uint) error {

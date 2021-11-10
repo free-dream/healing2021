@@ -18,7 +18,7 @@ type ClassicListResp struct {
 
 // 童年原唱页原唱信息
 type OriginInfoResp struct {
-	ClassicId int    `json:"classic_id"`
+	ClassicURL string    `json:"classic_url"`
 	SongName  string `json:"song_name"`
 	Singer    string `json:"singer"`
 	Icon      string `json:"icon"`

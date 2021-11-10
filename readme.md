@@ -1066,7 +1066,7 @@ Content-Type: application/json
 
 失败（说明后台挂了）：
 
-HTTP/1.1 500Forbidden
+HTTP/1.1 500
 
 Content-Type: application/json
 
@@ -1096,7 +1096,7 @@ Content-Type: application/json
 
 失败（说明后台挂了）：
 
-HTTP/1.1 500Forbidden
+HTTP/1.1 500
 
 Content-Type: application/json
 
@@ -1122,7 +1122,7 @@ Content-Type: application/json
 
 ```json
 {// 成功就一定会返回且仅返回一条记录
-    "classic_id":int, 	//用于播放原唱
+    "classic_url":string, 	//用于播放原唱
     "song_name": string,
     "singer": string,
     "icon":text(url),   //歌曲图标
@@ -1132,7 +1132,7 @@ Content-Type: application/json
 
 失败（说明参数缺失或者非法）：
 
-HTTP/1.1 400 Forbidden
+HTTP/1.1 400 
 
 Content-Type: application/json
 
@@ -1140,7 +1140,7 @@ Content-Type: application/json
 
 失败（说明后台挂了）：
 
-HTTP/1.1 500Forbidden
+HTTP/1.1 500
 
 Content-Type: application/json
 
@@ -1176,7 +1176,7 @@ Content-Type: application/json
 
 失败（说明参数缺失或者非法）：
 
-HTTP/1.1 400 Forbidden
+HTTP/1.1 400 
 
 Content-Type: application/json
 
@@ -1184,7 +1184,7 @@ Content-Type: application/json
 
 失败（说明后台挂了）：
 
-HTTP/1.1 500Forbidden
+HTTP/1.1 500
 
 Content-Type: application/json
 
@@ -1226,7 +1226,7 @@ Content-Type: application/json
 
 失败（说明参数缺失或者非法）：
 
-HTTP/1.1 400 Forbidden
+HTTP/1.1 400 
 
 Content-Type: application/json
 
@@ -1234,7 +1234,7 @@ Content-Type: application/json
 
 失败（说明后台挂了）：
 
-HTTP/1.1 500Forbidden
+HTTP/1.1 500
 
 Content-Type: application/json
 
@@ -1284,7 +1284,7 @@ Content-Type: application/json
 
 失败(例)：
 
-HTTP/1.1 403 Forbidden
+HTTP/1.1 403 
 
 Content-Type: application/json
 
@@ -1292,7 +1292,7 @@ Content-Type: application/json
 
 失败（说明参数缺失或者非法）：
 
-HTTP/1.1 400 Forbidden
+HTTP/1.1 400 
 
 Content-Type: application/json
 
@@ -1300,7 +1300,7 @@ Content-Type: application/json
 
 失败（说明后台挂了）：
 
-HTTP/1.1 500Forbidden
+HTTP/1.1 500
 
 Content-Type: application/json
 
@@ -1344,7 +1344,7 @@ Content-Type: application/json
 
 失败时(例子)：
 
-HTTP/1.1 403 Forbidden
+HTTP/1.1 403 
 
 Content-Type: application/json
 
@@ -1382,7 +1382,7 @@ Content-Type: application/json
 
 失败时(例子)：
 
-HTTP/1.1 403 Forbidden
+HTTP/1.1 403 
 
 Content-Type: application/json
 
@@ -1409,7 +1409,7 @@ Content-Type: application/json
 
 失败时(例子)：
 
-HTTP/1.1 403 Forbidden
+HTTP/1.1 403 
 
 Content-Type: application/json
 
@@ -1438,7 +1438,7 @@ Content-Type: application/json
 
 失败时(例子)：
 
-HTTP/1.1 403 Forbidden
+HTTP/1.1 403 
 
 Content-Type: application/json
 
@@ -1491,17 +1491,17 @@ Content-Type: application/json
 
 失败时：
 
-HTTP/1.1 403 Forbidden
+HTTP/1.1 403 
 
 Content-Type: application/json
 
 `{"message" : "page参数非法"}`
 
-HTTP/1.1 404 Forbidden (method参数不正确)
+HTTP/1.1 404 (method参数不正确)
 
 失败（说明后台挂了）：
 
-HTTP/1.1 500Forbidden
+HTTP/1.1 500
 
 Content-Type: application/json
 
@@ -1541,7 +1541,7 @@ HTTP/1.1 200 OK
 
 失败时：
 
-HTTP/1.1 403 Forbidden
+HTTP/1.1 403 
 
 Content-Type: application/json
 
@@ -1549,7 +1549,7 @@ Content-Type: application/json
 
 失败（说明后台挂了）：
 
-HTTP/1.1 500Forbidden
+HTTP/1.1 500
 
 Content-Type: application/json
 
@@ -1593,7 +1593,7 @@ Content-Type: application/json
 
 失败时：
 
-HTTP/1.1 403 Forbidden
+HTTP/1.1 403 
 
 Content-Type: application/json
 
@@ -1601,7 +1601,7 @@ Content-Type: application/json
 
 `{"message" : "id参数非法"}`（传入的不是数字）
 
-HTTP/1.1 500 Forbidden
+HTTP/1.1 500 
 
 Content-Type: application/json
 
@@ -1630,7 +1630,7 @@ HTTP/1.1 200 OK
 
 失败时：
 
-HTTP/1.1 403 Forbidden
+HTTP/1.1 403 
 
 Content-Type: application/json
 
@@ -1670,7 +1670,7 @@ Content-Type: application/json
 
 失败时(例子)：
 
-HTTP/1.1 403 Forbidden
+HTTP/1.1 403 
 
 Content-Type: application/json
 
@@ -1698,7 +1698,7 @@ Content-Type: application/json
 
 失败时(例子)：
 
-HTTP/1.1 500 Forbidden
+HTTP/1.1 500 
 
 Content-Type: application/json
 
@@ -1724,7 +1724,7 @@ Content-Type: application/json
 
 失败时(例子)：
 
-HTTP/1.1 500 Forbidden
+HTTP/1.1 500 
 
 Content-Type: application/json
 
@@ -1755,7 +1755,7 @@ Content-Type: application/json
 
 失败时(例子)：
 
-HTTP/1.1 500 Forbidden
+HTTP/1.1 500 
 
 Content-Type: application/json
 
