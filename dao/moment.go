@@ -2,6 +2,7 @@ package dao
 
 import (
 	"fmt"
+	"strconv"
 
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
@@ -11,6 +12,7 @@ import (
 // 获取指定的一页(十条)动态
 type ForPraiseMRecord struct {
 	MomentId int `gorm:"moment_id"`
+	Tot int `gorm:"tot"`
 }
 
 func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment, bool) {
@@ -21,19 +23,29 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 		if err := MysqlDB.Order("created_at DESC").Offset(Page * 10).Limit(10).Find(&AllMoment).Error; err != nil {
 			return AllMoment, false
 		}
-	} else if Method == "recommend" { // Todo:这里要加上评论(用内联表)
+	} else if Method == "recommend" {
 		// 按点赞排序
 		// 先查点赞表找到对应的动态
 		var MomentRecords []ForPraiseMRecord
 		var MomentRecord ForPraiseMRecord
-		rows, err := MysqlDB.Model(&statements.Praise{}).Select("moment_id, count(is_liked)").Where("moment_id<>?", 0).Group("moment_id").Order("count(is_liked) DESC").Offset(Page * 10).Limit(10).Rows()
-		if err != nil {
+		//rows, err := MysqlDB.Model(&statements.Praise{}).Select("moment_id, count(is_liked)").Where("moment_id<>?", 0).Group("moment_id").Order("count(is_liked) DESC").Offset(Page * 10).Limit(10).Rows()
+		SQLstr := "select aa.moment_id, tot1+tot2 as tot from (select moment_id, count(moment_id) as tot1 from moment_comment where is_deleted<>1 group by moment_id) as aa right outer join (select moment_id, count(is_liked) as tot2 from praise group by moment_id) as bb on aa.moment_id=bb.moment_id order by tot desc " + " limit " + strconv.Itoa(Page * 10) + ",10;"
+		rows, err := MysqlDB.Debug().Raw(SQLstr).Rows()
+		if err == gorm.ErrRecordNotFound{
+			return AllMoment, true  // 说明这时候就是空的
+		} else if err != nil {
 			return AllMoment, false
 		}
 		defer rows.Close()
 		for rows.Next() {
 			// 全扫描进结构体
-			MysqlDB.ScanRows(rows, &MomentRecord)
+			err := MysqlDB.ScanRows(rows, &MomentRecord)
+			if err != nil {
+				break
+			}
+			if len(MomentRecords)>0 && MomentRecord.MomentId == MomentRecords[len(MomentRecords)-1].MomentId {
+				break
+			}
 			MomentRecords = append(MomentRecords, MomentRecord)
 		}
 
@@ -57,23 +69,17 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 }
 
 // 创建新动态
-//type MomentId struct {
-//	Id int `gorm:"id"`
-//}
 func CreateMoment(Moment statements.Moment) bool {
 	MysqlDB := setting.MysqlConn()
 	if err := MysqlDB.Create(&Moment).Error; err != nil {
 		return false
 	}
 
-	// 只是设想，目前状况时发表动态实在是太慢了，还是少加为好
-	// 塞一条 is_like=0 的点赞记录
-	//var momentId MomentId
-	//if err := MysqlDB.Model(&statements.MomentComment{}).Where("user_id=? and moment_id=?", Comment.UserId, Comment.MomentId, Comment.Comment).Scan(&commentId).Error; err != nil {
-	//	fmt.Println(err)
-	//	return false
-	//}
-	//UpdateLikesByID(0, momentId.Id,1,  "moment")
+	// 塞一条 is_like=0 的点赞记录，用作标记
+	err := markMomentInPraise(int(Moment.ID))
+	if err != nil {
+		return false
+	}
 
 	return true
 }
@@ -127,22 +133,21 @@ func CountCommentsById(MomentId int) int {
 }
 
 // 创建新评论,返回创建好的评论的 id
-type CommentId struct {
-	Id int `gorm:"id"`
-}
-
+//type CommentId struct {
+//	Id int `gorm:"id"`
+//}
 func CreateComment(Comment statements.MomentComment) (int, bool) {
 	MysqlDB := setting.MysqlConn()
 	if err := MysqlDB.Create(&Comment).Error; err != nil {
 		return 0, false
 	}
 
-	var commentId CommentId
-	if err := MysqlDB.Model(&statements.MomentComment{}).Where("user_id=? and moment_id=? and comment=?", Comment.UserId, Comment.MomentId, Comment.Comment).Scan(&commentId).Error; err != nil {
-		fmt.Println(err)
-		return 0, false
-	}
-	return commentId.Id, true
+	//var commentId CommentId
+	//if err := MysqlDB.Model(&statements.MomentComment{}).Where("user_id=? and moment_id=? and comment=?", Comment.UserId, Comment.MomentId, Comment.Comment).Scan(&commentId).Error; err != nil {
+	//	fmt.Println(err)
+	//	return 0, false
+	//}
+	return int(Comment.ID), true
 }
 
 // 拉取一个动态下的评论列表
