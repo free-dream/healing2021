@@ -131,15 +131,26 @@ func Pager(key string, page int) (interface{}, error, int) {
 	var pageNum int
 	if len(resp)%10 == 0 {
 		pageNum = len(resp) / 10
+		if pageNum >= page {
+
+			return resp[(page-1)*10 : (page-1)*10+10], nil, pageNum
+		} else {
+
+			return nil, errors.New("out of range"), pageNum
+		}
+
 	} else {
 		pageNum = len(resp)/10 + 1
-	}
-	if len(resp)/10 > page {
+		if pageNum > page {
 
-		return resp[(page-1)*10 : (page-1)*10+10], nil, pageNum
-	} else {
+			return resp[(page-1)*10 : (page-1)*10+10], nil, pageNum
+		} else if pageNum == page {
+			return resp[(page-1)*10:], nil, pageNum
+		} else {
 
-		return resp[(page-1)*10:], nil, pageNum
+			return nil, errors.New("out of range"), pageNum
+		}
+
 	}
 
 }
@@ -341,11 +352,10 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 }
 
 //治愈系对应的录音
-func CreateRecord(module int, id string, file string, uid int, isAnon bool) (int, CoverDetails, error) {
+func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool) (int, CoverDetails, error) {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
-	intId, _ := strconv.Atoi(id)
-	selectionId := intId
+
 	userId := uid
 	var selection statements.Selection
 	result1 := db.Model(&statements.Selection{}).Where("id=?", selectionId).First(&selection)
@@ -365,8 +375,7 @@ func CreateRecord(module int, id string, file string, uid int, isAnon bool) (int
 
 	err := db.Model(&statements.Cover{}).Create(&cover).Error
 	db.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
-	user_id := 0
-	db.Table("selection").Select("user_id").Where("cover_id=?", coverDetails.ID).Scan(&user_id)
+	db.Table("selection").Select("user_id").Where("cover_id=?", coverDetails.ID).Scan(&selection)
 	if !isAnon {
 		coverDetails.CreatedAt = tools.DecodeTime(cover.CreatedAt)
 		value, err1 := json.Marshal(coverDetails)
@@ -382,7 +391,7 @@ func CreateRecord(module int, id string, file string, uid int, isAnon bool) (int
 		redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+"all", string(value))
 	}
 
-	return user_id, coverDetails, err
+	return selection.UserId, coverDetails, err
 }
 
 func Select(selection statements.Selection) (SelectionDetails, error) {
