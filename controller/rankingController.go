@@ -12,6 +12,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	url1  = "http://cdn.healing2020.100steps.top/static/personal/avatarFemale.png"
+	url2  = "http://cdn.healing2020.100steps.top/static/personal/avatarFemale.png"
+	empty = "#暂无#"
+)
+
 //GET /healing/rank/:school
 func GetRanking(ctx *gin.Context) {
 	//取出参数
@@ -43,6 +49,19 @@ func GetRanking(ctx *gin.Context) {
 		temp.Userid = int(user.ID)
 		temp.Avatar = user.Avatar
 		temp.Nickname = user.Nickname
+		rankresps = append(rankresps, *temp)
+	}
+
+	//若不足10条，传回默认
+	for i := len(rankresps); i < 10; i++ {
+		temp := new(resp.RankingResp)
+		temp.Userid = -1
+		if (i+1)%2 == 0 {
+			temp.Avatar = url1
+		} else {
+			temp.Avatar = url2
+		}
+		temp.Nickname = empty
 		rankresps = append(rankresps, *temp)
 	}
 

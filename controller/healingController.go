@@ -93,7 +93,10 @@ func SelectionFetcher(ctx *gin.Context) {
 
 		resp, err := dao.GetSelections(id, tag)
 		if err != nil {
-			panic(err)
+			ctx.JSON(416, gin.H{
+				"message": "out of range",
+			})
+			return
 
 		}
 		ctx.JSON(200, resp)
@@ -101,7 +104,10 @@ func SelectionFetcher(ctx *gin.Context) {
 	} else {
 		resp, err, pageNum := dao.Pager("healing2021:home."+strconv.Itoa(id), tag.Page)
 		if err != nil {
-			panic(err)
+			ctx.JSON(416, gin.H{
+				"message": "out of range",
+			})
+			return
 
 		}
 		ctx.JSON(200, gin.H{
@@ -118,18 +124,25 @@ func CoverFetcher(ctx *gin.Context) {
 	tag.Label = ctx.Query("label")
 	id := sessions.Default(ctx).Get("user_id").(int)
 	if tag.Page == 1 {
+
 		resp, err := dao.GetCovers(strconv.Itoa(1), id, tag)
 		if err != nil {
-			panic(err)
-			// return
+			ctx.JSON(416, gin.H{
+				"message": "out of range",
+			})
+			return
+
 		}
 		ctx.JSON(200, resp)
 
 	} else {
 		resp, err, pageNum := dao.Pager("healing2021:home."+strconv.Itoa(id), tag.Page)
 		if err != nil {
-			panic(err)
-			// return
+			ctx.JSON(416, gin.H{
+				"message": "out of range",
+			})
+			return
+
 		}
 		ctx.JSON(200, gin.H{
 			"cover_list": resp,
@@ -140,7 +153,7 @@ func CoverFetcher(ctx *gin.Context) {
 }
 
 type RecordParams struct {
-	SelectionId string   `json:"selection_id" binding:"required"`
+	SelectionId int      `json:"selection_id" binding:"required"`
 	Record      []string `json:"record" binding:"required"`
 	Module      int      `json:"module"`
 	IsAnon      bool     `json:"is_anon"`
