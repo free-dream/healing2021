@@ -31,7 +31,7 @@ func GetRankingBySchool(school string) ([]tables.User, error) {
 	return users, nil
 }
 
-//获取当前用户排名,只在登陆时获取一次，之后就直接读缓存
+//获取当前用户排名,之后就直接读缓存
 func GetRankByCUserId(userid int) (string, error) {
 	mysqlDb := db.MysqlConn()
 	var users []tables.User

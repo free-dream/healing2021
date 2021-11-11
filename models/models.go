@@ -4,12 +4,13 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"os"
+	"strconv"
+
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
-	"os"
-	"strconv"
 
 	"github.com/jinzhu/gorm"
 )
@@ -325,7 +326,7 @@ func AddFakeClassic() {
 
 // 造点测试用的假数据
 func FakeData() {
-	AddFakeUsers()
+	// AddFakeUsers()
 	AddFakeMoments()
 	AddFakeComments()
 	AddFakeSelections()
