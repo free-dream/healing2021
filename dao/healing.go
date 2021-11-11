@@ -98,6 +98,7 @@ type SelectionDetails struct {
 	UserId    int    `json:"user_id"`
 	CreatedAt string `json:"created_at"`
 	Avatar    string `json:"avatar"`
+	Remark    string `json:"remark"`
 }
 
 //为分页器做缓存
@@ -389,7 +390,7 @@ func Select(selection statements.Selection) (SelectionDetails, error) {
 	redisCli := setting.RedisConn()
 	err := db.Table("selection").Create(&selection).Error
 	selectionDetails := SelectionDetails{}
-	err = db.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at").Where("selection.id=?", selection.ID).Joins("left join selection on user.id=selection.user_id").Scan(&selectionDetails).Error
+	err = db.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at,remark").Where("selection.id=?", selection.ID).Joins("left join selection on user.id=selection.user_id").Scan(&selectionDetails).Error
 	selectionDetails.CreatedAt = tools.DecodeTime(selection.CreatedAt)
 	value, err := json.Marshal(selectionDetails)
 	if err != nil {

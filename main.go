@@ -24,7 +24,8 @@ func main() {
 		models.FakeData()
 	}
 	*/
-	models.AddDevotion()
+
+	models.AddFakeHome()
 	models.TableInit()
 
 	routers := router.SetupRouter()
