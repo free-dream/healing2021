@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -18,7 +19,6 @@ import (
 	"github.com/qiniu/go-sdk/v7/storage"
 
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
-	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 )
 
