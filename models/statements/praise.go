@@ -14,6 +14,7 @@ type Praise struct {
 	IsLiked         int `gorm:"default:0;index"`
 	MomentId        int `gorm:"default:0;index"`
 	MomentCommentId int `gorm:"default:0;index"`
+	DevotionId      int `gorm:"default:0;index"`
 }
 
 func PraiseInit() {

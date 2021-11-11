@@ -66,8 +66,9 @@ func CreateUser(user statements.User) int {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
 	redisCli.HSet("healing2021:avatar", user.Openid, user.Avatar)
-	if !redisCli.SIsMember("healing2021:openid", user.Openid).Val() {
-
+	vuser := statements.User{}
+	db.Table("user").Select("openid").Where("openid=?", user.Openid).Scan(&vuser)
+	if vuser.Openid == "" {
 		db.Table("user").Create(&user)
 		return int(user.ID)
 	} else {
@@ -135,6 +136,7 @@ type BasicMsg struct {
 	Signature      string   `json:"signature"`
 	Avatar         string   `json:"avatar"`
 	Nickname       string   `json:"nickname"`
+	Sex            int      `json:"sex"`
 }
 
 func GetBasicMessage(id int) (BasicMsg, error) {
@@ -242,17 +244,20 @@ type MomentMsgV2 struct {
 	Content   string    `json:"content"`
 }
 
-func GetUser(id int) interface{} {
-	db := setting.MysqlConn()
-	usr := UserMsg{}
-	resp := make(map[string]interface{})
-	db.Table("user").Select("id,avatar,nickname,school,signature,sex").Where("id=?", id).Scan(&usr)
-	resp["message"] = usr
-	resp["mySelections"] = getSelections(usr.ID, "selection", "user_id=?")
-	resp["mySongs"] = getCovers("cover", "user_id=?", usr.ID, 0)
-	resp["moments"] = getMoments(usr.ID, "moment", "user_id=?")
-	resp["myLikes"] = getPraises(usr.ID, "praise", "praise.user_id=?")
+func GetUser(id int, module int) interface{} {
 
+	resp := make(map[string]interface{})
+	switch module {
+	case 1:
+
+		resp["mySelections"] = getSelections(id, "selection", "user_id=?")
+	case 2:
+		resp["mySongs"] = getCovers("cover", "user_id=?", id, 0)
+	case 3:
+		resp["moments"] = getMoments(id, "moment", "user_id=?")
+	case 4:
+		resp["myLikes"] = getPraises(id, "praise", "praise.user_id=?")
+	}
 	return resp
 }
 
@@ -262,18 +267,23 @@ func UpdateBackground(openid string, background string) error {
 	return err
 }
 
-func GetCallee(id int) interface{} {
-	db := setting.MysqlConn()
-	usr := UserMsg{}
+func GetCallee(id int, module int) interface{} {
+
 	resp := make(map[string]interface{})
-	db.Table("user").Where("id=?", id).Scan(&usr)
-	resp["message"] = usr
-	resp["mySelections"] = getSelections(usr.ID, "selection", "user_id=?")
-
-	resp["mySongs"] = getCovers("cover", "user_id=? and is_anon=?", usr.ID, 1)
-	resp["moments"] = getMoments(usr.ID, "moment", "user_id=?")
-	resp["myLikes"] = getPraises(usr.ID, "praise", "praise.user_id=?")
-
+	db := setting.MysqlConn()
+	switch module {
+	case 1:
+		user := UserMsg{}
+		db.Table("user").Select("nickname,signature,sex,avatar,school,id").Where("id=?", id).Scan(&user)
+		resp["message"] = user
+		resp["mySelections"] = getSelections(id, "selection", "user_id=?")
+	case 2:
+		resp["mySongs"] = getCovers("cover", "user_id=? and is_anon=?", id, 1)
+	case 3:
+		resp["moments"] = getMoments(id, "moment", "user_id=?")
+	case 4:
+		resp["myLikes"] = getPraises(id, "praise", "praise.user_id=?")
+	}
 	return resp
 
 }

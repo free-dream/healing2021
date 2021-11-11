@@ -119,3 +119,14 @@ func UpdateLikesByID(user int, target int, likes int, kind string) error {
 	}
 	return nil
 }
+
+func markMomentInPraise(momentId int)  error{
+	mysqlDb := db.MysqlConn()
+	like := tables.Praise{
+		UserId:  0,
+		MomentId: momentId,
+		IsLiked: 1,
+	}
+	err := mysqlDb.Create(&like).Error
+	return err
+}

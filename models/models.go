@@ -2,7 +2,9 @@ package models
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
+	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
@@ -36,6 +38,7 @@ func TableInit() {
 	statements.UserInit()
 	statements.SysmsgInit()
 	statements.UsrmsgInit()
+	statements.DevotionInit()
 	//任务和奖品初始化,不用删
 	AddTask()
 	AddLotteries()
@@ -126,9 +129,31 @@ func CreateDummySelections(userid int) {
 	if err != nil {
 		panic(err)
 	}
-
 	db := setting.DB
 	db.Create(&selection)
+}
+
+func AddFakeHome() {
+	db := setting.MysqlConn()
+	redisCli := setting.RedisConn()
+	rows, _ := db.Table("selection").Rows()
+	defer rows.Close()
+	selectionDetails := dao.SelectionDetails{}
+	selection := statements.Selection{}
+	for rows.Next() {
+		db.ScanRows(rows, &selection)
+		db.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at,remark").Where("selection.id=?", selection.ID).Joins("left join selection on user.id=selection.user_id").Scan(&selectionDetails)
+		selectionDetails.CreatedAt = tools.DecodeTime(selection.CreatedAt)
+		value, _ := json.Marshal(selectionDetails)
+		if selection.Style != "" {
+			redisCli.RPush("healing2021:selection"+"."+selection.Style, string(value))
+		}
+		if selection.Language != "" {
+			redisCli.RPush("healing2021:selection"+"."+selection.Language, string(value))
+		}
+		redisCli.RPush("healing2021:selection"+"."+"all", string(value))
+	}
+
 }
 
 func CreateFakeSelection(uid int, name string) {
@@ -306,7 +331,7 @@ func FakeData() {
 	AddFakeSelections()
 	AddFakeCovers()
 	AddFakePraises()
-	AddFakeClassic()
+	//AddFakeClassic()
 }
 func AddClassic() {
 	csc, err := os.Open("classic.csv")
@@ -328,6 +353,31 @@ func AddClassic() {
 		err = db.Table("classic").Create(&classic).Error
 		if err != nil {
 			fmt.Println(classic)
+		}
+	}
+
+}
+func AddDevotion() {
+	csc, err := os.Open("devotion.csv")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer csc.Close()
+	readCsv := csv.NewReader(csc)
+	readAll, err := readCsv.ReadAll()
+	fmt.Println(readAll)
+	db := setting.MysqlConn()
+	for _, list := range readAll {
+		dev := statements.Devotion{
+			SongName: list[1],
+
+			File: list[2],
+
+			Singer: list[3],
+		}
+		err = db.Table("devotion").Create(&dev).Error
+		if err != nil {
+			fmt.Println(dev)
 		}
 	}
 

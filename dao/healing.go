@@ -98,6 +98,7 @@ type SelectionDetails struct {
 	UserId    int    `json:"user_id"`
 	CreatedAt string `json:"created_at"`
 	Avatar    string `json:"avatar"`
+	Remark    string `json:"remark"`
 }
 
 //为分页器做缓存
@@ -389,7 +390,7 @@ func Select(selection statements.Selection) (SelectionDetails, error) {
 	redisCli := setting.RedisConn()
 	err := db.Table("selection").Create(&selection).Error
 	selectionDetails := SelectionDetails{}
-	err = db.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at").Where("selection.id=?", selection.ID).Joins("left join selection on user.id=selection.user_id").Scan(&selectionDetails).Error
+	err = db.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at,remark").Where("selection.id=?", selection.ID).Joins("left join selection on user.id=selection.user_id").Scan(&selectionDetails).Error
 	selectionDetails.CreatedAt = tools.DecodeTime(selection.CreatedAt)
 	value, err := json.Marshal(selectionDetails)
 	if err != nil {
@@ -404,4 +405,52 @@ func Select(selection statements.Selection) (SelectionDetails, error) {
 	redisCli.RPush("healing2021:selection"+"."+"all", string(value))
 
 	return selectionDetails, err
+}
+
+type DevMsg struct {
+	ID       int    `json:"id"`
+	SongName string `json:"song_name"`
+	Singer   string `json:"singer"`
+	File     string `json:"file"`
+	Likes    int    `json:"likes"`
+}
+
+func PlayDevotion() (map[string]interface{}, error) {
+	resp := make(map[string]interface{})
+	content := make(map[int]interface{})
+	content2 := make(map[int]interface{})
+	likes := 0
+	index := 0
+	db := setting.MysqlConn()
+	devotion := DevMsg{}
+	rows, err := db.Table("devotion").Where("singer=?", "阿细").Rows()
+	if err != nil {
+		return resp, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		db.ScanRows(rows, &devotion)
+		db.Table("praise").Where("devotion_id=?", devotion.ID).Count(&likes)
+		devotion.Likes = likes
+		content[index] = devotion
+		index++
+	}
+	resp["阿细"] = content
+	index = 0
+	rows, err = db.Table("devotion").Where("singer=?", "梁山山").Rows()
+	if err != nil {
+		return resp, err
+	}
+	for rows.Next() {
+		db.ScanRows(rows, &devotion)
+		if err != nil {
+			return resp, err
+		}
+		db.Table("praise").Where("devotion_id=?", devotion.ID).Count(&likes)
+		devotion.Likes = likes
+		content2[index] = devotion
+		index++
+	}
+	resp["梁山山"] = content2
+	return resp, err
 }

@@ -67,6 +67,7 @@ func Judger(ctx *gin.Context) {
 		"phone_search":     resp.PhoneSearch,
 		"real_name_search": resp.RealNameSearch,
 		"signature":        resp.Signature,
+		"sex":              resp.Sex,
 	})
 }
 
@@ -162,8 +163,15 @@ func Updater(ctx *gin.Context) {
 //获取用户信息
 func Fetcher(ctx *gin.Context) {
 	session := sessions.Default(ctx)
+	param := ctx.Query("module")
+	module, err := strconv.Atoi(param)
+	if err != nil {
+		ctx.JSON(400, gin.H{
+			"message": "error param",
+		})
+	}
 	id := session.Get("user_id").(int)
-	user := dao.GetUser(id)
+	user := dao.GetUser(id, module)
 	ctx.JSON(200, user)
 
 }
@@ -180,7 +188,9 @@ func Refresher(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&obj)
 
 	if err != nil {
-		panic(err)
+		ctx.JSON(400, gin.H{
+			"message": "error param",
+		})
 	}
 	err = dao.UpdateBackground(openid, obj.Background)
 	if err != nil {
@@ -202,13 +212,20 @@ func GetOther(ctx *gin.Context) {
 		return
 	}
 	calleeId, err := strconv.Atoi(param)
+	param = ctx.Query("module")
+	module, err := strconv.Atoi(param)
+	if err != nil {
+		ctx.JSON(400, gin.H{
+			"message": "error param",
+		})
+	}
 	if err != nil {
 		ctx.JSON(400, gin.H{
 			"message": "error param",
 		})
 		panic(err)
 	}
-	resp := dao.GetCallee(calleeId)
+	resp := dao.GetCallee(calleeId, module)
 	ctx.JSON(200, resp)
 
 }
