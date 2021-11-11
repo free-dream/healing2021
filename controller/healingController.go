@@ -180,3 +180,12 @@ func Recorder(ctx *gin.Context) {
 
 	ctx.JSON(200, resp)
 }
+
+//献唱接口
+func DevotionPlayer(ctx *gin.Context) {
+	resp, err := dao.PlayDevotion()
+	if err != nil {
+		panic(err)
+	}
+	ctx.JSON(200, resp)
+}

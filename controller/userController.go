@@ -67,6 +67,7 @@ func Judger(ctx *gin.Context) {
 		"phone_search":     resp.PhoneSearch,
 		"real_name_search": resp.RealNameSearch,
 		"signature":        resp.Signature,
+		"sex":              resp.Sex,
 	})
 }
 

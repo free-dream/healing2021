@@ -136,6 +136,7 @@ type BasicMsg struct {
 	Signature      string   `json:"signature"`
 	Avatar         string   `json:"avatar"`
 	Nickname       string   `json:"nickname"`
+	Sex            int      `json:"sex"`
 }
 
 func GetBasicMessage(id int) (BasicMsg, error) {

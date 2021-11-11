@@ -333,3 +333,28 @@ func AddClassic() {
 	}
 
 }
+func AddDevotion() {
+	csc, err := os.Open("devotion.csv")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer csc.Close()
+	readCsv := csv.NewReader(csc)
+	readAll, err := readCsv.ReadAll()
+	fmt.Println(readAll)
+	db := setting.MysqlConn()
+	for _, list := range readAll {
+		dev := statements.Devotion{
+			SongName: list[1],
+
+			File: list[2],
+
+			Singer: list[3],
+		}
+		err = db.Table("devotion").Create(&dev).Error
+		if err != nil {
+			fmt.Println(dev)
+		}
+	}
+
+}
