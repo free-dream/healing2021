@@ -20,29 +20,31 @@ type UsrMsg struct {
 	SongName  string `json:"song_name"`
 	Remark    string `json:"remark"`
 	Nickname  string `json:"nickname"`
+	Avatar    string `json:"avatar"`
 }
 type CovMsg struct {
 	ID       int    `json:"id"`
 	UserId   int    `json:"user_id"`
 	Likes    int    `json:"likes"`
 	Nickname string `json:"nickname"`
-	File     string `json:file`
-	IsLiked  int    `json:"is_liked"`
+	File     string `json:"file"`
+	IsLiked  bool   `json:"is_liked"`
+	Avatar   string `json:"avatar"`
 }
 
 //处理治愈详情页
 //点赞数debug，尚未测试
 //结构体疑似有bug
-func GetHealingPage(selectionId int) (interface{}, error) {
+func GetHealingPage(selectionId int, userId int) (interface{}, error) {
 	db := setting.MysqlConn()
 	userMsg := UsrMsg{}
 	resp := make(map[string]interface{})
-	db.Table("selection").Select("selection.id,selection.song_name,selection.style,selection.created_at,selection.remark,user.nickname").Joins("left join user on user.id=selection.user_id").Where("selection.id=?", selectionId).Scan(&userMsg)
+	db.Table("selection").Select("user.avatar,selection.id,selection.song_name,selection.style,selection.created_at,selection.remark,user.nickname").Joins("left join user on user.id=selection.user_id").Where("selection.id=?", selectionId).Scan(&userMsg)
 	/*if err!=nil{
 		panic(err)
 		return nil, err
 	}*/
-	rows, err := db.Table("cover").Select("cover.file,cover.user_id,user.nickname,cover.id").Joins("left join user on user.id=cover.user_id").Where("cover.selection_id=?", selectionId).Rows()
+	rows, err := db.Table("cover").Select("user.avatar,cover.file,cover.user_id,user.nickname,cover.id").Joins("left join user on user.id=cover.user_id").Where("cover.selection_id=?", selectionId).Rows()
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +55,7 @@ func GetHealingPage(selectionId int) (interface{}, error) {
 	for rows.Next() {
 		err = db.ScanRows(rows, &obj)
 		db.Table("praise").Where("cover_id=? and is_liked=?", obj.ID, 1).Count(&obj.Likes)
-
+		obj.IsLiked, _ = PackageCheckMysql(userId, "cover", obj.ID)
 		if err != nil {
 			return nil, err
 		}
