@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	url1  = "http://cdn.healing2020.100steps.top/static/personal/avatarFemale.png"
+	url1  = "http://cdn.healing2020.100steps.top/static/personal/avatarMale.png"
 	url2  = "http://cdn.healing2020.100steps.top/static/personal/avatarFemale.png"
 	empty = "#暂无#"
 )

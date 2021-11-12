@@ -2,6 +2,7 @@ package dao
 
 import (
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
+	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	db "git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/sandwich"
 	"github.com/jinzhu/gorm"
@@ -23,8 +24,15 @@ func IsLikesExistError(err error) bool {
 	}
 }
 
+//包装一下给controller用
+func PackageCheckMysql(user int, kind string, target int) (bool, error) {
+	db := setting.MysqlConn()
+	boolean, err := CheckMysql(db, user, target, kind, 1, true)
+	return boolean, err
+}
+
 //跳转mysql检查
-func CheckMysql(lock *gorm.DB, user int, target int, kind string, likes int) (bool, error) {
+func CheckMysql(lock *gorm.DB, user int, target int, kind string, likes int, choose bool) (bool, error) {
 	var (
 		err  error
 		like tables.Praise
@@ -39,6 +47,17 @@ func CheckMysql(lock *gorm.DB, user int, target int, kind string, likes int) (bo
 	default:
 		panic("wrong type") //基本上不可能抵达,除非有意
 	}
+	//仅判断是否存在
+	if choose {
+		if gorm.IsRecordNotFoundError(err) {
+			return false, nil
+		} else if err != nil {
+			return true, err
+		} else {
+			return false, err
+		}
+	}
+	//点赞判断
 	if gorm.IsRecordNotFoundError(err) {
 		if likes > 0 {
 			return true, nil
@@ -89,7 +108,7 @@ func UpdateLikesByID(user int, target int, likes int, kind string) error {
 			return err
 		}
 	} else {
-		check, err2 := CheckMysql(lock, user, target, kind, likes)
+		check, err2 := CheckMysql(lock, user, target, kind, likes, false)
 		if check == false && err2 == nil {
 			var err1 error = &LikesExistError{}
 			return err1

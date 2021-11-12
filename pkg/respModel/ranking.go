@@ -26,4 +26,5 @@ type HotResp struct {
 	Posttime string `json:"post_time"`
 	Likes    int    `json:"likes"`
 	Songname string `json:"song_name"`
+	Check    int    `json:"check"`
 }

@@ -6,6 +6,8 @@ import (
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
 
+//检查点赞
+
 //根据日期获取对应热榜
 func GetCoversByDate(date string) ([]tables.Cover, []resp.CoverRank, error) {
 	mysqlDb := setting.MysqlConn()
