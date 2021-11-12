@@ -7,6 +7,7 @@ import (
 )
 
 var RedisClient *redis.Client
+var TokenGetCli *redis.Client
 
 func init() {
 	addr := tools.GetConfig("redis", "addr")
@@ -28,8 +29,22 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	TokenGetCli = redis.NewClient(&redis.Options{
+		Addr:         addr,
+		Password:     "",
+		DB:           0,
+		PoolSize:     30,
+		MinIdleConns: 10,
+	})
+	_, err = RedisClient.Ping().Result()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func RedisConn() *redis.Client {
 	return RedisClient
+}
+func RedisTokenConn() *redis.Client {
+	return TokenGetCli
 }

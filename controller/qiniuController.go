@@ -93,7 +93,7 @@ type WechatServerErr struct {
 }
 
 func getAccessToken() string {
-	redis_cli := setting.RedisClient
+	redis_cli := setting.TokenGetCli
 	return redis_cli.Get("apiv2:wechat:accesskey").Val()
 }
 

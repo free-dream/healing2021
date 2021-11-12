@@ -33,6 +33,7 @@ func main() {
 	routers := router.SetupRouter()
 
 	defer setting.DB.Close()
+	defer setting.TokenGetCli.Close()
 	defer setting.RedisClient.Close()
 	var port string
 	if tools.IsDebug() {
