@@ -223,7 +223,6 @@ type CoverMsgV2 struct {
 	SelectionId int       `json:"selection_id"`
 	SongName    string    `json:"song_name"`
 	CreatedAt   time.Time `json:"created_at"`
-	Check       int       `json:"check"`
 }
 type PraiseMsg struct {
 	CoverId     int    `json:"cover_id"`
@@ -239,6 +238,7 @@ type PraiseMsgV2 struct {
 	SongName    string    `json:"song_name"`
 	CreatedAt   time.Time `json:"created_at"`
 	ID          int       `json:"id"`
+	Check       int       `json:"check"`
 }
 type MomentMsg struct {
 	SongName  string   `json:"song_name"`
@@ -262,7 +262,6 @@ func GetUser(id int, module int) interface{} {
 	resp := make(map[string]interface{})
 	switch module {
 	case 1:
-
 		resp["mySelections"] = getSelections(id, "selection", "user_id=?")
 	case 2:
 		resp["mySongs"] = getCovers("cover", "user_id=?", id, 0)
@@ -323,6 +322,18 @@ func getPraises(value interface{}, tableName string, condition string) interface
 		resp.CoverId = obj.CoverId
 		resp.SelectionId = obj.SelectionId
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
+		//插入点赞确认
+		userid, _ := value.(int)
+		check, err1 := PackageCheckMysql(userid, "cover", obj.ID)
+		if err1 != nil {
+			log.Printf(err1.Error())
+			obj.Check = 0
+		} else if check {
+			obj.Check = 1
+		} else {
+			obj.Check = 0
+		}
+		//
 		db.Table("praise").Where("cover_id=? and is_liked=?", resp.CoverId, 1).Count(&resp.Likes)
 		content[index] = resp
 		index++
@@ -356,17 +367,6 @@ func getCovers(tableName string, condition string, value int, module int) interf
 		resp.SelectionId = obj.SelectionId
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		resp.SongName = obj.SongName
-		//插入点赞确认
-		check, err1 := PackageCheckMysql(value, "cover", obj.ID)
-		if err1 != nil {
-			log.Printf(err1.Error())
-			obj.Check = 0
-		} else if check {
-			obj.Check = 1
-		} else {
-			obj.Check = 0
-		}
-		//
 		db.Table("praise").Where("cover_id=? and is_liked=?", resp.ID, 1).Count(&resp.Likes)
 		content[index] = resp
 		index++
