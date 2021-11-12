@@ -157,7 +157,7 @@ func UpdateUser(user *statements.User, id int, avatar string) (string, error) {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
 	other := statements.User{}
-	db.Table("user").Where("nickname=?", user.Nickname).Scan(&other)
+	db.Table("user").Where("openid=?", user.Openid).Scan(&other)
 	if int(other.ID) != id && other.ID != 0 {
 
 		return "", errors.New("error")
@@ -166,7 +166,16 @@ func UpdateUser(user *statements.User, id int, avatar string) (string, error) {
 	message["nickname"] = user.Nickname
 	message["avatar_visible"] = user.AvatarVisible
 	if user.AvatarVisible == 1 {
-		avatar = tools.GetAvatarUrl(1)
+		switch other.Sex {
+		case 1:
+			avatar = tools.GetAvatarUrl(1)
+		case 2:
+			avatar = tools.GetAvatarUrl(0)
+		case 3:
+			avatar = tools.GetAvatarUrl(2)
+
+		}
+
 	} else {
 		avatar = redisCli.HGet("healing2021:avatar", user.Openid).Val()
 	}
