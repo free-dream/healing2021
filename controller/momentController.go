@@ -124,7 +124,7 @@ func PostMoment(ctx *gin.Context) {
 		param.Language = NewMoment.Language
 		param.Remark = NewMoment.Remark
 		param.Style = NewMoment.Style
-		resp, err := dao.Select(param)
+		_, resp, err := dao.Select(param)
 		if err != nil {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "点歌操作失败"})
 			return

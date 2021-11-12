@@ -218,12 +218,7 @@ func GetOther(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{
 			"message": "error param",
 		})
-	}
-	if err != nil {
-		ctx.JSON(400, gin.H{
-			"message": "error param",
-		})
-		panic(err)
+		return
 	}
 	resp := dao.GetCallee(calleeId, module)
 	ctx.JSON(200, resp)

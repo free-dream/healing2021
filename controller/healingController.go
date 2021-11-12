@@ -63,16 +63,21 @@ func Selector(ctx *gin.Context) {
 	userid := sessions.Default(ctx).Get("user_id").(int)
 
 	param.UserId = userid
-	resp, err := dao.Select(param)
+	num, resp, err := dao.Select(param)
 	if err != nil {
-		panic(err)
-		// return
+		ctx.JSON(403, gin.H{
+			"message": "今日次数已用完",
+		})
+		return
 	}
 	//接入任务模块
 	thistask := task.ST
 	thistask.AddRecord(userid)
 	//
-	ctx.JSON(200, resp)
+	ctx.JSON(200, gin.H{
+		"selection_num": num,
+		"resp":          resp,
+	})
 }
 
 //首页控制
@@ -84,6 +89,7 @@ func SelectionFetcher(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{
 			"message": "error param",
 		})
+		return
 	}
 	tag.RankWay, _ = strconv.Atoi(ctx.Query("rankWay"))
 	tag.Label = ctx.Query("label")
@@ -128,6 +134,7 @@ func CoverFetcher(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{
 			"message": "error param",
 		})
+		return
 	}
 	tag.RankWay, _ = strconv.Atoi(ctx.Query("rankWay"))
 	tag.Label = ctx.Query("label")

@@ -23,6 +23,7 @@ type User struct {
 	AvatarVisible  int    `gorm:"default:0" json:"avatar_visible"`
 	PhoneSearch    int    `gorm:"default:0" json:"phone_search"`
 	RealNameSearch int    `gorm:"default:0" json:"real_name_search"`
+	SelectionNum   int    `gorm:"default:2" json:"selection_num"`
 }
 
 func UserInit() {

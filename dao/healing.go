@@ -26,6 +26,8 @@ type CovMsg struct {
 	UserId   int    `json:"user_id"`
 	Likes    int    `json:"likes"`
 	Nickname string `json:"nickname"`
+	File     string `json:file`
+	IsLiked  int    `json:"is_liked"`
 }
 
 //处理治愈详情页
@@ -40,7 +42,7 @@ func GetHealingPage(selectionId int) (interface{}, error) {
 		panic(err)
 		return nil, err
 	}*/
-	rows, err := db.Table("cover").Select("cover.user_id,user.nickname,cover.id").Joins("left join user on user.id=cover.user_id").Where("cover.selection_id=?", selectionId).Rows()
+	rows, err := db.Table("cover").Select("cover.file,cover.user_id,user.nickname,cover.id").Joins("left join user on user.id=cover.user_id").Where("cover.selection_id=?", selectionId).Rows()
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +52,8 @@ func GetHealingPage(selectionId int) (interface{}, error) {
 	content := make(map[int]interface{})
 	for rows.Next() {
 		err = db.ScanRows(rows, &obj)
-		db.Table("praise").Where("cover_id=? and is_liked=?", obj.ID, 0).Count(&obj.Likes)
+		db.Table("praise").Where("cover_id=? and is_liked=?", obj.ID, 1).Count(&obj.Likes)
+
 		if err != nil {
 			return nil, err
 		}
@@ -393,26 +396,34 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 	return selection.UserId, coverDetails, err
 }
 
-func Select(selection statements.Selection) (SelectionDetails, error) {
+func Select(selection statements.Selection) (int, SelectionDetails, error) {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
-	err := db.Table("selection").Create(&selection).Error
-	selectionDetails := SelectionDetails{}
-	err = db.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at,remark").Where("selection.id=?", selection.ID).Joins("left join selection on user.id=selection.user_id").Scan(&selectionDetails).Error
-	selectionDetails.CreatedAt = tools.DecodeTime(selection.CreatedAt)
-	value, err := json.Marshal(selectionDetails)
-	if err != nil {
-		return selectionDetails, err
-	}
-	if selection.Style != "" {
-		redisCli.RPush("healing2021:selection"+"."+selection.Style, string(value))
-	}
-	if selection.Language != "" {
-		redisCli.RPush("healing2021:selection"+"."+selection.Language, string(value))
-	}
-	redisCli.RPush("healing2021:selection"+"."+"all", string(value))
+	user := statements.User{}
+	db.Table("user").Select("selection_num").Where("id=?", selection.UserId).Scan(&user)
+	if 0 < user.SelectionNum {
+		err := db.Table("selection").Create(&selection).Error
+		db.Table("user").Where("id=?", selection.UserId).Update("selection_num", user.SelectionNum-1)
+		selectionDetails := SelectionDetails{}
+		err = db.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at,remark").Where("selection.id=?", selection.ID).Joins("left join selection on user.id=selection.user_id").Scan(&selectionDetails).Error
+		selectionDetails.CreatedAt = tools.DecodeTime(selection.CreatedAt)
+		value, err := json.Marshal(selectionDetails)
+		if err != nil {
+			return user.SelectionNum, selectionDetails, err
+		}
+		if selection.Style != "" {
+			redisCli.RPush("healing2021:selection"+"."+selection.Style, string(value))
+		}
+		if selection.Language != "" {
+			redisCli.RPush("healing2021:selection"+"."+selection.Language, string(value))
+		}
+		redisCli.RPush("healing2021:selection"+"."+"all", string(value))
 
-	return selectionDetails, err
+		return user.SelectionNum, selectionDetails, err
+	} else {
+		return user.SelectionNum, SelectionDetails{}, errors.New("今日次数已用尽")
+	}
+
 }
 
 type DevMsg struct {

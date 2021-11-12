@@ -328,7 +328,7 @@ Content-Type: application/json
 ```json
 {
     user：{
-  "songName": "string",
+  "song_name": "string",
   "selectionId": int,
   "name": "string",//点歌用户名
   "style": "string",//风格
@@ -337,10 +337,10 @@ Content-Type: application/json
 }
   "singers": {
       index{
-    "singer": "string",
-    "songId": int,
-    "likeId":int,
-    "song": "string" //歌曲url
+    "nickname": "string",
+    "id": int, //对应翻唱的id
+    "user_id":int,
+    "file": "string" ,//歌曲url
     "likes":int
   }
   }
