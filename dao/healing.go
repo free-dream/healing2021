@@ -50,7 +50,7 @@ func GetHealingPage(selectionId int) (interface{}, error) {
 	content := make(map[int]interface{})
 	for rows.Next() {
 		err = db.ScanRows(rows, &obj)
-		db.Table("praise").Where("cover_id=? and is_liked=1", obj.ID, 0).Count(&obj.Likes)
+		db.Table("praise").Where("cover_id=? and is_liked=?", obj.ID, 0).Count(&obj.Likes)
 		if err != nil {
 			return nil, err
 		}
