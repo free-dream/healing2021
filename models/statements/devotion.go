@@ -25,5 +25,5 @@ func DevotionInit() {
 		db.AutoMigrate(&Devotion{})
 		fmt.Println("Table Devotion has existed")
 	}
-	setting.TimeSetting("Devotion")
+	setting.TimeSetting("devotion")
 }
