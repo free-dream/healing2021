@@ -346,7 +346,7 @@ Content-Type: application/json
     "likeId":int,
     "song": "string", //歌曲url
     "likes":int,
-      "check":int
+    "is_liked":int,	//用于确认是否点赞
   	}
   }
 }
