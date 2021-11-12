@@ -3,6 +3,7 @@ package dao
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"math/rand"
 	"sort"
 	"strconv"
@@ -28,7 +29,7 @@ type CovMsg struct {
 	Likes    int    `json:"likes"`
 	Nickname string `json:"nickname"`
 	File     string `json:"file"`
-	IsLiked  bool   `json:"is_liked"`
+	IsLiked  int    `json:"is_liked"`
 	Avatar   string `json:"avatar"`
 }
 
@@ -55,7 +56,17 @@ func GetHealingPage(selectionId int, userId int) (interface{}, error) {
 	for rows.Next() {
 		err = db.ScanRows(rows, &obj)
 		db.Table("praise").Where("cover_id=? and is_liked=?", obj.ID, 1).Count(&obj.Likes)
-		obj.IsLiked, _ = PackageCheckMysql(userId, "cover", obj.ID)
+		//插入点赞确认
+		check, err1 := PackageCheckMysql(userId, "cover", obj.ID)
+		if err1 != nil {
+			log.Printf(err1.Error())
+			obj.IsLiked = 0
+		} else if check {
+			obj.IsLiked = 1
+		} else {
+			obj.IsLiked = 0
+		}
+		//
 		if err != nil {
 			return nil, err
 		}

@@ -3,6 +3,7 @@ package dao
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"strconv"
 	"time"
 
@@ -222,6 +223,7 @@ type CoverMsgV2 struct {
 	SelectionId int       `json:"selection_id"`
 	SongName    string    `json:"song_name"`
 	CreatedAt   time.Time `json:"created_at"`
+	Check       int       `json:"check"`
 }
 type PraiseMsg struct {
 	CoverId     int    `json:"cover_id"`
@@ -245,6 +247,7 @@ type MomentMsg struct {
 	State     []string `json:"state"`
 	Content   string   `json:"content"`
 	Likes     int      `json:"likes"`
+	Check     int      `json:"check"`
 }
 type MomentMsgV2 struct {
 	SongName  string    `json:"song_name"`
@@ -353,6 +356,17 @@ func getCovers(tableName string, condition string, value int, module int) interf
 		resp.SelectionId = obj.SelectionId
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		resp.SongName = obj.SongName
+		//插入点赞确认
+		check, err1 := PackageCheckMysql(value, "cover", obj.ID)
+		if err1 != nil {
+			log.Printf(err1.Error())
+			obj.Check = 0
+		} else if check {
+			obj.Check = 1
+		} else {
+			obj.Check = 0
+		}
+		//
 		db.Table("praise").Where("cover_id=? and is_liked=?", resp.ID, 1).Count(&resp.Likes)
 		content[index] = resp
 		index++
@@ -402,6 +416,18 @@ func getMoments(value interface{}, tableName string, condition string) interface
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		resp.SongName = obj.SongName
 		resp.Content = obj.Content
+		//插入check
+		coverid, _ := value.(int)
+		check, err := PackageCheckMysql(coverid, "moment", obj.ID)
+		if err != nil {
+			log.Printf("检查出错")
+			resp.Check = 0
+		} else if check {
+			resp.Check = 1
+		} else {
+			resp.Check = 0
+		}
+		//
 		db.Table("praise").Where("cover_id=? and is_liked=?", resp.ID, 1).Count(&resp.Likes)
 		if err != nil {
 			panic(err)
