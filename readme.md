@@ -116,6 +116,8 @@ Content-Type application/json
 
 # 2. 用户模块
 
+**全局性的参数:check,用于检查用户是否点过赞,0为为未点赞，1为已点赞，不在之后的接口再详细说明**
+
 ## 2.1 用户注册
 
 POST /user HTTP/1.1
@@ -131,7 +133,6 @@ Content-Type: application/json
 "phone_number": "string", //选填
 "sex": int,// 1:男 2:女 3:其他
 "school": "string" //可以传缩写过来 scut
-
 }
 ```
 
@@ -195,12 +196,12 @@ Content-Type: application/json
 ```json
 
 {
-    "avatar": "string" //头像url,
-    "nickname": "string",
+    "avatar": string, //头像url
+    "nickname": string,
     "avatar_visible": string,     	// 1：隐藏头像，0：不隐藏
     "phone_search": string,     	// 0：允许通过手机号查找，1：不允许
     "real_name_search": string,      	// 0：允许通过姓名查找，1：不允许
-    "signature": "string"  		//个性签名（可不填）
+    "signature": string  		//个性签名（可不填）
 }
 ```
 失败:
@@ -254,7 +255,8 @@ Content-Type: application/json
     "created_at": "string",
     "song_name": "string",
     "id": int, //对应点赞的id
-    "likes": int //对应点赞数
+    "likes": int, //对应点赞数
+          "check":int,
       }
   },
   "moments": {
@@ -264,7 +266,8 @@ Content-Type: application/json
     "content": "string", //动态内容
     "id": int, //对应动态的id
     "song_name": string, //分享的歌曲名
-    "likes": int 
+    "likes": int,
+          "checks":int,
       }
   }
 }
@@ -334,15 +337,16 @@ Content-Type: application/json
   "style": "string",//风格
   "created_at": "string", //“2006-01-02 15:04:05”
   "remark": "string" //30字以内
-}
+	}
   "singers": {
-      index{
+    index{
     "singer": "string",
     "songId": int,
     "likeId":int,
-    "song": "string" //歌曲url
-    "likes":int
-  }
+    "song": "string", //歌曲url
+    "likes":int,
+      "check":int
+  	}
   }
 }
 ```
@@ -365,7 +369,7 @@ Query
 
 ```json
 {
-  "calleeId": int //被访问用户的id
+  "calleeId": int, //被访问用户的id
   "module": int//点歌1 唱歌2 点赞3 动态4
 }
 ```
@@ -406,7 +410,8 @@ Content-Type: application/json
     "created_at": "string",
     "song_name": "string",
     "id": int, //对应点赞的id
-    "likes": int //对应点赞数
+    "likes": int, //对应点赞数
+    "check":int,
       }
   },
   "moments": {
@@ -416,7 +421,8 @@ Content-Type: application/json
     "content": "string", //动态内容
     "id": int, //对应动态的id
     "song_name": string, //分享的歌曲名
-    "likes": int 
+    "likes": int,
+    "check":int
       }
   }
 }
@@ -457,18 +463,19 @@ Content-Type: application/json
 [
    "阿细":{index:
     {
-      "devotion_id": int
+      "devotion_id": int，
       "song_name": string,
       "file": string,
-      "likes": int
-      
+      "likes": int,
+      “check”:int
     }},
   "梁山山":{
     index: {
-      "devotion_id": int
+      "devotion_id": int，
       "song_name": string,
       "file": string,
-      "likes": int
+      "likes": int，
+      "check":int
     }
   }
 ]
@@ -531,10 +538,6 @@ GET /healing/covers/list HTTP 1.1
 
 ***根据点赞表和翻唱时间综合排序***
 
-***初始化就从mysql检索，准备好两幅表缓存在redis里***
-
-***设置一个更新器，若表格发生了更新，先写入redis,每隔一段时间将数据录入mysql一次***
-
 GET /healing/selections/list HTTP 1.1
 
 ```
@@ -560,7 +563,9 @@ Content-Type: application/json
         "user_id":integer,	//翻唱用户的id
         "created_at":string(datetime),	//“2006-01-02 15:04:05”
         "avatar":string,
-        "file":string//歌曲url
+        "file":string,//歌曲url
+		"likes":int,	//点赞数
+		"check":int，	
     }],
   page_num:int
     
@@ -583,7 +588,7 @@ POST /healing/cover
 {
     "selection_id":int,//点歌id
     "record":[]string,//拼接的录音url
-    module:int, 1表示治愈系翻唱,2表示童年
+    "module":int, 1表示治愈系翻唱,2表示童年
     "is_anon": bool,      
 }
 ```
@@ -618,7 +623,7 @@ Content-Type: application/json
 
 ### 3.1.5 听歌点赞/取消点赞
 
-GET /like HTTP 1.1
+PUT /like HTTP 1.1
 
 统一使用通用模块的点赞操作，详见接口8.1
 
@@ -846,7 +851,8 @@ Content-Type: application/json
         "nickname":string,	//用户名
         "post_time":string(datetime),	//时间
         "likes":int,	//点赞数
-        "song_name":string	//歌曲名
+        "song_name":string,	//歌曲名
+        "check":int
     }
     ...
 ]
@@ -896,9 +902,8 @@ Content-Type: application/json
 
 ### 3.2.4 搜索页面的相关接口
 
-1. 搜索历史是否可以交付前端缓存？//后端先拉了一个表项
-2. 搜索要求不同关键字之间以空格分开
-3. 热榜建议缓存到redis里，调用的时候直接抓取若干项 //已经有了
+1. 搜索要求不同关键字之间以空格分开
+2. 热榜建议缓存到redis里，调用的时候直接抓取若干项 //已经有了
 
 #### 3.2.4.1 搜索接口
 
@@ -965,36 +970,6 @@ HTTP/1.1 403 Forbidden
 Content-Type: application/json
 
 `{"message" : "搜索失败"}`
-
-#### 3.2.4.2 搜索历史 (废案)
-
-GET /healing/search/history
-
-***建议搜索历史缓存在redis里,用户退出时持久化于mysql***
-
-成功:
-
-HTTP/1.1 200 OK
-
-Content-Type: application/json
-
-```json
-[
-    {
-        "keyword":string,	//搜索关键字
-        "result":string	//搜索结果
-    }
-    ...
-]
-```
-
-失败(例)：
-
-HTTP/1.1 403 Forbidden
-
-Content-Type: application/json
-
-`{"message" : "搜索历史获取失败"}`
 
 #### 3.4.2.3 热榜
 
@@ -1231,6 +1206,7 @@ Content-Type: application/json
 	"nickname":string,	//翻唱者
     "icon":text(url),	//歌曲图标
     "work_name":string,	//作品名
+    "likes":int,	//点赞数
 	"check":int		//0表示当前用户未点赞，1表示当前用户已经点赞
 }
 ```
@@ -1908,4 +1884,34 @@ HTTP/1.1 403 Forbidden
 
 Content-Type: application/json
 
-`{"message" : "抽奖失败"}
+`{"message" : "抽奖失败"}`
+
+#### 3.2.4.2 搜索历史 (废案)
+
+GET /healing/search/history
+
+***建议搜索历史缓存在redis里,用户退出时持久化于mysql***
+
+成功:
+
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+```json
+[
+    {
+        "keyword":string,	//搜索关键字
+        "result":string	//搜索结果
+    }
+    ...
+]
+```
+
+失败(例)：
+
+HTTP/1.1 403 Forbidden
+
+Content-Type: application/json
+
+`{"message" : "搜索历史获取失败"}`
