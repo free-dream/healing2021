@@ -63,14 +63,14 @@ func GetOriginInfo(ClassicId int) (respModel.OriginInfoResp, error) {
 		return respModel.OriginInfoResp{}, err
 	}
 
-	classURL, err := GetClassicUrlById(ClassicId)
+	ClassURL, err := GetClassicUrlById(ClassicId)
 	if err != nil {
 		return respModel.OriginInfoResp{}, err
 	}
 
 	// 格式转换
 	OriginInfoResp := respModel.OriginInfoResp{
-		ClassicURL: classURL,
+		ClassicURL: ClassURL,
 		SongName:  Origin.SongName,
 		Singer:    Origin.Singer,
 		Icon:      Origin.Icon,
@@ -93,12 +93,12 @@ func GetClassicIdByName(SongName string) (int, error) {
 
 // 通过 classic_id 找 url
 type ClassicUrl struct {
-	URL string `gorm:"classic_url"`
+	File string `gorm:"file"`
 }
 
 func GetClassicUrlById(ClassicId int) (string, error) {
 	db := setting.MysqlConn()
-	ClassicUrl := ClassicUrl{}
-	err := db.Model(&statements.Classic{}).Where("id=?", ClassicId).Scan(&ClassicUrl).Error
-	return ClassicUrl.URL, err
+	tmpClassicUrl := ClassicUrl{}
+	err := db.Select("file").Model(&statements.Classic{}).Where("id=?", ClassicId).Scan(&tmpClassicUrl).Error
+	return tmpClassicUrl.File, err
 }
