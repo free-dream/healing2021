@@ -50,7 +50,7 @@ func GetHealingPage(selectionId int) (interface{}, error) {
 	content := make(map[int]interface{})
 	for rows.Next() {
 		err = db.ScanRows(rows, &obj)
-		db.Table("praise").Where("cover_id=? and is_liked", obj.ID, 0).Count(&obj.Likes)
+		db.Table("praise").Where("cover_id=? and is_liked=1", obj.ID, 0).Count(&obj.Likes)
 		if err != nil {
 			return nil, err
 		}
@@ -300,7 +300,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			//采用rand.Shuffle，将切片随机化处理后返回
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
 			for i, _ := range resp {
-				db.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
+				db.Table("praise").Where("cover_id=? and is_liked=1", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			return resp, err
 		} else {
@@ -308,7 +308,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 				return resp[i].CreatedAt > resp[j].CreatedAt
 			})
 			for i, _ := range resp {
-				db.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
+				db.Table("praise").Where("cover_id=? and is_liked=1", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			return resp, nil
 		}
@@ -334,7 +334,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			//采用rand.Shuffle，将切片随机化处理后返回
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
 			for i, _ := range resp {
-				db.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
+				db.Table("praise").Where("cover_id=? and is_liked=1", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			return resp, nil
 		} else {
@@ -342,7 +342,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 				return resp[i].CreatedAt > resp[j].CreatedAt
 			})
 			for i, _ := range resp {
-				db.Table("praise").Where("cover_id=? and is_liked", resp[i].ID, 1).Count(&resp[i].Likes)
+				db.Table("praise").Where("cover_id=? and is_liked=1", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			return resp, nil
 		}
