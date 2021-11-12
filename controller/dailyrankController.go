@@ -2,14 +2,13 @@ package controller
 
 //dailyrank除了当日热榜需要更新之外其它可以直接缓存
 import (
-	"encoding/json"
+	"fmt"
 	"log"
 	"regexp"
 
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
 	resp "git.100steps.top/100steps/healing2021_be/pkg/respModel"
-	"git.100steps.top/100steps/healing2021_be/sandwich"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -36,15 +35,22 @@ func GetAllrank(ctx *gin.Context) {
 	raws, likes, err := dao.GetCoversByLikes()
 	respCovers := make([]resp.HotResp, 0)
 	if err != nil {
+		//
+		fmt.Println("测试1")
+		//
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 		return
 	}
 	for i, cover := range raws {
 		nickname, err := dao.GetUserNickname(cover.UserId)
 		if err != nil {
+			//
+			fmt.Println("测试2")
+			//
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 			return
 		}
+
 		//点赞确认
 		coverid := likes[i].CoverId
 		boolean, err1 := dao.PackageCheckMysql(UserId, "cover", coverid)
@@ -55,6 +61,7 @@ func GetAllrank(ctx *gin.Context) {
 		if boolean {
 			check = 1
 		}
+
 		check = 0
 		respCover := resp.HotResp{
 			CoverId:  coverid,
@@ -68,13 +75,13 @@ func GetAllrank(ctx *gin.Context) {
 		respCovers = append(respCovers, respCover)
 	}
 
-	//缓存
-	jsondata, _ := json.Marshal(respCovers)
-	cache := string(jsondata)
-	err = sandwich.CacheDailyRank("all", cache)
-	if err != nil {
-		log.Fatal("redis缓存出错")
-	}
+	// //缓存
+	// jsondata, _ := json.Marshal(respCovers)
+	// cache := string(jsondata)
+	// err = sandwich.CacheDailyRank("all", cache)
+	// if err != nil {
+	// 	log.Fatal("redis缓存出错")
+	// }
 
 	ctx.JSON(200, respCovers)
 }
@@ -128,13 +135,13 @@ func GetDailyrank(ctx *gin.Context) {
 		respCovers = append(respCovers, respCover)
 	}
 
-	//缓存
-	jsondata, _ := json.Marshal(respCovers)
-	cache := string(jsondata)
-	err = sandwich.CacheDailyRank(date, cache)
-	if err != nil {
-		log.Fatal("redis缓存出错")
-	}
+	// //缓存
+	// jsondata, _ := json.Marshal(respCovers)
+	// cache := string(jsondata)
+	// err = sandwich.CacheDailyRank(date, cache)
+	// if err != nil {
+	// 	log.Fatal("redis缓存出错")
+	// }
 
 	ctx.JSON(200, respCovers)
 }
