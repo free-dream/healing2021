@@ -1,11 +1,10 @@
 package dao
 
 import (
-	"fmt"
-
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	db "git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/sandwich"
+	"github.com/jinzhu/gorm"
 )
 
 //自定义错误
@@ -21,6 +20,39 @@ func IsLikesExistError(err error) bool {
 		return true
 	} else {
 		return false
+	}
+}
+
+//跳转mysql检查
+func CheckMysql(lock *gorm.DB, user int, target int, kind string, likes int) (bool, error) {
+	var (
+		err  error
+		like tables.Praise
+	)
+	switch kind {
+	case "cover":
+		err = lock.Where("cover_id = ? AND user_id = ?", target, user).Find(&like).Error
+	case "moment":
+		err = lock.Where("moment_id = ? AND user_id = ?", target, user).Find(&like).Error
+	case "momentcomment":
+		err = lock.Where("moment_comment_id = ? AND user_id = ?", target, user).Find(&like).Error
+	default:
+		panic("wrong type") //基本上不可能抵达,除非有意
+	}
+	if gorm.IsRecordNotFoundError(err) {
+		if likes > 0 {
+			return true, nil
+		} else {
+			return false, nil
+		}
+	} else if err != nil {
+		if likes < 0 {
+			return true, nil
+		} else {
+			return false, nil
+		}
+	} else {
+		return false, err
 	}
 }
 
@@ -52,19 +84,18 @@ func UpdateLikesByID(user int, target int, likes int, kind string) error {
 			return err
 		}
 	} else if likes == 1 && !check {
-		//
-		fmt.Println("增加redis记录")
-		//
 		err = sandwich.AddLike(target, kind, user)
 		if err != nil {
 			return err
 		}
 	} else {
-		//
-		fmt.Println("触发重复点赞错误")
-		//
-		var err1 error = &LikesExistError{}
-		return err1
+		check, err2 := CheckMysql(lock, user, target, kind, likes)
+		if check == false && err2 == nil {
+			var err1 error = &LikesExistError{}
+			return err1
+		} else if check == false && err2 != nil {
+			return err2
+		}
 	}
 	if likes == 1 { //创建点赞表,更新coverLikes字段
 		switch kind {
@@ -120,12 +151,12 @@ func UpdateLikesByID(user int, target int, likes int, kind string) error {
 	return nil
 }
 
-func markMomentInPraise(momentId int)  error{
+func markMomentInPraise(momentId int) error {
 	mysqlDb := db.MysqlConn()
 	like := tables.Praise{
-		UserId:  0,
+		UserId:   0,
 		MomentId: momentId,
-		IsLiked: 1,
+		IsLiked:  1,
 	}
 	err := mysqlDb.Create(&like).Error
 	return err
