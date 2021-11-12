@@ -99,6 +99,7 @@ func SetupRouter() *gin.Engine {
 	api.POST("/healing/cover", controller.Recorder)     //植入任务 2021.11.1
 	api.POST("/healing/selection", controller.Selector) //植入任务 2021.11.1
 	api.GET("/healing/devotion", controller.DevotionPlayer)
+
 	//经典治愈——抽奖箱
 	// api.GET("healing/lotterybox/prizes", controller.GetPrizes)
 	// api.GET("/healing/lotterybox/drawcheck", controller.DrawCheck)
