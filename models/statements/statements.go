@@ -2,14 +2,13 @@ package statements
 
 import (
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
-	"git.100steps.top/100steps/healing2021_be/sandwich"
 )
 
 func TableClean() {
 	db := setting.MysqlConn()
 	db.Exec("truncate table advertisement")
-	//db.Exec("truncate table classic")
-	db.Exec("truncate table devotion")
+	db.Exec("truncate table classic")
+	//db.Exec("truncate table devotion")
 	db.Exec("truncate table cover")
 	db.Exec("truncate table praise")
 	db.Exec("truncate table lottery")
@@ -22,5 +21,5 @@ func TableClean() {
 	db.Exec("truncate table user")
 	db.Exec("truncate table sysmsg")
 	db.Exec("truncate table usrmsg")
-	sandwich.Clean()
+	//sandwich.Clean()
 }
