@@ -8,9 +8,11 @@ import (
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"git.100steps.top/100steps/healing2021_be/router"
+	"git.100steps.top/100steps/healing2021_be/sandwich"
 	"github.com/fvbock/endless"
 	"io/ioutil"
 	"log"
+	"strconv"
 	"syscall"
 	"time"
 )
@@ -36,6 +38,16 @@ func main() {
 	var port string
 	if tools.IsDebug() {
 		//controller.LoadTestData()
+		for i := 0; i < 10; i++ {
+			sandwich.PutInHotSong(tools.EncodeSong(
+				tools.HotSong{
+					SongName: "歌曲"+strconv.Itoa(i),
+					Language: "中文",
+					Style: "轻松",
+				}))
+			sandwich.PutInStates("状态"+strconv.Itoa(i))
+			sandwich.PutInSearchWord("热词"+strconv.Itoa(i))
+		}
 
 		port = ":8008"
 	} else {
