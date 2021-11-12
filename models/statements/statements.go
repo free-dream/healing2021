@@ -8,7 +8,7 @@ import (
 func TableClean() {
 	db := setting.MysqlConn()
 	db.Exec("truncate table advertisement")
-	db.Exec("truncate table classic")
+	//db.Exec("truncate table classic")
 	//db.Exec("truncate table devotion")
 	db.Exec("truncate table cover")
 	db.Exec("truncate table praise")
