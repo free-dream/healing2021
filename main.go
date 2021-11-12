@@ -22,6 +22,7 @@ import (
 // @Description 2021治愈系
 
 func main() {
+	models.TableInit()
 	if tools.IsDebug() {
 		statements.TableClean()
 		time.Sleep(time.Second * 2)
@@ -30,7 +31,6 @@ func main() {
 	models.AddClassic()
 	models.AddFakeHomeC()
 	models.AddFakeHomeS()
-	models.TableInit()
 
 	routers := router.SetupRouter()
 
