@@ -98,15 +98,7 @@ type ClassicUrl struct {
 
 func GetClassicUrlById(ClassicId int) (string, error) {
 	db := setting.MysqlConn()
-	tmpClassicUrl := statements.Classic{}
-	//tmpClassicUrl := ClassicUrl{}
-	//err := db.Model(&statements.Classic{}).Where("id=?", ClassicId).Scan(&tmpClassicUrl).Error
-	err := db.Where("id=?", ClassicId).First(&tmpClassicUrl).Error
-	//fmt.Println("---|---|---")
-	//fmt.Println(err)
-	//fmt.Println(tmpClassicUrl)
-	//fmt.Println(tmpClassicUrl.File)
-	//fmt.Println(ClassicId)
-	//fmt.Println("---|---|---")
+	tmpClassicUrl := ClassicUrl{}
+	err := db.Select("file").Model(&statements.Classic{}).Where("id=?", ClassicId).Scan(&tmpClassicUrl).Error
 	return tmpClassicUrl.File, err
 }
