@@ -134,7 +134,7 @@ func CreateDummySelections(userid int) {
 	db.Create(&selection)
 }
 
-func AddFakeHome() {
+func AddFakeHomeC() {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
 	rows, _ := db.Table("cover").Rows()
@@ -155,6 +155,29 @@ func AddFakeHome() {
 			redisCli.RPush("healing2021:cover."+"1"+"."+cover.Language, string(value))
 		}
 		redisCli.RPush("healing2021:cover."+"1"+"."+"all", string(value))
+
+	}
+}
+
+func AddFakeHomeS() {
+	db := setting.MysqlConn()
+	redisCli := setting.RedisConn()
+	rows, _ := db.Table("selection").Rows()
+	defer rows.Close()
+	selectionDetails := dao.SelectionDetails{}
+	selection := statements.Selection{}
+	for rows.Next() {
+		db.ScanRows(rows, &selection)
+		db.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at,remark").Where("selection.id=?", selection.ID).Joins("left join selection on user.id=selection.user_id").Scan(&selectionDetails)
+		selectionDetails.CreatedAt = tools.DecodeTime(selection.CreatedAt)
+		value, _ := json.Marshal(selectionDetails)
+		if selection.Style != "" {
+			redisCli.RPush("healing2021:selection"+"."+selection.Style, string(value))
+		}
+		if selection.Language != "" {
+			redisCli.RPush("healing2021:selection"+"."+selection.Language, string(value))
+		}
+		redisCli.RPush("healing2021:selection"+"."+"all", string(value))
 
 	}
 }
@@ -328,7 +351,7 @@ func AddFakeClassic() {
 
 // 造点测试用的假数据
 func FakeData() {
-	// AddFakeUsers()
+	AddFakeUsers()
 	AddFakeMoments()
 	AddFakeComments()
 	AddFakeSelections()

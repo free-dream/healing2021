@@ -18,6 +18,13 @@ func Clean() {
 		redisdb.Del(key)
 	}
 }
+func CleanSession() {
+	redisdb := setting.RedisConn()
+	keys := redisdb.Keys("session*").Val()
+	for _, key := range keys {
+		redisdb.Del(key)
+	}
+}
 
 //确认是否重复点赞、无法取消点赞
 func Check(targetid int, targettype string, userid int) bool {

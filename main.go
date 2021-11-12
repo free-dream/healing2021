@@ -28,6 +28,8 @@ func main() {
 		models.FakeData()
 	}
 
+	models.AddFakeHomeS()
+	models.AddFakeHomeC()
 	models.AddClassic()
 	models.TableInit()
 
@@ -41,12 +43,12 @@ func main() {
 		for i := 0; i < 10; i++ {
 			sandwich.PutInHotSong(tools.EncodeSong(
 				tools.HotSong{
-					SongName: "歌曲"+strconv.Itoa(i),
+					SongName: "歌曲" + strconv.Itoa(i),
 					Language: "中文",
-					Style: "轻松",
+					Style:    "轻松",
 				}))
-			sandwich.PutInStates("状态"+strconv.Itoa(i))
-			sandwich.PutInSearchWord("热词"+strconv.Itoa(i))
+			sandwich.PutInStates("状态" + strconv.Itoa(i))
+			sandwich.PutInSearchWord("热词" + strconv.Itoa(i))
 		}
 
 		port = ":8008"
