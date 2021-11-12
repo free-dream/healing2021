@@ -209,19 +209,24 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 			}
 		}
 		//第一次查询做缓存,与分页
-		Cache("healing2021:home."+strconv.Itoa(id), resp)
-		if len(resp) > 10 {
-			resp = resp[0:10]
-		}
+
 		if tag.RankWay == 1 {
 			rand.Seed(time.Now().Unix())
 			//采用rand.Shuffle，将切片随机化处理后返回
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
+			Cache("healing2021:home."+strconv.Itoa(id), resp)
+			if len(resp) > 10 {
+				resp = resp[0:10]
+			}
 			return resp, err
 		} else {
 			sort.Slice(resp, func(i, j int) bool {
 				return resp[i].CreatedAt > resp[j].CreatedAt
 			})
+			Cache("healing2021:home."+strconv.Itoa(id), resp)
+			if len(resp) > 10 {
+				resp = resp[0:10]
+			}
 			return resp, nil
 		}
 	} else {
@@ -237,19 +242,24 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 				index++
 			}
 		}
-		Cache("healing2021:home."+strconv.Itoa(id), resp)
-		if len(resp) > 10 {
-			resp = resp[0:10]
-		}
+
 		if tag.RankWay == 1 {
 			rand.Seed(time.Now().Unix())
 			//采用rand.Shuffle，将切片随机化处理后返回
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
+			Cache("healing2021:home."+strconv.Itoa(id), resp)
+			if len(resp) > 10 {
+				resp = resp[0:10]
+			}
 			return resp, err
 		} else {
 			sort.Slice(resp, func(i, j int) bool {
 				return resp[i].CreatedAt > resp[j].CreatedAt
 			})
+			Cache("healing2021:home."+strconv.Itoa(id), resp)
+			if len(resp) > 10 {
+				resp = resp[0:10]
+			}
 			return resp, err
 		}
 
@@ -306,10 +316,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			}
 		}
 		//第一次查询做缓存,与分页
-		Cache("healing2021:home."+strconv.Itoa(id), resp)
-		if len(resp) > 10 {
-			resp = resp[0:10]
-		}
+
 		if tag.RankWay == 1 {
 			rand.Seed(time.Now().Unix())
 			//采用rand.Shuffle，将切片随机化处理后返回
@@ -317,13 +324,21 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			for i, _ := range resp {
 				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
+			Cache("healing2021:home."+strconv.Itoa(id), resp)
+			if len(resp) > 10 {
+				resp = resp[0:10]
+			}
 			return resp, err
 		} else {
 			sort.Slice(resp, func(i, j int) bool {
-				return resp[i].CreatedAt > resp[j].CreatedAt
+				return resp[i].CreatedAt < resp[j].CreatedAt
 			})
 			for i, _ := range resp {
 				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
+			}
+			Cache("healing2021:home."+strconv.Itoa(id), resp)
+			if len(resp) > 10 {
+				resp = resp[0:10]
 			}
 			return resp, nil
 		}
@@ -351,13 +366,21 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			for i, _ := range resp {
 				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
+			Cache("healing2021:home."+strconv.Itoa(id), resp)
+			if len(resp) > 10 {
+				resp = resp[0:10]
+			}
 			return resp, nil
 		} else {
 			sort.Slice(resp, func(i, j int) bool {
-				return resp[i].CreatedAt > resp[j].CreatedAt
+				return resp[i].CreatedAt < resp[j].CreatedAt
 			})
 			for i, _ := range resp {
 				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
+			}
+			Cache("healing2021:home."+strconv.Itoa(id), resp)
+			if len(resp) > 10 {
+				resp = resp[0:10]
 			}
 			return resp, nil
 		}
