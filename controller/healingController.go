@@ -78,7 +78,13 @@ func Selector(ctx *gin.Context) {
 //首页控制
 func SelectionFetcher(ctx *gin.Context) {
 	tag := dao.Tags{}
-	tag.Page, _ = strconv.Atoi(ctx.Query("page"))
+	var err1 error
+	tag.Page, err1 = strconv.Atoi(ctx.Query("page"))
+	if err1 != nil || tag.Page <= 0 {
+		ctx.JSON(400, gin.H{
+			"message": "error param",
+		})
+	}
 	tag.RankWay, _ = strconv.Atoi(ctx.Query("rankWay"))
 	tag.Label = ctx.Query("label")
 	/**if err != nil {
@@ -102,7 +108,7 @@ func SelectionFetcher(ctx *gin.Context) {
 		ctx.JSON(200, resp)
 
 	} else {
-		resp, err, pageNum := dao.Pager("healing2021:home."+strconv.Itoa(id), tag.Page)
+		resp, err := dao.Pager("healing2021:home."+strconv.Itoa(id), tag.Page)
 		if err != nil {
 			ctx.JSON(416, gin.H{
 				"message": "out of range",
@@ -110,16 +116,19 @@ func SelectionFetcher(ctx *gin.Context) {
 			return
 
 		}
-		ctx.JSON(200, gin.H{
-			"selection_list": resp,
-			"page_num":       pageNum,
-		})
+		ctx.JSON(200, resp)
 	}
 
 }
 func CoverFetcher(ctx *gin.Context) {
 	tag := dao.Tags{}
-	tag.Page, _ = strconv.Atoi(ctx.Query("page"))
+	var err1 error
+	tag.Page, err1 = strconv.Atoi(ctx.Query("page"))
+	if err1 != nil || tag.Page <= 0 {
+		ctx.JSON(400, gin.H{
+			"message": "error param",
+		})
+	}
 	tag.RankWay, _ = strconv.Atoi(ctx.Query("rankWay"))
 	tag.Label = ctx.Query("label")
 	id := sessions.Default(ctx).Get("user_id").(int)
@@ -136,7 +145,7 @@ func CoverFetcher(ctx *gin.Context) {
 		ctx.JSON(200, resp)
 
 	} else {
-		resp, err, pageNum := dao.Pager("healing2021:home."+strconv.Itoa(id), tag.Page)
+		resp, err := dao.Pager("healing2021:home."+strconv.Itoa(id), tag.Page)
 		if err != nil {
 			ctx.JSON(416, gin.H{
 				"message": "out of range",
@@ -144,10 +153,7 @@ func CoverFetcher(ctx *gin.Context) {
 			return
 
 		}
-		ctx.JSON(200, gin.H{
-			"cover_list": resp,
-			"page_num":   pageNum,
-		})
+		ctx.JSON(200, resp)
 	}
 
 }

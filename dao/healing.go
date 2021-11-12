@@ -117,42 +117,41 @@ func Cache(key string, resp interface{}) {
 
 //分页器
 //从分页器里面取出
-func Pager(key string, page int) (interface{}, error, int) {
+func Pager(key string, page int) (interface{}, error) {
 	redisCli := setting.RedisConn()
 	var resp []interface{}
 	by, err := redisCli.HGet(key, "cache").Bytes()
 	if err != nil {
-		return nil, err, 0
+		return nil, err
 	}
 	err = json.Unmarshal(by, &resp)
 	if err != nil {
-		return nil, err, 0
+		return nil, err
 	}
 	var pageNum int
 	if len(resp)%10 == 0 {
 		pageNum = len(resp) / 10
 		if pageNum >= page {
 
-			return resp[(page-1)*10 : (page-1)*10+10], nil, pageNum
+			return resp[(page-1)*10 : (page-1)*10+10], nil
 		} else {
 
-			return nil, errors.New("out of range"), pageNum
+			return nil, errors.New("out of range")
 		}
 
 	} else {
 		pageNum = len(resp)/10 + 1
 		if pageNum > page {
 
-			return resp[(page-1)*10 : (page-1)*10+10], nil, pageNum
+			return resp[(page-1)*10 : (page-1)*10+10], nil
 		} else if pageNum == page {
-			return resp[(page-1)*10:], nil, pageNum
+			return resp[(page-1)*10:], nil
 		} else {
 
-			return nil, errors.New("out of range"), pageNum
+			return nil, errors.New("out of range")
+
 		}
-
 	}
-
 }
 
 //获取点歌页
