@@ -26,6 +26,12 @@ func Like(ctx *gin.Context) {
 		return
 	}
 
+	//防止空表
+	if LikeParam.Todo == 0 {
+		ctx.JSON(403, e.ErrMsgResponse{Message: "参数非法"})
+		return
+	}
+
 	// 参数准备
 	UserId := sessions.Default(ctx).Get("user_id").(int)
 	Type := ""
