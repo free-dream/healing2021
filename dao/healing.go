@@ -22,6 +22,7 @@ type UsrMsg struct {
 	Remark    string `json:"remark"`
 	Nickname  string `json:"nickname"`
 	Avatar    string `json:"avatar"`
+	UserId    int    `json:"user_id"`
 }
 type CovMsg struct {
 	ID       int    `json:"id"`
@@ -40,7 +41,7 @@ func GetHealingPage(selectionId int, userId int) (interface{}, error) {
 	db := setting.MysqlConn()
 	userMsg := UsrMsg{}
 	resp := make(map[string]interface{})
-	db.Table("selection").Select("user.avatar,selection.id,selection.song_name,selection.style,selection.created_at,selection.remark,user.nickname").Joins("left join user on user.id=selection.user_id").Where("selection.id=?", selectionId).Scan(&userMsg)
+	db.Table("selection").Select("selection.user_id,user.avatar,selection.id,selection.song_name,selection.style,selection.created_at,selection.remark,user.nickname").Joins("left join user on user.id=selection.user_id").Where("selection.id=?", selectionId).Scan(&userMsg)
 	/*if err!=nil{
 		panic(err)
 		return nil, err
