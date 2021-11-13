@@ -318,7 +318,6 @@ func GetCovers(module string, id int, tag Tags, userid int) (interface{}, error)
 			}
 			//确认是否点赞
 			for i, _ := range resp {
-
 				boolean, err := PackageCheckMysql(userid, "cover", resp[i].ID)
 				if err != nil {
 					log.Printf(err.Error())
