@@ -26,11 +26,13 @@ func CleanSession() {
 }
 
 //确认是否重复点赞、无法取消点赞
-func Check(targetid int, targettype string, userid int) bool {
+func Check(targetid int, targettype string, userid int) (bool, error) {
 	redisDb := setting.RedisConn()
 	tempkey := prefix + "user" + strconv.Itoa(userid) + targettype
-	check := redisDb.SIsMember(tempkey, targetid).Val()
-	return check
+	search := redisDb.SIsMember(tempkey, targetid)
+	error := search.Err()
+	check := search.Val()
+	return check, error
 }
 
 //取消点赞

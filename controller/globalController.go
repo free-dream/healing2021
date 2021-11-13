@@ -5,8 +5,10 @@ var (
 	normaltasks []int
 )
 
-//尝试构建一个词库，用于区分不同的关键词,看明年的有需求再改比较好
-var ()
+//尝试构建一个词库，用于区分不同的关键词
+var (
+	dics []string
+)
 
 func init() {
 	normaltasks = []int{1, 2, 3}
