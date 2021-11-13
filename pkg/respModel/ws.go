@@ -12,12 +12,14 @@ type SysMsg struct {
 }
 
 type UsrMsg struct {
-	FromUser uint   `json:"fromUser"`
-	ToUser   uint   `json:"toUser"`
-	Url      string `json:"user"` //录音url
-	Song     string `json:"song"` //歌名
-	Message  string `json:"message"`
-	IsSend   int    `json:"isSend"`
+	FromUser  uint      `json:"fromUser"`
+	ToUser    uint      `json:"toUser"`
+	Url       string    `json:"user"` //录音url
+	Song      string    `json:"song"` //歌名
+	SongId    uint      `json:"songId"`
+	Message   string    `json:"message"`
+	IsSend    int       `json:"isSend"`
+	CreatedAt time.Time `json:"time"`
 }
 
 type Sysmsg struct {
@@ -30,10 +32,12 @@ type Sysmsg struct {
 }
 
 type Usrmsg struct {
-	FromUser uint   `json:"fromUser"`
-	ToUser   uint   `json:"toUser"`
-	Url      string `json:"user"` //录音url
-	Song     string `json:"song"` //歌名
-	Message  string `json:"message"`
-	IsSend   int    `json:"isSend"`
+	FromUser  uint      `json:"fromUser"`
+	ToUser    uint      `json:"toUser"`
+	Url       string    `json:"user"` //录音url
+	Song      string    `json:"song"` //歌名
+	SongId    uint      `json:"songId"`
+	Message   string    `json:"message"`
+	IsSend    int       `json:"isSend"`
+	CreatedAt time.Time `json:"time"`
 }

@@ -28,15 +28,15 @@ func GetCoverList(UserId int, ClassicId int) ([]respModel.CoverResp, error) {
 		}
 
 		coverResp := respModel.CoverResp{
-			CoverId: int(cover.ID),
+			CoverId:  int(cover.ID),
 			Nickname: cover.Nickname,
 			Avatar:   cover.Avatar,
 			PostTime: tools.DecodeTime(cover.CreatedAt),
-			File:PlayerResp.File,
-			Name: PlayerResp.Name,
-			Icon: PlayerResp.Icon,
+			File:     PlayerResp.File,
+			Name:     PlayerResp.Name,
+			Icon:     PlayerResp.Icon,
 			WorkName: PlayerResp.WorkName,
-			Check: PlayerResp.Check,
+			Check:    PlayerResp.Check,
 		}
 		CoverResp = append(CoverResp, coverResp)
 	}
