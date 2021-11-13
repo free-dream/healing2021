@@ -175,9 +175,17 @@ func GetDailyrank(ctx *gin.Context) {
 			check = 0
 		}
 		//
+
+		//权宜之计
+		avatar, errA := dao.GetUserAvatar(UserId)
+		if errA != nil {
+			log.Printf(errA.Error()) //一般不会出问题
+		}
+		//
+
 		respCover := resp.HotResp{
 			CoverId:  likes[i].CoverId,
-			Avatar:   cover.Avatar,
+			Avatar:   avatar,
 			Nickname: nickname,
 			Posttime: cover.CreatedAt.String(),
 			Songname: cover.SongName,
