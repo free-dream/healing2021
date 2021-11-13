@@ -26,6 +26,7 @@ func GetOriginalInfo(ctx *gin.Context) {
 }
 
 // 获取用户翻唱列表并排序
+
 func GetOriginalSingerList(ctx *gin.Context) {
 	ClassicIdStr := ctx.Query("classic_id")
 	ClassicId, err := strconv.Atoi(ClassicIdStr)
@@ -43,4 +44,3 @@ func GetOriginalSingerList(ctx *gin.Context) {
 	ctx.JSON(200, CoverList)
 	return
 }
-

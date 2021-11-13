@@ -27,10 +27,11 @@ func main() {
 		models.FakeData()
 	}
 	models.AddClassic()
-	models.AddDevotion()*/
-	/*models.AddFakeHomeC()
-	models.AddFakeHomeS()*/
+	models.AddDevotion()
 
+	models.AddFakeHomeS()*/
+	sandwich.Clean()
+	models.AddFakeHomeC()
 	routers := router.SetupRouter()
 
 	defer setting.DB.Close()

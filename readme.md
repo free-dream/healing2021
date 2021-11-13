@@ -546,6 +546,7 @@ GET /healing/selections/list HTTP 1.1
 label：string //recommend all 或对应风格，语言
 "rankWay":int //1综合排序，2最新binding:"required"`
 "page":int //页数 页数为1会刷新，若列表长度小于10，则到底
+"module":string 
 }
 ```
 
