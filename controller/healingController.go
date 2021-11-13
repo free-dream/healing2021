@@ -141,8 +141,9 @@ func CoverFetcher(ctx *gin.Context) {
 	tag.Label = ctx.Query("label")
 	id := sessions.Default(ctx).Get("user_id").(int)
 	if tag.Page == 1 {
-
+		//传入userid
 		resp, err := dao.GetCovers(strconv.Itoa(1), id, tag)
+		//
 		if err != nil {
 			ctx.JSON(416, gin.H{
 				"message": "out of range",
@@ -210,7 +211,7 @@ func Recorder(ctx *gin.Context) {
 
 //献唱接口
 func DevotionPlayer(ctx *gin.Context) {
-	resp, err := dao.PlayDevotion()
+	resp, err := dao.PlayDevotion(sessions.Default(ctx).Get("user_id").(int))
 	if err != nil {
 		panic(err)
 	}

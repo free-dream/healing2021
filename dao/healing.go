@@ -29,7 +29,7 @@ type CovMsg struct {
 	Likes    int    `json:"likes"`
 	Nickname string `json:"nickname"`
 	File     string `json:"file"`
-	IsLiked  int    `json:"is_liked"`
+	Check    int    `json:"check"`
 	Avatar   string `json:"avatar"`
 }
 
@@ -60,11 +60,11 @@ func GetHealingPage(selectionId int, userId int) (interface{}, error) {
 		check, err1 := PackageCheckMysql(userId, "cover", obj.ID)
 		if err1 != nil {
 			log.Printf(err1.Error())
-			obj.IsLiked = 0
+			obj.Check = 0
 		} else if check {
-			obj.IsLiked = 1
+			obj.Check = 1
 		} else {
-			obj.IsLiked = 0
+			obj.Check = 0
 		}
 		//
 		if err != nil {
@@ -276,8 +276,10 @@ type CoverDetails struct {
 	Avatar    string `json:"avatar"`
 	File      string `json:"file"`
 	Likes     int    `json:"likes"`
+	Check     int    `json:"check"`
 }
 
+//传入userid以确认
 func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 	db := setting.MysqlConn()
 
@@ -314,6 +316,19 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 				err = json.Unmarshal(by, &resp[index])
 				index++
 			}
+			//确认是否点赞
+			for i, _ := range resp {
+				boolean, err := PackageCheckMysql(id, "cover", resp[i].ID)
+				if err != nil {
+					log.Printf(err.Error())
+					resp[i].Check = 0
+				} else if boolean {
+					resp[i].Check = 1
+				} else {
+					resp[i].Check = 0
+				}
+			}
+			//
 		}
 		//第一次查询做缓存,与分页
 
@@ -322,6 +337,17 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			//采用rand.Shuffle，将切片随机化处理后返回
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
 			for i, _ := range resp {
+				//确认是否点赞
+				boolean, err := PackageCheckMysql(id, "cover", resp[i].ID)
+				if err != nil {
+					log.Printf(err.Error())
+					resp[i].Check = 0
+				} else if boolean {
+					resp[i].Check = 1
+				} else {
+					resp[i].Check = 0
+				}
+				//
 				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
@@ -334,6 +360,17 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 				return resp[i].CreatedAt < resp[j].CreatedAt
 			})
 			for i, _ := range resp {
+				//确认是否点赞
+				boolean, err := PackageCheckMysql(id, "cover", resp[i].ID)
+				if err != nil {
+					log.Printf(err.Error())
+					resp[i].Check = 0
+				} else if boolean {
+					resp[i].Check = 1
+				} else {
+					resp[i].Check = 0
+				}
+				//
 				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
@@ -364,6 +401,17 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			//采用rand.Shuffle，将切片随机化处理后返回
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
 			for i, _ := range resp {
+				//确认是否点赞
+				boolean, err := PackageCheckMysql(id, "cover", resp[i].ID)
+				if err != nil {
+					log.Printf(err.Error())
+					resp[i].Check = 0
+				} else if boolean {
+					resp[i].Check = 1
+				} else {
+					resp[i].Check = 0
+				}
+				//
 				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
@@ -376,6 +424,17 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 				return resp[i].CreatedAt < resp[j].CreatedAt
 			})
 			for i, _ := range resp {
+				//确认是否点赞
+				boolean, err := PackageCheckMysql(id, "cover", resp[i].ID)
+				if err != nil {
+					log.Printf(err.Error())
+					resp[i].Check = 0
+				} else if boolean {
+					resp[i].Check = 1
+				} else {
+					resp[i].Check = 0
+				}
+				//
 				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
@@ -468,9 +527,10 @@ type DevMsg struct {
 	Singer   string `json:"singer"`
 	File     string `json:"file"`
 	Likes    int    `json:"likes"`
+	Check    int    `json:"check"`
 }
 
-func PlayDevotion() (map[string]interface{}, error) {
+func PlayDevotion(userid int) (map[string]interface{}, error) {
 	resp := make(map[string]interface{})
 	content := make(map[int]interface{})
 	content2 := make(map[int]interface{})
@@ -485,6 +545,18 @@ func PlayDevotion() (map[string]interface{}, error) {
 	defer rows.Close()
 	for rows.Next() {
 		db.ScanRows(rows, &devotion)
+
+		//插入点赞确认
+		check, err1 := PackageCheckMysql(userid, "cover", devotion.ID)
+		if err1 != nil {
+			log.Printf(err1.Error())
+			devotion.Check = 0
+		} else if check {
+			devotion.Check = 1
+		} else {
+			devotion.Check = 0
+		}
+		//
 		db.Table("praise").Where("devotion_id=?", devotion.ID).Count(&likes)
 		devotion.Likes = likes
 		content[index] = devotion
@@ -501,6 +573,17 @@ func PlayDevotion() (map[string]interface{}, error) {
 		if err != nil {
 			return resp, err
 		}
+		//插入点赞确认
+		check, err1 := PackageCheckMysql(userid, "cover", devotion.ID)
+		if err1 != nil {
+			log.Printf(err1.Error())
+			devotion.Check = 0
+		} else if check {
+			devotion.Check = 1
+		} else {
+			devotion.Check = 0
+		}
+		//
 		db.Table("praise").Where("devotion_id=?", devotion.ID).Count(&likes)
 		devotion.Likes = likes
 		content2[index] = devotion

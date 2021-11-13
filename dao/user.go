@@ -217,6 +217,7 @@ type CoverMsg struct {
 	SongName    string `json:"song_name"`
 	CreatedAt   string `json:"created_at"`
 	Likes       int    `json:"likes"`
+	Check       int    `json:"check"`
 }
 type CoverMsgV2 struct {
 	ID          int       `json:"id"`
@@ -231,6 +232,7 @@ type PraiseMsg struct {
 	ID          int    `json:"id"`
 	SelectionId int    `json:"selection_id"`
 	Likes       int    `json:"likes"`
+	Check       int    `json:"check"`
 }
 type PraiseMsgV2 struct {
 	CoverId     int       `json:"cover_id"`
@@ -238,7 +240,6 @@ type PraiseMsgV2 struct {
 	SongName    string    `json:"song_name"`
 	CreatedAt   time.Time `json:"created_at"`
 	ID          int       `json:"id"`
-	Check       int       `json:"check"`
 }
 type MomentMsg struct {
 	SongName  string   `json:"song_name"`
@@ -327,11 +328,11 @@ func getPraises(value interface{}, tableName string, condition string) interface
 		check, err1 := PackageCheckMysql(userid, "cover", obj.ID)
 		if err1 != nil {
 			log.Printf(err1.Error())
-			obj.Check = 0
+			resp.Check = 0
 		} else if check {
-			obj.Check = 1
+			resp.Check = 1
 		} else {
-			obj.Check = 0
+			resp.Check = 0
 		}
 		//
 		db.Table("praise").Where("cover_id=? and is_liked=?", resp.CoverId, 1).Count(&resp.Likes)
@@ -368,6 +369,18 @@ func getCovers(tableName string, condition string, value int, module int) interf
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		resp.SongName = obj.SongName
 		db.Table("praise").Where("cover_id=? and is_liked=?", resp.ID, 1).Count(&resp.Likes)
+		//插入点赞确认
+		userid := value
+		check, err1 := PackageCheckMysql(userid, "cover", obj.ID)
+		if err1 != nil {
+			log.Printf(err1.Error())
+			resp.Check = 0
+		} else if check {
+			resp.Check = 1
+		} else {
+			resp.Check = 0
+		}
+		//
 		content[index] = resp
 		index++
 	}
