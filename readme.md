@@ -1573,6 +1573,8 @@ Content-Type: application/json
 
 `{"message" : "系统消息发送失败"}
 
+`{"message" : "点歌操作失败"}（很有可能是点歌次数不足）
+
 ## <span id="">6.3 查看动态的详情</span>
 
 GET /dynamics/detail/{id}  HTTP1.1
