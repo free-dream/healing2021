@@ -1,8 +1,6 @@
 package dao
 
 import (
-	"fmt"
-
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	resp "git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
@@ -65,21 +63,12 @@ func GetCoversByLikes() ([]tables.Cover, []resp.CoverRank, error) {
 		Scan(&likes).Error
 
 	if err != nil {
-		//
-		fmt.Println("此处出错1")
-		//
 		return nil, nil, err
 	}
 	for _, item := range likes {
 		var temp tables.Cover
-		//
-		fmt.Println(item.CoverId)
-		//
 		err = mysqlDb.Where("id = ?", item.CoverId).First(&temp).Error
 		if err != nil {
-			//
-			fmt.Println("此处出错")
-			//
 			return nil, nil, err
 		}
 		covers = append(covers, temp)

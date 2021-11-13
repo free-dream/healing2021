@@ -2,7 +2,6 @@ package controller
 
 //dailyrank除了当日热榜需要更新之外其它可以直接缓存
 import (
-	"fmt"
 	"log"
 	"regexp"
 
@@ -11,6 +10,7 @@ import (
 	resp "git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
 // GET /healing/dailyrank/all
@@ -35,18 +35,16 @@ func GetAllrank(ctx *gin.Context) {
 	raws, likes, err := dao.GetCoversByLikes()
 	respCovers := make([]resp.HotResp, 0)
 	if err != nil {
-		//
-		fmt.Println("测试1")
-		//
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 		return
 	}
 	for i, cover := range raws {
 		nickname, err := dao.GetUserNickname(cover.UserId)
 		if err != nil {
-			//
-			fmt.Println("测试2")
-			//
+			if gorm.IsRecordNotFoundError(err) {
+				nickname = "#nickname#"
+				continue
+			}
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 			return
 		}
@@ -60,9 +58,10 @@ func GetAllrank(ctx *gin.Context) {
 		var check int
 		if boolean {
 			check = 1
+		} else {
+			check = 0
 		}
 
-		check = 0
 		respCover := resp.HotResp{
 			CoverId:  coverid,
 			Avatar:   cover.Avatar,
@@ -121,6 +120,10 @@ func GetDailyrank(ctx *gin.Context) {
 	for i, cover := range raws {
 		nickname, err := dao.GetUserNickname(cover.UserId)
 		if err != nil {
+			if gorm.IsRecordNotFoundError(err) {
+				nickname = "#nickname#"
+				continue
+			}
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 			return
 		}

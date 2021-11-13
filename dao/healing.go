@@ -276,6 +276,7 @@ type CoverDetails struct {
 	Avatar    string `json:"avatar"`
 	File      string `json:"file"`
 	Likes     int    `json:"likes"`
+	Check     int    `json:"check"`
 }
 
 func GetCovers(module string, id int, tag Tags) (interface{}, error) {

@@ -51,8 +51,8 @@ func CheckMysql(lock *gorm.DB, user int, target int, kind string, likes int, cho
 	if choose {
 		if gorm.IsRecordNotFoundError(err) {
 			return false, nil
-		} else if err != nil {
-			return true, err
+		} else if err == nil {
+			return true, nil
 		} else {
 			return false, err
 		}
@@ -147,7 +147,7 @@ func UpdateLikesByID(user int, target int, likes int, kind string) error {
 			lock.Rollback()
 			return err
 		}
-	} else if likes == -1 { //删除点赞表
+	} else if likes == -1 { //更新点赞表
 		switch kind {
 		case "cover":
 			err = lock.Where("cover_id = ? AND user_id = ?", target, user).Unscoped().Delete(&like).Error
