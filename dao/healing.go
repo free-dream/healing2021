@@ -471,8 +471,7 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 	coverDetails := CoverDetails{}
 
 	err := db.Model(&statements.Cover{}).Create(&cover).Error
-	db.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
-	db.Table("selection").Select("user_id").Where("cover_id=?", coverDetails.ID).Scan(&selection)
+	db.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
 	if !isAnon {
 		coverDetails.CreatedAt = tools.DecodeTime(cover.CreatedAt)
 		value, err1 := json.Marshal(coverDetails)
