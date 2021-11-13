@@ -195,25 +195,42 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 			return nil, err
 		}
 		if hobby == nil {
-			hobby = []string{"all"}
-		}
-		var size int
-		for _, value := range hobby {
-			lenth := redisCli.LLen("healing2021:selection." + value).Val()
-			size += int(lenth)
-		}
-		resp = make([]SelectionDetails, size)
-		for _, value := range hobby {
-			if redisCli.Exists("healing2021:selection."+value).Val() == 0 {
-				continue
-			}
-			lenth := redisCli.LLen("healing2021:selection." + value).Val()
-			for _, content := range redisCli.LRange("healing2021:selection."+value, 0, lenth).Val() {
+			lenth := redisCli.LLen("healing2021:selection." + "all").Val()
+			resp = make([]SelectionDetails, lenth)
+			for _, content := range redisCli.LRange("healing2021:selection."+"all", 0, lenth).Val() {
 				by = []byte(content)
 				err = json.Unmarshal(by, &resp[index])
 				index++
 			}
+		} else {
+
+			var size int
+			for _, value := range hobby {
+				lenth := redisCli.LLen("healing2021:selection." + value).Val()
+				size += int(lenth)
+			}
+			resp = make([]SelectionDetails, 0)
+			vresp := make([]SelectionDetails, size)
+			mresp := make(map[SelectionDetails]bool)
+			for _, value := range hobby {
+				if redisCli.Exists("healing2021:selection."+value).Val() == 0 {
+					continue
+				}
+				lenth := redisCli.LLen("healing2021:selection." + value).Val()
+				for _, content := range redisCli.LRange("healing2021:selection."+value, 0, lenth).Val() {
+					by = []byte(content)
+					err = json.Unmarshal(by, &resp[index])
+					index++
+				}
+			}
+			for _, val := range vresp {
+				if _, ok := mresp[val]; !ok {
+					resp = append(resp, val)
+					mresp[val] = true
+				}
+			}
 		}
+
 		//第一次查询做缓存,与分页
 
 		if tag.RankWay == 1 {
@@ -305,25 +322,41 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			panic(err)
 		}
 		if hobby == nil {
-			hobby = []string{"all"}
-		}
-		var size int
-		for _, value := range hobby {
-			lenth := redisCli.LLen("healing2021:cover." + strconv.Itoa(1) + "." + value).Val()
-			size += int(lenth)
-		}
-		resp = make([]CoverDetails, size)
-		for _, value := range hobby {
-			if redisCli.Exists("healing2021:cover."+strconv.Itoa(1)+"."+value).Val() == 0 {
-				continue
-			}
-			lenth := redisCli.LLen("healing2021:cover." + strconv.Itoa(1) + "." + value).Val()
-			for _, content := range redisCli.LRange("healing2021:cover."+strconv.Itoa(1)+"."+value, 0, lenth).Val() {
+			lenth := redisCli.LLen("healing2021:cover." + strconv.Itoa(1) + "." + "all").Val()
+			resp = make([]CoverDetails, lenth)
+			for _, content := range redisCli.LRange("healing2021:cover."+strconv.Itoa(1)+"."+"all", 0, lenth).Val() {
 				by = []byte(content)
 				err = json.Unmarshal(by, &resp[index])
 				index++
 			}
+		} else {
+			var size int
+			for _, value := range hobby {
+				lenth := redisCli.LLen("healing2021:cover." + strconv.Itoa(1) + "." + value).Val()
+				size += int(lenth)
+			}
+			resp = make([]CoverDetails, 0)
+			vresp := make([]CoverDetails, size)
+			mresp := make(map[CoverDetails]bool)
+			for _, value := range hobby {
+				if redisCli.Exists("healing2021:cover."+strconv.Itoa(1)+"."+value).Val() == 0 {
+					continue
+				}
+				lenth := redisCli.LLen("healing2021:cover." + strconv.Itoa(1) + "." + value).Val()
+				for _, content := range redisCli.LRange("healing2021:cover."+strconv.Itoa(1)+"."+value, 0, lenth).Val() {
+					by = []byte(content)
+					err = json.Unmarshal(by, &vresp[index])
+					index++
+				}
+				for _, val := range vresp {
+					if _, ok := mresp[val]; !ok {
+						resp = append(resp, val)
+						mresp[val] = true
+					}
+				}
+			}
 		}
+
 		//第一次查询做缓存,与分页
 
 		if tag.RankWay == 1 {
