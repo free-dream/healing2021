@@ -316,6 +316,20 @@ func GetCovers(module string, id int, tag Tags, userid int) (interface{}, error)
 				err = json.Unmarshal(by, &resp[index])
 				index++
 			}
+			//确认是否点赞
+			for i, _ := range resp {
+
+				boolean, err := PackageCheckMysql(userid, "cover", resp[i].ID)
+				if err != nil {
+					log.Printf(err.Error())
+					resp[i].Check = 0
+				} else if boolean {
+					resp[i].Check = 1
+				} else {
+					resp[i].Check = 0
+				}
+			}
+			//
 		}
 		//第一次查询做缓存,与分页
 
