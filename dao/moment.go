@@ -51,7 +51,6 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 		//fmt.Println(len(MomentRecords))
 		for _, record := range MomentRecords {
 			moment := statements.Moment{}
-			fmt.Println(record)
 			if err := MysqlDB.Where("id=?", record.MomentId).First(&moment).Error; err != nil {
 				return AllMoment, false
 			}

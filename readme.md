@@ -1505,7 +1505,9 @@ Content-Type: application/json
             "id": integer,	
             "nickname" : string,						// 用户名
             "avatar": string(url),						// 头像
-            "avatar_visible": integer(0/1)				// 0代表没设置头像
+            "avatar_visible": integer(0/1),				// 0代表没设置头像
+            "remark":string,
+            "sex":int
         }
     },
     ...

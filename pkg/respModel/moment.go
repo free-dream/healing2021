@@ -6,6 +6,8 @@ type UserInfo struct {
 	Nickname      string `json:"nickname"`
 	Avatar        string `json:"avatar"`
 	AvatarVisible int    `json:"avatar_visible"`
+	Remark        string `json:"remark"`
+	Sex           int    `json:"sex"`
 }
 
 // 动态响应
