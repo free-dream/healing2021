@@ -151,7 +151,7 @@ func Pager(key string, page int) (interface{}, error) {
 
 	if len(resp)%10 == 0 {
 		pageNum = len(resp) / 10
-		fmt.Println(pageNum)
+
 		if pageNum >= page {
 
 			return resp[(page-1)*10 : (page-1)*10+10], nil
@@ -162,7 +162,7 @@ func Pager(key string, page int) (interface{}, error) {
 
 	} else {
 		pageNum = len(resp)/10 + 1
-		fmt.Println(pageNum)
+
 		if pageNum > page {
 
 			return resp[(page-1)*10 : (page-1)*10+10], nil
