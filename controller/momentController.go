@@ -50,9 +50,9 @@ func GetMomentList(ctx *gin.Context) {
 	}
 
 	// 获取和整理其他所需信息，装进 response
+	UserId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
 	for _, OneMoment := range AllMoment {
 		User := statements.User{}
-		UserId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
 		User, ok := dao.GetUserById(OneMoment.UserId)
 		if !ok {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败"})
@@ -69,17 +69,18 @@ func GetMomentList(ctx *gin.Context) {
 			Lauded:     dao.HaveMLauded(UserId, int(OneMoment.ID)),
 			Comments:   dao.CountCommentsById(int(OneMoment.ID)),
 			Status:     tools.DecodeStrArr(OneMoment.State),
-			Creator:    dao.TransformUserInfo(User),
 		}
 
 		// 点歌\分享\无歌曲 单独处理 songId
 		switch OneMoment.Module {
 		case 1:
 			TmpMoment.SongId = OneMoment.SelectionId
+			TmpMoment.Creator = dao.TransformUserInfo(User, OneMoment.SelectionId)
 		case 2:
 			TmpMoment.SongId = OneMoment.ClassicId
+			TmpMoment.Creator = dao.TransformUserInfo(User, -1)
 		case 0:
-			// 啥事不用干
+			TmpMoment.Creator = dao.TransformUserInfo(User, -1)
 		default:
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库中出现非法字段"})
 			return
@@ -212,7 +213,7 @@ func GetMomentDetail(ctx *gin.Context) {
 		Lauded:     dao.HaveMLauded(UserId, int(Moment.ID)),
 		Comments:   dao.CountCommentsById(int(Moment.ID)),
 		Status:     tools.DecodeStrArr(Moment.State),
-		Creator:    dao.TransformUserInfo(User),
+		Creator:    dao.TransformUserInfo(User, -1),
 	}
 
 	// 点歌\分享\无歌曲 单独处理 songId
@@ -318,7 +319,7 @@ func GetCommentList(ctx *gin.Context) {
 			Content:   comment.Comment,
 			Lauds:     dao.CountCLaudsById(int(comment.ID)),
 			Lauded:    dao.HaveCLauded(UserId, int(comment.ID)),
-			Creator:   dao.TransformUserInfo(User),
+			Creator:   dao.TransformUserInfo(User, -1),
 			CreatedAt: tools.DecodeTime(comment.CreatedAt),
 		}
 		CommentsResp = append(CommentsResp, Comment)
