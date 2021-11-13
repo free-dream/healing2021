@@ -228,7 +228,7 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 					resp = append(resp, val)
 					mresp[val] = true
 				}
-				//resp = make([]SelectionDetails, len(resp))
+
 			}
 		}
 
@@ -266,7 +266,6 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 				index++
 			}
 		}
-		resp = make([]SelectionDetails, len(resp))
 
 		if tag.RankWay == 1 {
 			rand.Seed(time.Now().Unix())
