@@ -359,7 +359,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			return resp, err
 		} else {
 			sort.Slice(resp, func(i, j int) bool {
-				return resp[i].CreatedAt < resp[j].CreatedAt
+				return resp[i].CreatedAt > resp[j].CreatedAt
 			})
 			for i, _ := range resp {
 				//确认是否点赞
@@ -423,7 +423,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			return resp, nil
 		} else {
 			sort.Slice(resp, func(i, j int) bool {
-				return resp[i].CreatedAt < resp[j].CreatedAt
+				return resp[i].CreatedAt > resp[j].CreatedAt
 			})
 			for i, _ := range resp {
 				//确认是否点赞
