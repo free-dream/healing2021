@@ -105,7 +105,7 @@ type Tags struct {
 	Label   string `json:"label"`
 	RankWay int    `json:"rankWay" binding:"required"`
 	Page    int    `json:"page" binding:"required"`
-	Module  string `json:"module"`
+	//Module  string `json:"module"`
 }
 
 type SelectionDetails struct {
@@ -281,7 +281,7 @@ type CoverDetails struct {
 }
 
 //传入userid以确认
-func GetCovers(module string, id int, tag Tags) (interface{}, error) {
+func GetCovers(id int, tag Tags) (interface{}, error) {
 	db := setting.MysqlConn()
 
 	redisCli := setting.RedisConn()
@@ -303,16 +303,16 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 		}
 		var size int
 		for _, value := range hobby {
-			lenth := redisCli.LLen("healing2021:cover." + module + "." + value).Val()
+			lenth := redisCli.LLen("healing2021:cover." + strconv.Itoa(1) + "." + value).Val()
 			size += int(lenth)
 		}
 		resp = make([]CoverDetails, size)
 		for _, value := range hobby {
-			if redisCli.Exists("healing2021:cover."+module+"."+value).Val() == 0 {
+			if redisCli.Exists("healing2021:cover."+strconv.Itoa(1)+"."+value).Val() == 0 {
 				continue
 			}
-			lenth := redisCli.LLen("healing2021:cover." + module + "." + value).Val()
-			for _, content := range redisCli.LRange("healing2021:cover."+module+"."+value, 0, lenth).Val() {
+			lenth := redisCli.LLen("healing2021:cover." + strconv.Itoa(1) + "." + value).Val()
+			for _, content := range redisCli.LRange("healing2021:cover."+strconv.Itoa(1)+"."+value, 0, lenth).Val() {
 				by = []byte(content)
 				err = json.Unmarshal(by, &resp[index])
 				index++
@@ -381,10 +381,10 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			return resp, nil
 		}
 	} else {
-		lenth := redisCli.LLen("healing2021:cover." + module + "." + tag.Label).Val()
+		lenth := redisCli.LLen("healing2021:cover." + strconv.Itoa(1) + "." + tag.Label).Val()
 		resp = make([]CoverDetails, lenth)
 		for index < int(lenth) {
-			for _, content := range redisCli.LRange("healing2021:cover."+module+"."+tag.Label, 0, lenth).Val() {
+			for _, content := range redisCli.LRange("healing2021:cover."+strconv.Itoa(1)+"."+tag.Label, 0, lenth).Val() {
 				by := []byte(content)
 				err := json.Unmarshal(by, &resp[index])
 				if err != nil {

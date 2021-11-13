@@ -31,23 +31,14 @@ func GetCoverList(UserId int, ClassicId int) ([]respModel.CoverResp, error) {
 		}
 
 		coverResp := respModel.CoverResp{
-<<<<<<< HEAD
-			CoverId: int(cover.ID),
-			Nickname: cover.Nickname,  // 翻唱者
-			Avatar:   cover.Avatar,
-			PostTime: tools.DecodeTime(cover.CreatedAt),
-			File:PlayerResp.File,
-			Name: PlayerResp.Name,  // 歌名
-			Icon: PlayerResp.Icon,
-=======
+
 			CoverId:  int(cover.ID),
-			Nickname: cover.Nickname,
+			Nickname: cover.Nickname, // 翻唱者
 			Avatar:   cover.Avatar,
 			PostTime: tools.DecodeTime(cover.CreatedAt),
 			File:     PlayerResp.File,
-			Name:     PlayerResp.Name,
+			Name:     PlayerResp.Name, // 歌名
 			Icon:     PlayerResp.Icon,
->>>>>>> 29afb18c28ef5b92fd496eddb708751d917ed443
 			WorkName: PlayerResp.WorkName,
 			Check:    PlayerResp.Check,
 		}
