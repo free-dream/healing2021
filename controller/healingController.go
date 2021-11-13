@@ -195,7 +195,7 @@ func Recorder(ctx *gin.Context) {
 	usrMsg.Url = url
 	usrMsg.Song = resp.SongName
 	usrMsg.SongId = uint(params.SelectionId)
-	usrMsg.Message = resp.Nickname + "给你唱歌了哦"
+	usrMsg.Message = ""
 	usrMsg.FromUser = uint(userID)
 	usrMsg.ToUser = uint(id)
 	err = conn.SendUsrMsg(usrMsg)

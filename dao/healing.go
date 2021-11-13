@@ -270,15 +270,16 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 }
 
 type CoverDetails struct {
-	Nickname  string `json:"nickname"`
-	ID        int    `json:"id"`
-	SongName  string `json:"song_name"`
-	UserId    int    `json:"user_id"`
-	CreatedAt string `json:"created_at"`
-	Avatar    string `json:"avatar"`
-	File      string `json:"file"`
-	Likes     int    `json:"likes"`
-	Check     int    `json:"check"`
+	Nickname    string `json:"nickname"`
+	ID          int    `json:"id"`
+	SongName    string `json:"song_name"`
+	UserId      int    `json:"user_id"`
+	CreatedAt   string `json:"created_at"`
+	Avatar      string `json:"avatar"`
+	File        string `json:"file"`
+	Likes       int    `json:"likes"`
+	Check       int    `json:"check"`
+	SelectionId int    `json:"selection_id"`
 }
 
 //传入userid以确认
@@ -473,9 +474,10 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 	coverDetails := CoverDetails{}
 
 	err := db.Model(&statements.Cover{}).Create(&cover).Error
-	db.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
+	db.Table("user").Select("cover.selection_id,cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
 	if !isAnon {
 		coverDetails.CreatedAt = tools.DecodeTime(cover.CreatedAt)
+
 		value, err1 := json.Marshal(coverDetails)
 		if err1 != nil {
 			return 0, coverDetails, err1
