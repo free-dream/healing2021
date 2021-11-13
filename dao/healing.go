@@ -471,20 +471,25 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 	coverDetails := CoverDetails{}
 
 	err := db.Model(&statements.Cover{}).Create(&cover).Error
-	db.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
-	db.Table("selection").Select("user_id").Where("cover_id=?", coverDetails.ID).Scan(&selection)
+	db.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
 	if !isAnon {
 		coverDetails.CreatedAt = tools.DecodeTime(cover.CreatedAt)
 		value, err1 := json.Marshal(coverDetails)
 		if err1 != nil {
 			return 0, coverDetails, err1
 		}
-		if cover.Style != "" {
+
+		if cover.Style == cover.Language && cover.Style != "" {
 			redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Style, string(value))
+		} else {
+			if cover.Style != "" {
+				redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Style, string(value))
+			}
+			if cover.Language != "" {
+				redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Language, string(value))
+			}
 		}
-		if cover.Language != "" {
-			redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Language, string(value))
-		}
+
 		redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+"all", string(value))
 	}
 
@@ -506,14 +511,17 @@ func Select(selection statements.Selection) (int, SelectionDetails, error) {
 		if err != nil {
 			return user.SelectionNum, selectionDetails, err
 		}
-		if selection.Style != "" {
+		if selection.Style == selection.Language && selection.Style != "" {
 			redisCli.RPush("healing2021:selection"+"."+selection.Style, string(value))
-		}
-		if selection.Language != "" {
-			redisCli.RPush("healing2021:selection"+"."+selection.Language, string(value))
+		} else {
+			if selection.Style != "" {
+				redisCli.RPush("healing2021:selection"+"."+selection.Style, string(value))
+			}
+			if selection.Language != "" {
+				redisCli.RPush("healing2021:selection"+"."+selection.Language, string(value))
+			}
 		}
 		redisCli.RPush("healing2021:selection"+"."+"all", string(value))
-
 		return user.SelectionNum, selectionDetails, err
 	} else {
 		return user.SelectionNum, SelectionDetails{}, errors.New("今日次数已用尽")
