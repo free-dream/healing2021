@@ -91,12 +91,16 @@ func AddLotteries() {
 }
 
 /*-------------------------------其下为假数据----------------------------------*/
-func CreateFakeUser(nickname string, openid string, avatar string) { /*hobby map[string]string) */
+func CreateFakeUser(nickname string, openid string, avatar string, realname string, real int, tel string, telcheck int) { /*hobby map[string]string) */
 	User := statements.User{
-		Openid:   openid,
-		Nickname: nickname,
-		Avatar:   avatar,
-		Points:   0,
+		Openid:         openid,
+		Nickname:       nickname,
+		Avatar:         avatar,
+		Points:         0,
+		RealName:       realname,
+		RealNameSearch: real,
+		PhoneNumber:    tel,
+		PhoneSearch:    telcheck,
 	}
 
 	db := setting.DB
@@ -112,10 +116,10 @@ func CreateDummyUser(model *statements.User) {
 //生成假用户
 func AddFakeUsers() {
 	avatar := "http://cdn.healing2020.100steps.top/static/personal/avatarFemale.png"
-	CreateFakeUser("heng1", "123456", avatar)
-	CreateFakeUser("heng2", "123456321", avatar)
-	CreateFakeUser("heng3", "1231", avatar)
-	CreateFakeUser("heng4", "99999", avatar)
+	CreateFakeUser("heng1", "123456", avatar, "代知言", 1, "15838896053", 0)
+	CreateFakeUser("heng2", "123456321", avatar, "代知言", 0, "15838896053", 1)
+	CreateFakeUser("heng3", "1231", avatar, "言知代", 1, "15838896054", 1)
+	CreateFakeUser("heng4", "99999", avatar, "言知代", 1, "15838896055", 1)
 	for i := 0; i < 10; i++ {
 		CreateDummyUser(dummyUser())
 	}

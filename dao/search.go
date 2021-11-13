@@ -1,6 +1,9 @@
 package dao
 
 import (
+	"fmt"
+	"log"
+
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
@@ -41,15 +44,36 @@ func SearchUserByTel(tel string) ([]statements.User, int, error) {
 //其它查询
 func SearchUserByKeyword(keyword string) ([]statements.User, int, error) {
 	mysqlDb := setting.MysqlConn()
-	var data []statements.User
-	var counter int
-	db := mysqlDb.Limit(30).Where("nickname LIKE ?", "%"+keyword+"%").Find(&data)
-	err := db.Error
+	var (
+		data  []statements.User
+		real  []statements.User
+		width int
+		check bool
+	)
+	db1 := mysqlDb.Where("real_name_search = ? AND real_name = ?", 1, keyword).Find(&real)
+	err := db1.Error
+	if err != nil {
+		log.Printf(err.Error())
+		check = false
+		width = 30
+	} else {
+		check = true
+		width = 20
+	}
+	db := mysqlDb.Limit(width).Where("nickname LIKE ?", "%"+keyword+"%").Find(&data)
+	err = db.Error
 	if err != nil {
 		return nil, -1, err
 	}
-	db.Count(&counter)
-	return data, counter, nil
+	//
+	fmt.Println(check)
+	//
+	if check {
+		for _, item := range data {
+			real = append(real, item)
+		}
+	}
+	return real, len(real), nil
 }
 
 func SearchCoverByKeyword(keyword string) ([]statements.Cover, int, error) {
