@@ -131,7 +131,6 @@ func Cache(key string, resp interface{}) {
 		panic(err)
 	}
 	err = redisCli.HSet(key, "cache", value).Err()
-
 }
 
 //分页器

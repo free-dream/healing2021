@@ -185,7 +185,7 @@ func markMomentInPraise(momentId int) error {
 	like := tables.Praise{
 		UserId:   0,
 		MomentId: momentId,
-		IsLiked:  1,
+		IsLiked:  0,
 	}
 	err := mysqlDb.Create(&like).Error
 	return err

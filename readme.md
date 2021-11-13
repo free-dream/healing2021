@@ -1183,9 +1183,15 @@ Content-Type: application/json
 [// 当这首歌曲暂未有人翻唱时，返回值会是 null
     {
         "cover_id":int,			// 用于进入歌曲页
-        "nickname": string,		// 用户昵称
+        "nickname": string,		// 翻唱者
         "avatar": text(url),   	// 用户头像
         "post_time": datetime,	// “2006-01-02 15:04:05”
+        
+        "file":  url,		//歌曲录音的
+        "name":string,		//歌曲名
+        "icon":text(url),	//歌曲图标
+        "work_name":string,	//作品名
+        "check":int		//0表示当前用户未点赞，1表示当前用户已经点赞
     }
     ...
 ]
@@ -1213,7 +1219,7 @@ Content-Type: application/json
 
 调用 8.1 通用点赞接口
 
-### 4.3.2 当前歌曲的信息获取
+### 4.3.2 当前歌曲的信息获取（已经合并进入 4.2.2，单独也能用）
 
 GET /healing/covers/player
 
@@ -1257,7 +1263,7 @@ Content-Type: application/json
 
 `{"message" : "数据库操作失败"}`
 
-### 4.3.2  歌曲跳转(翻唱)
+### 4.3.3  歌曲跳转(翻唱)
 
 POST /healing/covers/jump
 

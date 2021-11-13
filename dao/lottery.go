@@ -1,6 +1,5 @@
 package dao
 
-//废案方法
 import (
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
