@@ -105,6 +105,7 @@ type Tags struct {
 	Label   string `json:"label"`
 	RankWay int    `json:"rankWay" binding:"required"`
 	Page    int    `json:"page" binding:"required"`
+	Module  string `json:"module"`
 }
 
 type SelectionDetails struct {

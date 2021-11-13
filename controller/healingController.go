@@ -131,6 +131,7 @@ func CoverFetcher(ctx *gin.Context) {
 	tag := dao.Tags{}
 	var err1 error
 	tag.Page, err1 = strconv.Atoi(ctx.Query("page"))
+	tag.Module = ctx.Query("module")
 	if err1 != nil || tag.Page <= 0 {
 		ctx.JSON(400, gin.H{
 			"message": "error param",
@@ -142,7 +143,7 @@ func CoverFetcher(ctx *gin.Context) {
 	id := sessions.Default(ctx).Get("user_id").(int)
 	if tag.Page == 1 {
 		//传入userid
-		resp, err := dao.GetCovers(strconv.Itoa(1), id, tag)
+		resp, err := dao.GetCovers(tag.Module, id, tag)
 		//
 		if err != nil {
 			ctx.JSON(416, gin.H{
@@ -194,7 +195,7 @@ func Recorder(ctx *gin.Context) {
 	usrMsg := respModel.UsrMsg{}
 	usrMsg.Url = url
 	usrMsg.Song = resp.SongName
-	usrMsg.Message = ""
+	usrMsg.Message = resp.Nickname + "给你唱歌了哦"
 	usrMsg.FromUser = uint(userID)
 	usrMsg.ToUser = uint(id)
 	err = conn.SendUsrMsg(usrMsg)

@@ -123,7 +123,7 @@ func SetupRouter() *gin.Engine {
 	api.GET("/childhood/rank", controller.GetRank)
 	api.GET("/childhood/list", controller.GetList)
 	api.GET("/childhood/original/info", controller.GetOriginalInfo)
-	api.GET("/childhood/original/covers", controller.GetOriginalSingerList)
+	api.GET("/childhood/original/covers", controller.CoverFetcher)
 	api.GET("/healing/covers/player", controller.GetPlayer)
 	api.POST("/healing/covers/jump", controller.JumpSongs)
 
