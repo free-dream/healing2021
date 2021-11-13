@@ -143,7 +143,7 @@ func AddFakeHomeC() {
 	cover := statements.Cover{}
 	for rows.Next() {
 		db.ScanRows(rows, &cover)
-		db.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
+		db.Table("user").Select("cover.selection_id,cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
 
 		coverDetails.CreatedAt = tools.DecodeTime(cover.CreatedAt)
 		value, _ := json.Marshal(coverDetails)

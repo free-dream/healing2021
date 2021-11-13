@@ -3,6 +3,7 @@ package dao
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"math/rand"
 	"sort"
@@ -147,8 +148,10 @@ func Pager(key string, page int) (interface{}, error) {
 		return nil, err
 	}
 	var pageNum int
+
 	if len(resp)%10 == 0 {
 		pageNum = len(resp) / 10
+		fmt.Println(pageNum)
 		if pageNum >= page {
 
 			return resp[(page-1)*10 : (page-1)*10+10], nil
@@ -159,6 +162,7 @@ func Pager(key string, page int) (interface{}, error) {
 
 	} else {
 		pageNum = len(resp)/10 + 1
+		fmt.Println(pageNum)
 		if pageNum > page {
 
 			return resp[(page-1)*10 : (page-1)*10+10], nil
@@ -354,6 +358,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
+			fmt.Println(len(resp))
 			if len(resp) > 10 {
 				resp = resp[0:10]
 			}
@@ -377,6 +382,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
+			fmt.Println(len(resp))
 			if len(resp) > 10 {
 				resp = resp[0:10]
 			}
@@ -395,10 +401,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 				index++
 			}
 		}
-		Cache("healing2021:home."+strconv.Itoa(id), resp)
-		if len(resp) > 10 {
-			resp = resp[0:10]
-		}
+
 		if tag.RankWay == 1 {
 			rand.Seed(time.Now().Unix())
 			//采用rand.Shuffle，将切片随机化处理后返回
