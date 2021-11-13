@@ -545,7 +545,6 @@ func PlayDevotion(userid int) (map[string]interface{}, error) {
 	defer rows.Close()
 	for rows.Next() {
 		db.ScanRows(rows, &devotion)
-
 		//插入点赞确认
 		check, err1 := PackageCheckMysql(userid, "cover", devotion.ID)
 		if err1 != nil {

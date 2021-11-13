@@ -539,10 +539,6 @@ GET /healing/covers/list HTTP 1.1
 
 ***根据点赞表和翻唱时间综合排序***
 
-***初始化就从mysql检索，准备好两幅表缓存在redis里***
-
-***设置一个更新器，若表格发生了更新，先写入redis,每隔一段时间将数据录入mysql一次***
-
 GET /healing/selections/list HTTP 1.1
 
 ```
