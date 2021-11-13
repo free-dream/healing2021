@@ -172,7 +172,7 @@ func AddFakeHomeS() {
 	selection := statements.Selection{}
 	for rows.Next() {
 		db.ScanRows(rows, &selection)
-		db.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at,remark").Where("selection.id=?", selection.ID).Joins("left join selection on user.id=selection.user_id").Scan(&selectionDetails)
+		db.Table("user").Select("user.sex,selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at,selection.remark").Where("selection.id=?", selection.ID).Joins("left join selection on user.id=selection.user_id").Scan(&selectionDetails)
 		selectionDetails.CreatedAt = tools.DecodeTime(selection.CreatedAt)
 		value, _ := json.Marshal(selectionDetails)
 		if selection.Style != "" {

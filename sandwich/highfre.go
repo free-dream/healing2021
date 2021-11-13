@@ -12,7 +12,7 @@ import (
 
 func Clean() {
 	redisdb := setting.RedisConn()
-	keys := redisdb.Keys("healing2021:cover*").Val()
+	keys := redisdb.Keys("healing2021:selection*").Val()
 	for _, key := range keys {
 		redisdb.Del(key)
 	}

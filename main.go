@@ -34,7 +34,7 @@ func main() {
 	statements.ClassicInit()
 	statements.PraiseInit()
 	sandwich.Clean()
-	models.AddFakeHomeC()
+	models.AddFakeHomeS()
 	models.AddClassic()
 	routers := router.SetupRouter()
 
