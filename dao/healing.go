@@ -209,7 +209,7 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 				lenth := redisCli.LLen("healing2021:selection." + value).Val()
 				size += int(lenth)
 			}
-			resp = make([]SelectionDetails, size)
+			resp = make([]SelectionDetails, 0)
 			vresp := make([]SelectionDetails, size)
 			mresp := make(map[SelectionDetails]bool)
 			for _, value := range hobby {
@@ -228,6 +228,7 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 					resp = append(resp, val)
 					mresp[val] = true
 				}
+				resp = make([]SelectionDetails, len(resp))
 			}
 		}
 
@@ -265,6 +266,7 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 				index++
 			}
 		}
+		resp = make([]SelectionDetails, len(resp))
 
 		if tag.RankWay == 1 {
 			rand.Seed(time.Now().Unix())
