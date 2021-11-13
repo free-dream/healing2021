@@ -71,10 +71,10 @@ func GetOriginInfo(ClassicId int) (respModel.OriginInfoResp, error) {
 	// 格式转换
 	OriginInfoResp := respModel.OriginInfoResp{
 		ClassicURL: ClassURL,
-		SongName:  Origin.SongName,
-		Singer:    Origin.Singer,
-		Icon:      Origin.Icon,
-		WorkName:  Origin.WorkName,
+		SongName:   Origin.SongName,
+		Singer:     Origin.Singer,
+		Icon:       Origin.Icon,
+		WorkName:   Origin.WorkName,
 	}
 	return OriginInfoResp, nil
 }
