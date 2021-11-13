@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"fmt"
+	"regexp"
 	"strings"
 
 	"git.100steps.top/100steps/healing2021_be/dao"
@@ -30,7 +32,13 @@ func clean(keyword string) []string {
 	return keywords
 }
 
-//POST heaing/search
+//电话号码检查
+func IsTelSearch(keyword string) bool {
+	model := regexp.MustCompile("1[3-6][0-9][0-9]{8}")
+	return model.MatchString(keyword)
+}
+
+//POST /heaing/search
 func Search(ctx *gin.Context) {
 	var key keyword
 	respAll := make([]interface{}, 0)
@@ -45,6 +53,33 @@ func Search(ctx *gin.Context) {
 		return
 	}
 	keyword := key.Keyword
+
+	//确认是否是电话查询
+	if IsTelSearch(keyword) {
+		rawUsers, lenuser, err := dao.SearchUserByTel(keyword)
+		if err != nil {
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
+		}
+		//
+		fmt.Println("触发")
+		//
+		respLen.LenUser = lenuser
+		for _, user := range rawUsers {
+			if user.ID == 0 {
+				continue
+			}
+			temp := respModel.UserResp{
+				Avatar:   user.Avatar,
+				Userid:   int(user.ID),
+				Nickname: user.Nickname,
+				Slogan:   user.Signature,
+			}
+			respUsers = append(respUsers, temp)
+		}
+		respAll = append(respAll, respLen, respUsers, respSelections, respCovers)
+		ctx.JSON(200, respAll)
+		return
+	}
 
 	//查询翻唱
 	rawCovers, lencover, err := dao.SearchCoverByKeyword(keyword)

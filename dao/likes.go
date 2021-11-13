@@ -1,6 +1,8 @@
 package dao
 
 import (
+	"log"
+
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	db "git.100steps.top/100steps/healing2021_be/pkg/setting"
@@ -33,6 +35,14 @@ func PackageCheckMysql(user int, kind string, target int) (bool, error) {
 
 //跳转mysql检查
 func CheckMysql(lock *gorm.DB, user int, target int, kind string, likes int, choose bool) (bool, error) {
+	//redis检查
+	redisCheck, err1 := sandwich.Check(target, kind, user)
+	if err1 != nil {
+		log.Printf(err1.Error())
+	} else {
+		return redisCheck, nil
+	}
+	//
 	var (
 		err  error
 		like tables.Praise
@@ -96,7 +106,7 @@ func UpdateLikesByID(user int, target int, likes int, kind string) error {
 	// 用户第一次进行点赞时没有记录能进行 update
 	// 若为取消点赞，应检查是否存有当前用户id,若为点赞，则反之
 
-	check := sandwich.Check(target, kind, user)
+	check, _ := sandwich.Check(target, kind, user)
 	if likes == -1 && check {
 		err = sandwich.CancelLike(target, kind, user)
 		if err != nil {

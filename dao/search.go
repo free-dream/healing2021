@@ -23,6 +23,22 @@ import (
 //为保证性能，只获取最多30条记录
 //返回数据和数据长度
 //仅能匹配歌名和用户名，无法进行风格或者语言的搜索
+
+//根据电话号码获取用户
+func SearchUserByTel(tel string) ([]statements.User, int, error) {
+	mysqlDb := setting.MysqlConn()
+	var data []statements.User
+	var counter int
+	db := mysqlDb.Limit(30).Where("phone_number = ? AND phone_search = ?", tel, 1).Find(&data)
+	err := db.Error
+	if err != nil {
+		return nil, -1, err
+	}
+	db.Count(&counter)
+	return data, counter, nil
+}
+
+//其它查询
 func SearchUserByKeyword(keyword string) ([]statements.User, int, error) {
 	mysqlDb := setting.MysqlConn()
 	var data []statements.User
