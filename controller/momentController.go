@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -98,7 +99,7 @@ type MomentBase struct {
 	Content string   `json:"content"`
 	Status  []string `json:"status"`
 
-	HaveSong int `json:"have_selection"`
+	HaveSong int `json:"have_song"`
 
 	SongName string `json:"song_name"`
 	Language string `json:"language"`
@@ -119,7 +120,10 @@ func PostMoment(ctx *gin.Context) {
 	userid := sessions.Default(ctx).Get("user_id").(int)
 	param.UserId = userid
 
+	Moment.Module = NewMoment.HaveSong
 	switch NewMoment.HaveSong {
+	case 0:
+		// nothing
 	case 1:
 		param.SongName = NewMoment.SongName
 		param.Language = NewMoment.Language
@@ -131,12 +135,8 @@ func PostMoment(ctx *gin.Context) {
 			return
 		}
 		Moment.SelectionId = resp.ID
-		Moment.Module = 1
 	case 2:
 		Moment.ClassicId = NewMoment.ClassicId
-		Moment.Module = 2
-	case 0:
-		Moment.Module = 0
 	default: // 出现错误
 		ctx.JSON(403, e.ErrMsgResponse{Message: "非法参数"})
 		//为了保证后面任务在接口使用时顺利进行，return---voloroloq 2021.11.1
@@ -160,6 +160,8 @@ func PostMoment(ctx *gin.Context) {
 	Moment.SongName = NewMoment.SongName
 	Moment.UserId = param.UserId
 	Moment.State = tools.EncodeStrArr(NewMoment.Status)
+
+	fmt.Println(Moment.Module)
 
 	// 存入数据库
 	if ok := dao.CreateMoment(Moment); !ok {

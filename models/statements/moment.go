@@ -14,7 +14,7 @@ type Moment struct {
 	SongName    string `gorm:"default:''"`
 	SelectionId int    `gorm:"default:0;index"`
 	ClassicId   int    `gorm:"default:0;index"`
-	Module      int    `gorm:"default:2;index"` // 0经典点歌，1童年分享，2无歌曲
+	Module      int    `gorm:"default:0;index"` // 1经典点歌，2童年分享，0无歌曲
 	State       string `gorm:"default:''"`
 }
 
