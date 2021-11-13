@@ -118,6 +118,7 @@ type SelectionDetails struct {
 	CreatedAt string `json:"created_at"`
 	Avatar    string `json:"avatar"`
 	Remark    string `json:"remark"`
+	Sex       int    `json:"sex"`
 }
 
 //为分页器做缓存
@@ -498,7 +499,7 @@ func Select(selection statements.Selection) (int, SelectionDetails, error) {
 		err := db.Table("selection").Create(&selection).Error
 		db.Table("user").Where("id=?", selection.UserId).Update("selection_num", user.SelectionNum-1)
 		selectionDetails := SelectionDetails{}
-		err = db.Table("user").Select("selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at,remark").Where("selection.id=?", selection.ID).Joins("left join selection on user.id=selection.user_id").Scan(&selectionDetails).Error
+		err = db.Table("user").Select("user.sex,selection.user_id,selection.id,user.nickname,user.avatar,selection.song_name,selection.created_at,selection.remark").Where("selection.id=?", selection.ID).Joins("left join selection on user.id=selection.user_id").Scan(&selectionDetails).Error
 		selectionDetails.CreatedAt = tools.DecodeTime(selection.CreatedAt)
 		value, err := json.Marshal(selectionDetails)
 		if err != nil {

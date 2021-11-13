@@ -74,11 +74,11 @@ func GetMomentList(ctx *gin.Context) {
 
 		// 点歌\分享\无歌曲 单独处理 songId
 		switch OneMoment.Module {
-		case 0:
-			TmpMoment.SongId = OneMoment.SelectionId
 		case 1:
-			TmpMoment.SongId = OneMoment.ClassicId
+			TmpMoment.SongId = OneMoment.SelectionId
 		case 2:
+			TmpMoment.SongId = OneMoment.ClassicId
+		case 0:
 			// 啥事不用干
 		default:
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库中出现非法字段"})
@@ -119,7 +119,7 @@ func PostMoment(ctx *gin.Context) {
 	param.UserId = userid
 
 	switch NewMoment.HaveSong {
-	case 0:
+	case 1:
 		param.SongName = NewMoment.SongName
 		param.Language = NewMoment.Language
 		param.Remark = NewMoment.Remark
@@ -130,12 +130,12 @@ func PostMoment(ctx *gin.Context) {
 			return
 		}
 		Moment.SelectionId = resp.ID
-		Moment.Module = 0
-	case 1:
-		Moment.ClassicId = NewMoment.ClassicId
 		Moment.Module = 1
 	case 2:
+		Moment.ClassicId = NewMoment.ClassicId
 		Moment.Module = 2
+	case 0:
+		Moment.Module = 0
 	default: // 出现错误
 		ctx.JSON(403, e.ErrMsgResponse{Message: "非法参数"})
 		//为了保证后面任务在接口使用时顺利进行，return---voloroloq 2021.11.1
@@ -146,7 +146,7 @@ func PostMoment(ctx *gin.Context) {
 	for _, state := range NewMoment.Status {
 		sandwich.PutInStates(state)
 	}
-	if NewMoment.HaveSong == 0 {
+	if NewMoment.HaveSong == 1 {
 		sandwich.PutInHotSong(tools.EncodeSong(tools.HotSong{
 			SongName: param.SongName,
 			Language: param.Language,
@@ -217,11 +217,11 @@ func GetMomentDetail(ctx *gin.Context) {
 
 	// 点歌\分享\无歌曲 单独处理 songId
 	switch Moment.Module {
-	case 0:
-		MomentDetail.SongId = Moment.SelectionId
 	case 1:
-		MomentDetail.SongId = Moment.ClassicId
+		MomentDetail.SongId = Moment.SelectionId
 	case 2:
+		MomentDetail.SongId = Moment.ClassicId
+	case 0:
 		// 啥事不用干
 	default:
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库中出现非法字段"})

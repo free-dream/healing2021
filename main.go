@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"git.100steps.top/100steps/healing2021_be/cron"
 	"git.100steps.top/100steps/healing2021_be/models"
+	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"git.100steps.top/100steps/healing2021_be/router"
@@ -30,8 +31,10 @@ func main() {
 	models.AddDevotion()
 
 	models.AddFakeHomeS()*/
+	statements.ClassicInit()
+	statements.PraiseInit()
 	sandwich.Clean()
-	models.AddFakeHomeC()
+	models.AddFakeHomeS()
 	models.AddClassic()
 	routers := router.SetupRouter()
 
