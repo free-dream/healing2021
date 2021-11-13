@@ -219,7 +219,7 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 				lenth := redisCli.LLen("healing2021:selection." + value).Val()
 				for _, content := range redisCli.LRange("healing2021:selection."+value, 0, lenth).Val() {
 					by = []byte(content)
-					err = json.Unmarshal(by, &resp[index])
+					err = json.Unmarshal(by, &vresp[index])
 					index++
 				}
 			}
@@ -228,7 +228,7 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 					resp = append(resp, val)
 					mresp[val] = true
 				}
-				resp = make([]SelectionDetails, len(resp))
+				//resp = make([]SelectionDetails, len(resp))
 			}
 		}
 
