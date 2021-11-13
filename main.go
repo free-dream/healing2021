@@ -46,9 +46,17 @@ func main() {
 					Language: "中文",
 					Style:    "轻松",
 				}))
-			sandwich.PutInStates("状态" + strconv.Itoa(i))
 			sandwich.PutInSearchWord("热词" + strconv.Itoa(i))
 		}
+		sandwich.PutInStates("迷茫")
+		sandwich.PutInStates("听音乐")
+		sandwich.PutInStates("摸鱼")
+		sandwich.PutInStates("唱歌")
+		sandwich.PutInStates("头秃")
+		sandwich.PutInStates("发呆")
+		sandwich.PutInStates("睡觉")
+		sandwich.PutInStates("干饭")
+		sandwich.PutInStates("无语")
 
 		port = ":8008"
 	} else {

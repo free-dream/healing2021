@@ -10,7 +10,7 @@ import (
 )
 
 // 获取所有翻唱信息（全表查找，后面优化
-func GetCoverList(ClassicId int) ([]respModel.CoverResp, error) {
+func GetCoverList(UserId int, ClassicId int) ([]respModel.CoverResp, error) {
 	MysqlDB := setting.MysqlConn()
 	var CoverResp []respModel.CoverResp
 	var Cover []statements.Cover
@@ -22,11 +22,21 @@ func GetCoverList(ClassicId int) ([]respModel.CoverResp, error) {
 
 	// 参数转换
 	for _, cover := range Cover {
+		PlayerResp, err := GetPlayerInfo(UserId, int(cover.ID))
+		if err != nil {
+			return CoverResp, err
+		}
+
 		coverResp := respModel.CoverResp{
-			CoverId:  cover.ClassicId,
+			CoverId: int(cover.ID),
 			Nickname: cover.Nickname,
 			Avatar:   cover.Avatar,
 			PostTime: tools.DecodeTime(cover.CreatedAt),
+			File:PlayerResp.File,
+			Name: PlayerResp.Name,
+			Icon: PlayerResp.Icon,
+			WorkName: PlayerResp.WorkName,
+			Check: PlayerResp.Check,
 		}
 		CoverResp = append(CoverResp, coverResp)
 	}
