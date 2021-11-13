@@ -6,6 +6,7 @@ import (
 	"git.100steps.top/100steps/healing2021_be/controller/ws"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
+	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 
 	"git.100steps.top/100steps/healing2021_be/controller/task"
 	"git.100steps.top/100steps/healing2021_be/dao"
@@ -129,6 +130,9 @@ func SelectionFetcher(ctx *gin.Context) {
 }
 func CoverFetcher(ctx *gin.Context) {
 	tag := dao.Tags{}
+	//获得userid
+	userid := tools.GetUserid(ctx)
+	//
 	var err1 error
 	tag.Page, err1 = strconv.Atoi(ctx.Query("page"))
 	if err1 != nil || tag.Page <= 0 {
@@ -141,8 +145,9 @@ func CoverFetcher(ctx *gin.Context) {
 	tag.Label = ctx.Query("label")
 	id := sessions.Default(ctx).Get("user_id").(int)
 	if tag.Page == 1 {
-
-		resp, err := dao.GetCovers(strconv.Itoa(1), id, tag)
+		//传入userid
+		resp, err := dao.GetCovers(strconv.Itoa(1), id, tag, userid)
+		//
 		if err != nil {
 			ctx.JSON(416, gin.H{
 				"message": "out of range",

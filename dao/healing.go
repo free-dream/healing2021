@@ -279,7 +279,8 @@ type CoverDetails struct {
 	Check     int    `json:"check"`
 }
 
-func GetCovers(module string, id int, tag Tags) (interface{}, error) {
+//传入userid以确认
+func GetCovers(module string, id int, tag Tags, userid int) (interface{}, error) {
 	db := setting.MysqlConn()
 
 	redisCli := setting.RedisConn()
@@ -323,6 +324,17 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			//采用rand.Shuffle，将切片随机化处理后返回
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
 			for i, _ := range resp {
+				//确认是否点赞
+				boolean, err := PackageCheckMysql(userid, "cover", resp[i].ID)
+				if err != nil {
+					log.Printf(err.Error())
+					resp[i].Check = 0
+				} else if boolean {
+					resp[i].Check = 1
+				} else {
+					resp[i].Check = 0
+				}
+				//
 				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
@@ -335,6 +347,17 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 				return resp[i].CreatedAt < resp[j].CreatedAt
 			})
 			for i, _ := range resp {
+				//确认是否点赞
+				boolean, err := PackageCheckMysql(userid, "cover", resp[i].ID)
+				if err != nil {
+					log.Printf(err.Error())
+					resp[i].Check = 0
+				} else if boolean {
+					resp[i].Check = 1
+				} else {
+					resp[i].Check = 0
+				}
+				//
 				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
@@ -365,6 +388,17 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			//采用rand.Shuffle，将切片随机化处理后返回
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
 			for i, _ := range resp {
+				//确认是否点赞
+				boolean, err := PackageCheckMysql(userid, "cover", resp[i].ID)
+				if err != nil {
+					log.Printf(err.Error())
+					resp[i].Check = 0
+				} else if boolean {
+					resp[i].Check = 1
+				} else {
+					resp[i].Check = 0
+				}
+				//
 				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
@@ -377,6 +411,17 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 				return resp[i].CreatedAt < resp[j].CreatedAt
 			})
 			for i, _ := range resp {
+				//确认是否点赞
+				boolean, err := PackageCheckMysql(userid, "cover", resp[i].ID)
+				if err != nil {
+					log.Printf(err.Error())
+					resp[i].Check = 0
+				} else if boolean {
+					resp[i].Check = 1
+				} else {
+					resp[i].Check = 0
+				}
+				//
 				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
