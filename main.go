@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"git.100steps.top/100steps/healing2021_be/cron"
 	"git.100steps.top/100steps/healing2021_be/models"
-	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"git.100steps.top/100steps/healing2021_be/router"
@@ -14,7 +13,6 @@ import (
 	"log"
 	"strconv"
 	"syscall"
-	"time"
 )
 
 // @Title healing2021
@@ -23,16 +21,17 @@ import (
 
 func main() {
 	models.TableInit()
-	if tools.IsDebug() {
+	/*if tools.IsDebug() {
 		statements.TableClean()
 		time.Sleep(time.Second * 2)
 		models.FakeData()
 	}
 	models.AddClassic()
 	models.AddDevotion()
-	/*models.AddFakeHomeC()
-	models.AddFakeHomeS()*/
 
+	models.AddFakeHomeS()*/
+	sandwich.Clean()
+	models.AddFakeHomeC()
 	routers := router.SetupRouter()
 
 	defer setting.DB.Close()
@@ -48,9 +47,17 @@ func main() {
 					Language: "中文",
 					Style:    "轻松",
 				}))
-			sandwich.PutInStates("状态" + strconv.Itoa(i))
 			sandwich.PutInSearchWord("热词" + strconv.Itoa(i))
 		}
+		sandwich.PutInStates("迷茫")
+		sandwich.PutInStates("听音乐")
+		sandwich.PutInStates("摸鱼")
+		sandwich.PutInStates("唱歌")
+		sandwich.PutInStates("头秃")
+		sandwich.PutInStates("发呆")
+		sandwich.PutInStates("睡觉")
+		sandwich.PutInStates("干饭")
+		sandwich.PutInStates("无语")
 
 		port = ":8008"
 	} else {

@@ -2,9 +2,9 @@ package dao
 
 import "git.100steps.top/100steps/healing2021_be/pkg/setting"
 
-func Authentication(nickname string) bool {
+func Authentication(openid string) bool {
 	redisCli := setting.RedisConn()
-	return redisCli.SIsMember("healing2021:administrator", nickname).Val()
+	return redisCli.SIsMember("healing2021:administrator", openid).Val()
 }
 
 func DeleteContent(id int) error {

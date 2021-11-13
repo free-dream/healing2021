@@ -89,7 +89,7 @@ func WsData(ctx *gin.Context) {
 	uid := uint(id)
 	// fake uid
 	//uid := uint(2)
-    //AddFakeData()
+	//AddFakeData()
 
 	var resp WsDataResp
 	var err error
@@ -111,10 +111,10 @@ func WsData(ctx *gin.Context) {
 }
 
 func AddFakeData() {
-    msg := respModel.SysMsg{}
-    msg.Uid = 2
-    msg.Type = 1
-    msg.ContentId = 3
-    conn := GetConn() 
-    conn.SendSystemMsg(msg)
+	msg := respModel.SysMsg{}
+	msg.Uid = 2
+	msg.Type = 1
+	msg.ContentId = 3
+	conn := GetConn()
+	conn.SendSystemMsg(msg)
 }

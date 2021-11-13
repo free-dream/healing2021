@@ -48,7 +48,8 @@ func PhoneCaller(ctx *gin.Context) {
 func Judger(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	user_id := session.Get("user_id").(int)
-	is_existed := dao.Exist(session.Get("openid").(string))
+	openid := session.Get("openid").(string)
+	is_existed := dao.Exist(openid)
 	resp, err := dao.GetBasicMessage(user_id)
 	session.Set("headImgUrl", resp.Avatar)
 	session.Set("nickname", resp.Nickname)
@@ -56,7 +57,7 @@ func Judger(ctx *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-	is_administrator := dao.Authentication(resp.Nickname)
+	is_administrator := dao.Authentication(openid)
 	ctx.JSON(200, gin.H{
 		"user_id":          user_id,
 		"is_existed":       is_existed,

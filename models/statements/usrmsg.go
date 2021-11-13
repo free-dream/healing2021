@@ -12,6 +12,7 @@ type Usrmsg struct {
 	ToUser   uint `gorm:"not null;index"`
 	Url      string
 	Song     string
+	SongId   uint
 	Message  string
 	gorm.Model
 	IsSend int

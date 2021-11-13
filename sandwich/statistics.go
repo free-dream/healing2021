@@ -39,9 +39,9 @@ func GetStates() []string {
 	}
 
 	// 测试
-	for _, val := range Values {
-		fmt.Println(val)
-	}
+	//for _, val := range Values {
+	//	fmt.Println(val)
+	//}
 
 	return Values
 }
@@ -72,9 +72,9 @@ func GetSearchWord() []string {
 	}
 
 	// 测试
-	for _, val := range Values {
-		fmt.Println(val)
-	}
+	//for _, val := range Values {
+	//	fmt.Println(val)
+	//}
 
 	return Values
 }
@@ -105,9 +105,9 @@ func GetHotSong() []string {
 	}
 
 	// 测试
-	for _, val := range Values {
-		fmt.Println(val)
-	}
+	//for _, val := range Values {
+	//	fmt.Println(val)
+	//}
 
 	return Values
 }

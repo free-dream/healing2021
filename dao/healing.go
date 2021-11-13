@@ -3,6 +3,7 @@ package dao
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"math/rand"
 	"sort"
@@ -22,6 +23,7 @@ type UsrMsg struct {
 	Remark    string `json:"remark"`
 	Nickname  string `json:"nickname"`
 	Avatar    string `json:"avatar"`
+	UserId    int    `json:"user_id"`
 }
 type CovMsg struct {
 	ID       int    `json:"id"`
@@ -40,7 +42,7 @@ func GetHealingPage(selectionId int, userId int) (interface{}, error) {
 	db := setting.MysqlConn()
 	userMsg := UsrMsg{}
 	resp := make(map[string]interface{})
-	db.Table("selection").Select("user.avatar,selection.id,selection.song_name,selection.style,selection.created_at,selection.remark,user.nickname").Joins("left join user on user.id=selection.user_id").Where("selection.id=?", selectionId).Scan(&userMsg)
+	db.Table("selection").Select("selection.user_id,user.avatar,selection.id,selection.song_name,selection.style,selection.created_at,selection.remark,user.nickname").Joins("left join user on user.id=selection.user_id").Where("selection.id=?", selectionId).Scan(&userMsg)
 	/*if err!=nil{
 		panic(err)
 		return nil, err
@@ -105,6 +107,7 @@ type Tags struct {
 	Label   string `json:"label"`
 	RankWay int    `json:"rankWay" binding:"required"`
 	Page    int    `json:"page" binding:"required"`
+	//Module  string `json:"module"`
 }
 
 type SelectionDetails struct {
@@ -144,8 +147,10 @@ func Pager(key string, page int) (interface{}, error) {
 		return nil, err
 	}
 	var pageNum int
+
 	if len(resp)%10 == 0 {
 		pageNum = len(resp) / 10
+
 		if pageNum >= page {
 
 			return resp[(page-1)*10 : (page-1)*10+10], nil
@@ -156,6 +161,7 @@ func Pager(key string, page int) (interface{}, error) {
 
 	} else {
 		pageNum = len(resp)/10 + 1
+
 		if pageNum > page {
 
 			return resp[(page-1)*10 : (page-1)*10+10], nil
@@ -267,19 +273,20 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 }
 
 type CoverDetails struct {
-	Nickname  string `json:"nickname"`
-	ID        int    `json:"id"`
-	SongName  string `json:"song_name"`
-	UserId    int    `json:"user_id"`
-	CreatedAt string `json:"created_at"`
-	Avatar    string `json:"avatar"`
-	File      string `json:"file"`
-	Likes     int    `json:"likes"`
-	Check     int    `json:"check"`
+	Nickname    string `json:"nickname"`
+	ID          int    `json:"id"`
+	SongName    string `json:"song_name"`
+	UserId      int    `json:"user_id"`
+	CreatedAt   string `json:"created_at"`
+	Avatar      string `json:"avatar"`
+	File        string `json:"file"`
+	Likes       int    `json:"likes"`
+	Check       int    `json:"check"`
+	SelectionId int    `json:"selection_id"`
 }
 
 //传入userid以确认
-func GetCovers(module string, id int, tag Tags) (interface{}, error) {
+func GetCovers(id int, tag Tags) (interface{}, error) {
 	db := setting.MysqlConn()
 
 	redisCli := setting.RedisConn()
@@ -301,16 +308,16 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 		}
 		var size int
 		for _, value := range hobby {
-			lenth := redisCli.LLen("healing2021:cover." + module + "." + value).Val()
+			lenth := redisCli.LLen("healing2021:cover." + strconv.Itoa(1) + "." + value).Val()
 			size += int(lenth)
 		}
 		resp = make([]CoverDetails, size)
 		for _, value := range hobby {
-			if redisCli.Exists("healing2021:cover."+module+"."+value).Val() == 0 {
+			if redisCli.Exists("healing2021:cover."+strconv.Itoa(1)+"."+value).Val() == 0 {
 				continue
 			}
-			lenth := redisCli.LLen("healing2021:cover." + module + "." + value).Val()
-			for _, content := range redisCli.LRange("healing2021:cover."+module+"."+value, 0, lenth).Val() {
+			lenth := redisCli.LLen("healing2021:cover." + strconv.Itoa(1) + "." + value).Val()
+			for _, content := range redisCli.LRange("healing2021:cover."+strconv.Itoa(1)+"."+value, 0, lenth).Val() {
 				by = []byte(content)
 				err = json.Unmarshal(by, &resp[index])
 				index++
@@ -350,13 +357,14 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
+			fmt.Println(len(resp))
 			if len(resp) > 10 {
 				resp = resp[0:10]
 			}
 			return resp, err
 		} else {
 			sort.Slice(resp, func(i, j int) bool {
-				return resp[i].CreatedAt < resp[j].CreatedAt
+				return resp[i].CreatedAt > resp[j].CreatedAt
 			})
 			for i, _ := range resp {
 				//确认是否点赞
@@ -373,16 +381,17 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
+			fmt.Println(len(resp))
 			if len(resp) > 10 {
 				resp = resp[0:10]
 			}
 			return resp, nil
 		}
 	} else {
-		lenth := redisCli.LLen("healing2021:cover." + module + "." + tag.Label).Val()
+		lenth := redisCli.LLen("healing2021:cover." + strconv.Itoa(1) + "." + tag.Label).Val()
 		resp = make([]CoverDetails, lenth)
 		for index < int(lenth) {
-			for _, content := range redisCli.LRange("healing2021:cover."+module+"."+tag.Label, 0, lenth).Val() {
+			for _, content := range redisCli.LRange("healing2021:cover."+strconv.Itoa(1)+"."+tag.Label, 0, lenth).Val() {
 				by := []byte(content)
 				err := json.Unmarshal(by, &resp[index])
 				if err != nil {
@@ -391,10 +400,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 				index++
 			}
 		}
-		Cache("healing2021:home."+strconv.Itoa(id), resp)
-		if len(resp) > 10 {
-			resp = resp[0:10]
-		}
+
 		if tag.RankWay == 1 {
 			rand.Seed(time.Now().Unix())
 			//采用rand.Shuffle，将切片随机化处理后返回
@@ -420,7 +426,7 @@ func GetCovers(module string, id int, tag Tags) (interface{}, error) {
 			return resp, nil
 		} else {
 			sort.Slice(resp, func(i, j int) bool {
-				return resp[i].CreatedAt < resp[j].CreatedAt
+				return resp[i].CreatedAt > resp[j].CreatedAt
 			})
 			for i, _ := range resp {
 				//确认是否点赞
@@ -470,20 +476,26 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 	coverDetails := CoverDetails{}
 
 	err := db.Model(&statements.Cover{}).Create(&cover).Error
-	db.Table("user").Select("cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at,cover.likes").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
-	db.Table("selection").Select("user_id").Where("cover_id=?", coverDetails.ID).Scan(&selection)
+	db.Table("user").Select("cover.selection_id,cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
 	if !isAnon {
 		coverDetails.CreatedAt = tools.DecodeTime(cover.CreatedAt)
+
 		value, err1 := json.Marshal(coverDetails)
 		if err1 != nil {
 			return 0, coverDetails, err1
 		}
-		if cover.Style != "" {
+
+		if cover.Style == cover.Language && cover.Style != "" {
 			redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Style, string(value))
+		} else {
+			if cover.Style != "" {
+				redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Style, string(value))
+			}
+			if cover.Language != "" {
+				redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Language, string(value))
+			}
 		}
-		if cover.Language != "" {
-			redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+cover.Language, string(value))
-		}
+
 		redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+"all", string(value))
 	}
 
@@ -505,14 +517,17 @@ func Select(selection statements.Selection) (int, SelectionDetails, error) {
 		if err != nil {
 			return user.SelectionNum, selectionDetails, err
 		}
-		if selection.Style != "" {
+		if selection.Style == selection.Language && selection.Style != "" {
 			redisCli.RPush("healing2021:selection"+"."+selection.Style, string(value))
-		}
-		if selection.Language != "" {
-			redisCli.RPush("healing2021:selection"+"."+selection.Language, string(value))
+		} else {
+			if selection.Style != "" {
+				redisCli.RPush("healing2021:selection"+"."+selection.Style, string(value))
+			}
+			if selection.Language != "" {
+				redisCli.RPush("healing2021:selection"+"."+selection.Language, string(value))
+			}
 		}
 		redisCli.RPush("healing2021:selection"+"."+"all", string(value))
-
 		return user.SelectionNum, selectionDetails, err
 	} else {
 		return user.SelectionNum, SelectionDetails{}, errors.New("今日次数已用尽")

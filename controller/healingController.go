@@ -142,7 +142,7 @@ func CoverFetcher(ctx *gin.Context) {
 	id := sessions.Default(ctx).Get("user_id").(int)
 	if tag.Page == 1 {
 		//传入userid
-		resp, err := dao.GetCovers(strconv.Itoa(1), id, tag)
+		resp, err := dao.GetCovers(id, tag)
 		//
 		if err != nil {
 			ctx.JSON(416, gin.H{
@@ -194,6 +194,7 @@ func Recorder(ctx *gin.Context) {
 	usrMsg := respModel.UsrMsg{}
 	usrMsg.Url = url
 	usrMsg.Song = resp.SongName
+	usrMsg.SongId = uint(params.SelectionId)
 	usrMsg.Message = ""
 	usrMsg.FromUser = uint(userID)
 	usrMsg.ToUser = uint(id)

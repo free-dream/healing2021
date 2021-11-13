@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"fmt"
 	//"errors"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
@@ -10,23 +11,36 @@ import (
 )
 
 // 获取所有翻唱信息（全表查找，后面优化
-func GetCoverList(ClassicId int) ([]respModel.CoverResp, error) {
+func GetCoverList(UserId int, ClassicId int) ([]respModel.CoverResp, error) {
 	MysqlDB := setting.MysqlConn()
 	var CoverResp []respModel.CoverResp
 	var Cover []statements.Cover
 
 	err := MysqlDB.Where("classic_id=?", ClassicId).Find(&Cover).Error
 	if err != nil {
+		fmt.Println(err)
 		return CoverResp, err
 	}
 
 	// 参数转换
 	for _, cover := range Cover {
+		PlayerResp, err := GetPlayerInfo(UserId, int(cover.ID))
+		if err != nil && err != gorm.ErrRecordNotFound {
+			fmt.Println(err)
+			return CoverResp, err
+		}
+
 		coverResp := respModel.CoverResp{
-			CoverId:  cover.ClassicId,
-			Nickname: cover.Nickname,
+
+			CoverId:  int(cover.ID),
+			Nickname: cover.Nickname, // 翻唱者
 			Avatar:   cover.Avatar,
 			PostTime: tools.DecodeTime(cover.CreatedAt),
+			File:     PlayerResp.File,
+			Name:     PlayerResp.Name, // 歌名
+			Icon:     PlayerResp.Icon,
+			WorkName: PlayerResp.WorkName,
+			Check:    PlayerResp.Check,
 		}
 		CoverResp = append(CoverResp, coverResp)
 	}
