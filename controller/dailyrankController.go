@@ -77,9 +77,16 @@ func GetAllrank(ctx *gin.Context) {
 			check = 0
 		}
 
+		//权宜之计
+		avatar, errA := dao.GetUserAvatar(UserId)
+		if errA != nil {
+			log.Printf(errA.Error()) //一般不会出问题
+		}
+		//
+
 		respCover := resp.HotResp{
 			CoverId:  coverid,
-			Avatar:   cover.Avatar,
+			Avatar:   avatar,
 			Nickname: nickname,
 			Posttime: cover.CreatedAt.String(),
 			Likes:    likes[i].Likes,

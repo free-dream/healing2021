@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"fmt"
 	"log"
 
 	"git.100steps.top/100steps/healing2021_be/models/statements"
@@ -65,9 +64,6 @@ func SearchUserByKeyword(keyword string) ([]statements.User, int, error) {
 	if err != nil {
 		return nil, -1, err
 	}
-	//
-	fmt.Println(check)
-	//
 	if check {
 		for _, item := range data {
 			real = append(real, item)
