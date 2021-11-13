@@ -209,7 +209,7 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 				lenth := redisCli.LLen("healing2021:selection." + value).Val()
 				size += int(lenth)
 			}
-			resp = make([]SelectionDetails, 0)
+			resp = make([]SelectionDetails, size)
 			vresp := make([]SelectionDetails, size)
 			mresp := make(map[SelectionDetails]bool)
 			for _, value := range hobby {
@@ -335,7 +335,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 				lenth := redisCli.LLen("healing2021:cover." + strconv.Itoa(1) + "." + value).Val()
 				size += int(lenth)
 			}
-			resp = make([]CoverDetails, 0)
+			resp = make([]CoverDetails, size)
 			vresp := make([]CoverDetails, size)
 			mresp := make(map[CoverDetails]bool)
 			for _, value := range hobby {
