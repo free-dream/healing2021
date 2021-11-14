@@ -69,10 +69,10 @@ func Like(ctx *gin.Context) {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
 		return
 	}
+
 	if LikeParam.Todo == 1 {
 		conn := ws.GetConn()
 		sysMsg := respModel.SysMsg{}
-
 
 		switch Type {
 		case "moment":
@@ -86,7 +86,7 @@ func Like(ctx *gin.Context) {
 				Type:      2,
 				ContentId: uint(LikeParam.Id),
 				Time:      time.Now(),
-				FromUser: nickname,
+				FromUser:  nickname,
 			}
 		case "momentcomment":
 			SenderId, err := dao.GetCommentSenderId(LikeParam.Id)
@@ -99,7 +99,7 @@ func Like(ctx *gin.Context) {
 				Type:      4,
 				ContentId: uint(LikeParam.Id),
 				Time:      time.Now(),
-				FromUser: nickname,
+				FromUser:  nickname,
 			}
 		case "cover":
 			singerId, songName, err := dao.GetCoverInfo(LikeParam.Id)
@@ -113,7 +113,7 @@ func Like(ctx *gin.Context) {
 				Song:      songName,
 				ContentId: uint(LikeParam.Id),
 				Time:      time.Now(),
-				FromUser: nickname,
+				FromUser:  nickname,
 			}
 		}
 
