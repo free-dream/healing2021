@@ -9,6 +9,7 @@ type SysMsg struct {
 	Song      string    `json:"song"`
 	Time      time.Time `json:"time"`
 	IsSend    int       `json:"isSend"`
+    FromUser  string    `json:"fromUser"`
 }
 
 type UsrMsg struct {
@@ -29,6 +30,7 @@ type Sysmsg struct {
 	Song      string    `json:"song"`
 	Time      time.Time `json:"time"`
 	IsSend    int       `json:"isSend"`
+    FromUser  string    `json:"fromUser"`
 }
 
 type Usrmsg struct {
