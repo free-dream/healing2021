@@ -40,6 +40,7 @@ type CovMsg struct {
 //结构体疑似有bug
 func GetHealingPage(selectionId int, userId int) (interface{}, error) {
 	db := setting.MysqlConn()
+	redisCli := setting.RedisConn()
 	userMsg := UsrMsg{}
 	resp := make(map[string]interface{})
 	db.Table("selection").Select("selection.user_id,user.avatar,selection.id,selection.song_name,selection.style,selection.created_at,selection.remark,user.nickname").Joins("left join user on user.id=selection.user_id").Where("selection.id=?", selectionId).Scan(&userMsg)
@@ -57,11 +58,10 @@ func GetHealingPage(selectionId int, userId int) (interface{}, error) {
 	content := make(map[int]interface{})
 	for rows.Next() {
 		err = db.ScanRows(rows, &obj)
-		db.Order("likes desc").
-			Table("praise").
-			Select("cover_id, count(*) as likes").
-			Where("cover_id = ? AND is_liked = ?", obj.ID, 1).
-			Group("cover_id").Row().Scan(obj.Likes)
+		obj.Likes, err = strconv.Atoi(redisCli.HGet("healing2021:praise of cover", strconv.Itoa(obj.ID)).Val())
+		if err != nil {
+			continue
+		}
 	}
 	//插入点赞确认
 	check, err1 := PackageCheckMysql(userId, "cover", obj.ID)
@@ -308,9 +308,15 @@ type CoverDetails struct {
 	SelectionId int    `json:"selection_id"`
 }
 
+//简单的翻唱对象
+type LikeObj struct {
+	Likes   int `json:"likes"`
+	CoverId int `json:"cover_id"`
+}
+
 //传入userid以确认
 func GetCovers(id int, tag Tags) (interface{}, error) {
-	db := setting.MysqlConn()
+	//	db := setting.MysqlConn()
 
 	redisCli := setting.RedisConn()
 	index := 0
@@ -371,20 +377,20 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
 			for i, _ := range resp {
 				//确认是否点赞
-				boolean, err := PackageCheckMysql(id, "cover", resp[i].ID)
-				if err != nil {
-					log.Printf(err.Error())
+				boolean, err1 := PackageCheckMysql(id, "cover", resp[i].ID)
+				if err1 != nil {
+					log.Printf(err1.Error())
 					resp[i].Check = 0
 				} else if boolean {
 					resp[i].Check = 1
 				} else {
 					resp[i].Check = 0
 				}
-				db.Order("likes desc").
-					Table("praise").
-					Select("cover_id, count(*) as likes").
-					Where("cover_id = ? AND is_liked = ?", resp[i].ID, 1).
-					Group("cover_id").Row().Scan(&resp[i].Likes)
+				//点赞数获取
+				resp[i].Likes, err1 = strconv.Atoi(redisCli.HGet("healing2021:praise of cover", strconv.Itoa(resp[i].ID)).Val())
+				if err1 != nil {
+					continue
+				}
 
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
@@ -399,21 +405,20 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			})
 			for i, _ := range resp {
 				//确认是否点赞
-				boolean, err := PackageCheckMysql(id, "cover", resp[i].ID)
-				if err != nil {
-					log.Printf(err.Error())
+				boolean, err1 := PackageCheckMysql(id, "cover", resp[i].ID)
+				if err1 != nil {
+					log.Printf(err1.Error())
 					resp[i].Check = 0
 				} else if boolean {
 					resp[i].Check = 1
 				} else {
 					resp[i].Check = 0
 				}
-				//
-				db.Order("likes desc").
-					Table("praise").
-					Select("cover_id, count(*) as likes").
-					Where("cover_id = ? AND is_liked = ?", resp[i].ID, 1).
-					Group("cover_id").Row().Scan(resp[i].Likes)
+				//获取点赞数
+				resp[i].Likes, err1 = strconv.Atoi(redisCli.HGet("healing2021:praise of cover", strconv.Itoa(resp[i].ID)).Val())
+				if err1 != nil {
+					continue
+				}
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
 			fmt.Println(len(resp))
@@ -435,7 +440,6 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 				index++
 			}
 		}
-
 		if tag.RankWay == 1 {
 			rand.Seed(time.Now().Unix())
 			//采用rand.Shuffle，将切片随机化处理后返回
@@ -451,12 +455,11 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 				} else {
 					resp[i].Check = 0
 				}
-				//
-				db.Order("likes desc").
-					Table("praise").
-					Select("cover_id, count(*) as likes").
-					Where("cover_id = ? AND is_liked = ?", resp[i].ID, 1).
-					Group("cover_id").Row().Scan(resp[i].Likes)
+				//点赞数获取
+				resp[i].Likes, err = strconv.Atoi(redisCli.HGet("healing2021:praise of cover", strconv.Itoa(resp[i].ID)).Val())
+				if err != nil {
+					continue
+				}
 
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
@@ -468,7 +471,6 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			sort.Slice(resp, func(i, j int) bool {
 				return resp[i].CreatedAt > resp[j].CreatedAt
 			})
-			NewT := db.Table("praise").Select("cover_id,sum(id) as likes").Group("cover_id").Where("is_liked=1")
 			for i, _ := range resp {
 				//确认是否点赞
 				boolean, err := PackageCheckMysql(id, "cover", resp[i].ID)
@@ -480,8 +482,11 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 				} else {
 					resp[i].Check = 0
 				}
-				//
-				NewT.Select("sum(id) as likes").Where("cover_id=?", resp[i].Likes).Scan(&resp[i])
+				//点赞数获取
+				resp[i].Likes, err = strconv.Atoi(redisCli.HGet("healing2021:praise of cover", strconv.Itoa(resp[i].ID)).Val())
+				if err != nil {
+					continue
+				}
 
 			}
 
@@ -494,10 +499,6 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 
 	}
 
-}
-
-type Num struct {
-	N int `json:"n"`
 }
 
 //治愈系对应的录音

@@ -305,6 +305,7 @@ func GetCallee(id int, module int) interface{} {
 
 func getPraises(value interface{}, tableName string, condition string) interface{} {
 	db := setting.MysqlConn()
+	redisCli := setting.RedisConn()
 	obj := PraiseMsgV2{}
 	resp := PraiseMsg{}
 	rows, err := db.Table(tableName).Joins("left join cover on cover.id=praise.cover_id").Where(condition, value).Rows()
@@ -335,11 +336,10 @@ func getPraises(value interface{}, tableName string, condition string) interface
 			resp.Check = 0
 		}
 		//
-		db.Order("likes desc").
-			Table("praise").
-			Select("cover_id, count(*) as likes").
-			Where("cover_id = ? AND is_liked = ?", resp.ID, 1).
-			Group("cover_id").Row().Scan(resp.Likes)
+		resp.Likes, err1 = strconv.Atoi(redisCli.HGet("healing2021:praise of cover", strconv.Itoa(resp.ID)).Val())
+		if err1 != nil {
+			continue
+		}
 		content[index] = resp
 		index++
 	}
@@ -347,6 +347,7 @@ func getPraises(value interface{}, tableName string, condition string) interface
 }
 func getCovers(tableName string, condition string, value int, module int) interface{} {
 	db := setting.MysqlConn()
+	redisCli := setting.RedisConn()
 	obj := CoverMsgV2{}
 	resp := CoverMsg{}
 	rows, _ := db.Rows()
@@ -390,6 +391,10 @@ func getCovers(tableName string, condition string, value int, module int) interf
 			resp.Check = 0
 		}
 		//
+		resp.Likes, err1 = strconv.Atoi(redisCli.HGet("healing2021:praise of cover", strconv.Itoa(resp.ID)).Val())
+		if err1 != nil {
+			continue
+		}
 		content[index] = resp
 		index++
 	}
@@ -455,7 +460,7 @@ func getMoments(value interface{}, tableName string, condition string) interface
 			resp.Check = 0
 		}
 		//
-		db.Table("praise").Where("cover_id=? and is_liked=?", resp.ID, 1).Count(&resp.Likes)
+		db.Table("praise").Where("moment_id=? and is_liked=?", resp.ID, 1).Count(&resp.Likes)
 		if err != nil {
 			panic(err)
 		}
