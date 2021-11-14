@@ -57,10 +57,11 @@ func GetHealingPage(selectionId int, userId int) (interface{}, error) {
 	content := make(map[int]interface{})
 	for rows.Next() {
 		err = db.ScanRows(rows, &obj)
-		value := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(obj.ID) + " and is_liked=1;").Value
-		if value != nil {
-			obj.Likes = value.(int)
-		}
+		db.Order("likes desc").
+			Table("praise").
+			Select("cover_id, count(*) as likes").
+			Where("cover_id = ? AND is_liked = ?", obj.ID, 1).
+			Group("cover_id").Row().Scan(obj.Likes)
 	}
 	//插入点赞确认
 	check, err1 := PackageCheckMysql(userId, "cover", obj.ID)
@@ -379,10 +380,11 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 				} else {
 					resp[i].Check = 0
 				}
-				value := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp[i].ID) + " and is_liked=1;").Value
-				if value != nil {
-					resp[i].Likes = value.(int)
-				}
+				db.Order("likes desc").
+					Table("praise").
+					Select("cover_id, count(*) as likes").
+					Where("cover_id = ? AND is_liked = ?", resp[i].ID, 1).
+					Group("cover_id").Row().Scan(resp[i].Likes)
 
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
@@ -407,11 +409,11 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 					resp[i].Check = 0
 				}
 				//
-				value := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp[i].ID) + " and is_liked=1;").Value
-				if value != nil {
-					resp[i].Likes = value.(int)
-				}
-
+				db.Order("likes desc").
+					Table("praise").
+					Select("cover_id, count(*) as likes").
+					Where("cover_id = ? AND is_liked = ?", resp[i].ID, 1).
+					Group("cover_id").Row().Scan(resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
 			fmt.Println(len(resp))
@@ -450,10 +452,11 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 					resp[i].Check = 0
 				}
 				//
-				value := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp[i].ID) + " and is_liked=1;").Value
-				if value != nil {
-					resp[i].Likes = value.(int)
-				}
+				db.Order("likes desc").
+					Table("praise").
+					Select("cover_id, count(*) as likes").
+					Where("cover_id = ? AND is_liked = ?", resp[i].ID, 1).
+					Group("cover_id").Row().Scan(resp[i].Likes)
 
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
@@ -477,10 +480,11 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 					resp[i].Check = 0
 				}
 				//
-				value := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp[i].ID) + " and is_liked=1;").Value
-				if value != nil {
-					resp[i].Likes = value.(int)
-				}
+				db.Order("likes desc").
+					Table("praise").
+					Select("cover_id, count(*) as likes").
+					Where("cover_id = ? AND is_liked = ?", resp[i].ID, 1).
+					Group("cover_id").Row().Scan(resp[i].Likes)
 			}
 
 			Cache("healing2021:home."+strconv.Itoa(id), resp)

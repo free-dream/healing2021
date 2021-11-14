@@ -335,10 +335,11 @@ func getPraises(value interface{}, tableName string, condition string) interface
 			resp.Check = 0
 		}
 		//
-		val := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp.ID) + " and is_liked=1;").Value
-		if val != nil {
-			resp.Likes = val.(int)
-		}
+		db.Order("likes desc").
+			Table("praise").
+			Select("cover_id, count(*) as likes").
+			Where("cover_id = ? AND is_liked = ?", resp.ID, 1).
+			Group("cover_id").Row().Scan(resp.Likes)
 		content[index] = resp
 		index++
 	}
@@ -371,10 +372,11 @@ func getCovers(tableName string, condition string, value int, module int) interf
 		resp.SelectionId = obj.SelectionId
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		resp.SongName = obj.SongName
-		val := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp.ID) + " and is_liked=1;").Value
-		if val != nil {
-			resp.Likes = val.(int)
-		}
+		db.Order("likes desc").
+			Table("praise").
+			Select("cover_id, count(*) as likes").
+			Where("cover_id = ? AND is_liked = ?", resp.ID, 1).
+			Group("cover_id").Row().Scan(resp.Likes)
 
 		//插入点赞确认
 		userid := value
@@ -436,10 +438,11 @@ func getMoments(value interface{}, tableName string, condition string) interface
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		resp.SongName = obj.SongName
 		resp.Content = obj.Content
-		val := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp.ID) + " and is_liked=1").Value
-		if val != nil {
-			resp.Likes = val.(int)
-		}
+		db.Order("likes desc").
+			Table("praise").
+			Select("cover_id, count(*) as likes").
+			Where("cover_id = ? AND is_liked = ?", resp.ID, 1).
+			Group("cover_id").Row().Scan(resp.Likes)
 		//插入check
 		coverid, _ := value.(int)
 		check, err := PackageCheckMysql(coverid, "moment", obj.ID)
