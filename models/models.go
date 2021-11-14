@@ -245,16 +245,10 @@ func CreateFakeCovers(uid int, name string, cid int, classicId int, module int) 
 }
 func AddFakeCovers() {
 	// 经典翻唱 5
-	for index := 1; index < 6; index++ {
+	for index := 1; index < 19; index++ {
 		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, 0, 1)
 	}
 
-	// 童年翻唱 3x13=39
-	for index := 1; index < 14; index++ {
-		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, index, 2)
-		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, index, 2)
-		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, index, 2)
-	}
 	CreateDummyCovers()
 }
 
