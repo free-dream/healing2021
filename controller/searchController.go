@@ -52,6 +52,12 @@ func Search(ctx *gin.Context) {
 		return
 	}
 	keyword := key.Keyword
+	//空串处理
+	if keyword == "" {
+		respAll = append(respAll, respLen, respUsers, respSelections, respCovers)
+		ctx.JSON(200, respAll)
+		return
+	}
 
 	//确认是否是电话查询
 	if IsTelSearch(keyword) {
