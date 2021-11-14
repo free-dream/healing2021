@@ -241,6 +241,7 @@ func (conn *Connection) chatWatcher(data []byte, uid string) {
 		}
 
         toUserName, sqlErr := dao.GetUserById(int(newUsrMsg.ToUser))
+        fromUserName, _ := dao.GetUserById(int(newUsrMsg.FromUser))
         if sqlErr == false {
 			conn.writeMessage([]byte("receiver is not exist"))
             return
@@ -248,6 +249,7 @@ func (conn *Connection) chatWatcher(data []byte, uid string) {
 		newConn, isConn := getNewConn(uint2str(newUsrMsg.ToUser))
         newUsrMsg.CreatedAt = time.Now()
         newUsrMsg.ToUserName = toUserName.Nickname
+        newUsrMsg.FromUserName = fromUserName.Nickname
 		if !isConn {
 			if bErr := dao.UsrBackUp(newUsrMsg, 2); bErr != nil {
 				//conn.writeMessage([]byte(bErr.Error()))
