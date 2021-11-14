@@ -58,6 +58,7 @@ func GetCoversByLikes() ([]tables.Cover, []resp.CoverRank, error) {
 	err := mysqlDb.Order("likes desc").
 		Table("praise").
 		Select("cover_id, count(cover_id) as likes").
+		Where("is_liked = ?", 1).
 		Group("cover_id").
 		Limit(10).
 		Scan(&likes).Error

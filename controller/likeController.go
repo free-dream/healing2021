@@ -55,6 +55,9 @@ func Like(ctx *gin.Context) {
 		if dao.IsLikesExistError(ok) {
 			ctx.JSON(405, e.ErrMsgResponse{Message: "不允许重复点赞"})
 			return
+		} else if dao.IsZeroUserIdError(ok) {
+			ctx.JSON(406, e.ErrMsgResponse{Message: "传入用户id为0"})
+			return
 		}
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入错误"})
 		return

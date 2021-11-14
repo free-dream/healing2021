@@ -12,14 +12,28 @@ import (
 
 //自定义错误
 type LikesExistError struct{}
+type ZeroUserIdError struct{}
 
 func (l *LikesExistError) Error() string {
 	return "点赞/取消点赞失败,redis记录不匹配"
 }
 
+func (l *ZeroUserIdError) Error() string {
+	return "当前用户id为0,无法点赞"
+}
+
 //重复点赞判断函数
 func IsLikesExistError(err error) bool {
 	if err.Error() == "点赞/取消点赞失败,redis记录不匹配" {
+		return true
+	} else {
+		return false
+	}
+}
+
+//0用户id判断参数
+func IsZeroUserIdError(err error) bool {
+	if err.Error() == "当前用户id为0,无法点赞" {
 		return true
 	} else {
 		return false
@@ -87,6 +101,10 @@ func CheckMysql(lock *gorm.DB, user int, target int, kind string, likes int, cho
 
 //基于直接点赞更新mysql，加锁
 func UpdateLikesByID(user int, target int, likes int, kind string) error {
+	if user == 0 {
+		var err error = &ZeroUserIdError{}
+		return err
+	}
 	mysqlDb := db.MysqlConn()
 	var (
 		err  error
@@ -118,13 +136,8 @@ func UpdateLikesByID(user int, target int, likes int, kind string) error {
 			return err
 		}
 	} else {
-		check, err2 := CheckMysql(lock, user, target, kind, likes, false)
-		if check == false && err2 == nil {
-			var err1 error = &LikesExistError{}
-			return err1
-		} else if check == false && err2 != nil {
-			return err2
-		}
+		var err1 error = &LikesExistError{}
+		return err1
 	}
 	if likes == 1 { //创建点赞表,更新coverLikes字段
 		switch kind {
