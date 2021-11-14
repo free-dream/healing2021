@@ -375,7 +375,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 				} else {
 					resp[i].Check = 0
 				}
-				db.Raw("select count(*) praise where cover_id="+strconv.Itoa(resp[i].ID)+"and is_liked=1", &resp[i].Likes)
+				db.Raw("select count(*) from praise where cover_id="+strconv.Itoa(resp[i].ID)+"and is_liked=1", &resp[i].Likes)
 
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
@@ -400,7 +400,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 					resp[i].Check = 0
 				}
 				//
-				db.Raw("select count(*) praise where cover_id="+strconv.Itoa(resp[i].ID)+"and is_liked=1", &resp[i].Likes)
+				db.Raw("select count(*) form praise where cover_id="+strconv.Itoa(resp[i].ID)+"and is_liked=1", &resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
 			fmt.Println(len(resp))
@@ -439,7 +439,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 					resp[i].Check = 0
 				}
 				//
-				db.Raw("select count(*) praise where cover_id="+strconv.Itoa(resp[i].ID)+"and is_liked=1", &resp[i].Likes)
+				db.Raw("select count(*) from praise where cover_id="+strconv.Itoa(resp[i].ID)+"and is_liked=1", &resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
 			if len(resp) > 10 {
@@ -462,7 +462,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 					resp[i].Check = 0
 				}
 				//
-				db.Raw("select count(*) praise where cover_id="+strconv.Itoa(resp[i].ID)+"and is_liked=1", &resp[i].Likes)
+				db.Raw("select count(*) from praise where cover_id="+strconv.Itoa(resp[i].ID)+"and is_liked=1", &resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
 			if len(resp) > 10 {
