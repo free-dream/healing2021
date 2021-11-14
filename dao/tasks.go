@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"git.100steps.top/100steps/healing2021_be/models/statements"
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	db "git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
@@ -8,6 +9,13 @@ import (
 //基于给定数据生成tasktable,用于用户初始化
 func GenerateTasktable(tids []int, userid int) error {
 	mysqlDb := db.MysqlConn()
+	//补一个任务查重
+	var temp []statements.TaskTable
+	mysqlDb.Where("user_id = ?", userid).Find(&temp)
+	if len(temp) > 0 {
+		return nil
+	}
+	//
 	for tid := range tids {
 		task := tables.TaskTable{
 			TaskId:  tids[tid],
