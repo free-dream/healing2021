@@ -240,6 +240,11 @@ func (conn *Connection) chatWatcher(data []byte, uid string) {
 			return
 		}
 
+        toUserName, sqlErr := dao.GetUserById(int(newUsrMsg.ToUser))
+        if sqlErr == false {
+			conn.writeMessage([]byte("receiver is not exist"))
+            return
+        }
 		newConn, isConn := getNewConn(uint2str(newUsrMsg.ToUser))
 		if !isConn {
 			if bErr := dao.UsrBackUp(newUsrMsg, 2); bErr != nil {
@@ -255,8 +260,11 @@ func (conn *Connection) chatWatcher(data []byte, uid string) {
 			conn.writeMessage([]byte("Fail to storage data"))
 			return
 		}
+        newUsrMsg.CreatedAt = time.Now()
+        newUsrMsg.ToUserName = toUserName.Nickname
+        newData, _ := json.Marshal(newUsrMsg)
+		newConn.writeMessage(newData)
 		conn.writeMessage([]byte("ok"))
-		newConn.writeMessage(data)
 	}
 }
 
@@ -266,14 +274,21 @@ type SysMsg struct {
 	ContentId uint      `json:"contentId"`
 	Song      string    `json:"song"`
 	Time      time.Time `json:"time"`
+	IsSend    int       `json:"isSend"`
+    FromUser  string    `json:"fromUser"`
 }
 
 type UsrMsg struct {
-	FromUser uint   `json:"fromUser"`
-	ToUser   uint   `json:"toUser"`
-	Url      string `json:"user"` //录音url
-	Song     string `json:"song"` //歌名
-	Message  string `json:"message"`
+	FromUser  uint      `json:"fromUser"`
+	ToUser    uint      `json:"toUser"`
+    FromUserName string `json:"fromUserName"`
+    ToUserName string   `json:"toUserName"`
+	Url       string    `json:"user"` //录音url
+	Song      string    `json:"song"` //歌名
+	SongId    uint      `json:"songId"`
+	Message   string    `json:"message"`
+	IsSend    int       `json:"isSend"`
+	CreatedAt time.Time `json:"time"`
 }
 
 func (conn *Connection) SendSystemMsg(sysMsg respModel.SysMsg) error {
