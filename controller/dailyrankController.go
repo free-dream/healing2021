@@ -86,13 +86,16 @@ func GetAllrank(ctx *gin.Context) {
 		//
 
 		respCover := resp.HotResp{
-			CoverId:  coverid,
-			Avatar:   avatar,
-			Nickname: nickname,
-			Posttime: cover.CreatedAt.String(),
-			Likes:    likes[i].Likes,
-			Songname: cover.SongName,
-			Check:    check,
+			CoverId:     coverid,
+			Avatar:      avatar,
+			Nickname:    nickname,
+			Posttime:    cover.CreatedAt.String(),
+			Likes:       likes[i].Likes,
+			Songname:    cover.SongName,
+			Check:       check,
+			Module:      cover.Module,
+			SelectionId: cover.SelectionId,
+			ClassicId:   cover.ClassicId,
 		}
 		respCovers = append(respCovers, respCover)
 	}
@@ -185,13 +188,16 @@ func GetDailyrank(ctx *gin.Context) {
 		//
 
 		respCover := resp.HotResp{
-			CoverId:  likes[i].CoverId,
-			Avatar:   avatar,
-			Nickname: nickname,
-			Posttime: cover.CreatedAt.String(),
-			Songname: cover.SongName,
-			Likes:    likes[i].Likes,
-			Check:    check,
+			CoverId:     likes[i].CoverId,
+			Avatar:      avatar,
+			Nickname:    nickname,
+			Posttime:    cover.CreatedAt.String(),
+			Songname:    cover.SongName,
+			Likes:       likes[i].Likes,
+			Check:       check,
+			Module:      cover.Module,
+			SelectionId: cover.SelectionId,
+			ClassicId:   cover.ClassicId,
 		}
 		respCovers = append(respCovers, respCover)
 	}
