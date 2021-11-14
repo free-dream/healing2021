@@ -78,7 +78,7 @@ func GetAllrank(ctx *gin.Context) {
 			check = 0
 		}
 
-		//权宜之计
+		//取用头像
 		avatar, errA := dao.GetUserAvatar(cover.UserId)
 		if errA != nil {
 			log.Printf(errA.Error()) //一般不会出问题
@@ -177,7 +177,7 @@ func GetDailyrank(ctx *gin.Context) {
 		}
 		//
 
-		//权宜之计
+		//取用头像
 		avatar, errA := dao.GetUserAvatar(cover.UserId)
 		if errA != nil {
 			log.Printf(errA.Error()) //一般不会出问题

@@ -47,8 +47,11 @@ func GetUserNickname(userid int) (string, error) {
 //获取用户的avatar
 func GetUserAvatar(userid int) (string, error) {
 	var user tables.User
-	err := MysqlDb.Where("id = ?", userid).First(&user).Error
+	err := MysqlDb.Where("id = ? AND avatar_visible = ?", userid, 1).First(&user).Error
 	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return "", nil
+		}
 		return "", err
 	}
 	return user.Avatar, nil

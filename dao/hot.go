@@ -29,6 +29,7 @@ func GetCoversByDate(date string) ([]tables.Cover, []resp.CoverRank, error) {
 	err := mysqlDb.Order("likes desc").
 		Table("praise").
 		Select("cover_id, count(cover_id) as likes").
+		Where("cover_id <> ? AND is_liked = ?", 0, 1).
 		Group("cover_id").
 		Limit(10).
 		Where("cover_id in (?)", subquery).
@@ -58,7 +59,7 @@ func GetCoversByLikes() ([]tables.Cover, []resp.CoverRank, error) {
 	err := mysqlDb.Order("likes desc").
 		Table("praise").
 		Select("cover_id, count(cover_id) as likes").
-		Where("is_liked = ?", 1).
+		Where("cover_id <> ? AND is_liked = ?", 0, 1).
 		Group("cover_id").
 		Limit(10).
 		Scan(&likes).Error
