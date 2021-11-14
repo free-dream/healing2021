@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -161,7 +160,6 @@ func PostMoment(ctx *gin.Context) {
 	Moment.UserId = param.UserId
 	Moment.State = tools.EncodeStrArr(NewMoment.Status)
 
-	fmt.Println(Moment.Module)
 
 	// 存入数据库
 	if ok := dao.CreateMoment(Moment); !ok {
@@ -270,6 +268,7 @@ func PostComment(ctx *gin.Context) {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
 		return
 	}
+
 	err = conn.SendSystemMsg(respModel.SysMsg{
 		Uid:       uint(userId),
 		Type:      3,
