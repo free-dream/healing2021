@@ -27,9 +27,12 @@ type SelectionResp struct {
 
 // 搜索翻唱信息返回
 type CoversResp struct {
-	Coverid  int       `json:"cover_id"`
-	Avatar   string    `json:"avatar"`
-	Posttime time.Time `json:"post_time"`
-	Songname string    `json:"song_name"`
-	Nickname string    `json:"nickname"`
+	Coverid     int       `json:"cover_id"`
+	Avatar      string    `json:"avatar"`
+	Posttime    time.Time `json:"post_time"`
+	Songname    string    `json:"song_name"`
+	Nickname    string    `json:"nickname"`
+	Module      int       `json:"module"`
+	SelectionId string    `json:"selection_id"`
+	ClassicId   int       `json:"classic_id"`
 }

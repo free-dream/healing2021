@@ -486,7 +486,14 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 	if result1.Error != nil {
 		return 0, CoverDetails{}, errors.New("selection_id is invalid")
 	}
+	//补一个拿人头的
+	avatar, err1 := GetUserAvatar(uid)
+	if err1 != nil {
+		log.Printf(err1.Error())
+	}
+	//
 	var cover statements.Cover
+	cover.Avatar = avatar
 	cover.SelectionId = strconv.Itoa(selectionId)
 	cover.UserId = userId
 	cover.SongName = selection.SongName
