@@ -54,6 +54,7 @@ func GetAllrank(ctx *gin.Context) {
 		return
 	}
 	for i, cover := range raws {
+		//尽量避免查询出问题
 		nickname, err := dao.GetUserNickname(cover.UserId)
 		if err != nil {
 			if gorm.IsRecordNotFoundError(err) {

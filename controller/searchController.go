@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 
@@ -60,9 +59,6 @@ func Search(ctx *gin.Context) {
 		if err != nil {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 		}
-		//
-		fmt.Println("触发")
-		//
 		respLen.LenUser = lenuser
 		for _, user := range rawUsers {
 			if user.ID == 0 {
