@@ -481,10 +481,20 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 	redisCli := setting.RedisConn()
 
 	userId := uid
+	var cover statements.Cover
 	var selection statements.Selection
-	result1 := db.Model(&statements.Selection{}).Where("id=?", selectionId).First(&selection)
-	if result1.Error != nil {
-		return 0, CoverDetails{}, errors.New("selection_id is invalid")
+	var classic statements.Classic
+	switch module {
+	case 1:
+		cover.SelectionId = strconv.Itoa(selectionId)
+		db.Model(&statements.Selection{}).Where("id=?", selectionId).Scan(&selection)
+		cover.Style = selection.Style
+		cover.Language = selection.Language
+		cover.SongName = selection.SongName
+	case 2:
+		cover.ClassicId = selectionId
+		db.Model(&statements.Classic{}).Where("id=?", selectionId).Scan(&classic)
+		cover.SongName = classic.SongName
 	}
 	//补一个拿人头的
 	avatar, err1 := GetUserAvatar(uid)
@@ -492,21 +502,9 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 		log.Printf(err1.Error())
 	}
 	//
-	var cover statements.Cover
 	cover.Avatar = avatar
-	switch module {
-	case 1:
-		cover.SelectionId = strconv.Itoa(selectionId)
-	case 2:
-		cover.ClassicId = selectionId
-
-	}
-
 	cover.UserId = userId
-	cover.SongName = selection.SongName
 	cover.File = file
-	cover.Style = selection.Style
-	cover.Language = selection.Language
 	cover.Module = module
 	cover.IsAnon = isAnon
 	coverDetails := CoverDetails{}
