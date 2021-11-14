@@ -51,7 +51,6 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 		//fmt.Println(len(MomentRecords))
 		for _, record := range MomentRecords {
 			moment := statements.Moment{}
-			fmt.Println(record)
 			if err := MysqlDB.Where("id=?", record.MomentId).First(&moment).Error; err != nil {
 				return AllMoment, false
 			}
@@ -208,7 +207,7 @@ type MomentSenderId struct {
 func GetMomentSenderId(MomentId int) (int, error) {
 	momentSenderId := MomentSenderId{}
 	db := setting.MysqlConn()
-	err := db.Model(&statements.Moment{}).Where("id=?", MomentId).Scan(&momentSenderId).Error
+	err := db.Model(&statements.Moment{}).Select("user_id").Where("id=?", MomentId).Scan(&momentSenderId).Error
 	return momentSenderId.UserId, err
 }
 
@@ -220,6 +219,6 @@ type CommentSenderId struct {
 func GetCommentSenderId(CommentId int) (int, error) {
 	commentSenderId := MomentSenderId{}
 	db := setting.MysqlConn()
-	err := db.Model(&statements.MomentComment{}).Where("id=?", CommentId).Scan(&commentSenderId).Error
+	err := db.Model(&statements.MomentComment{}).Select("user_id").Where("id=?", CommentId).Scan(&commentSenderId).Error
 	return commentSenderId.UserId, err
 }
