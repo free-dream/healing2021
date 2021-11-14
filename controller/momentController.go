@@ -45,7 +45,7 @@ func GetMomentList(ctx *gin.Context) {
 	// 从数据库中得到经过筛选的一页 Momment 列表
 	AllMoment, ok := dao.GetMomentPage(Method, Keyword, Page)
 	if !ok {
-		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败"})
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败1"})
 		return
 	}
 
@@ -55,7 +55,7 @@ func GetMomentList(ctx *gin.Context) {
 		User := statements.User{}
 		User, ok := dao.GetUserById(OneMoment.UserId)
 		if !ok {
-			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败"})
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败2"})
 			return
 		}
 

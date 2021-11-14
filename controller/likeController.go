@@ -75,6 +75,9 @@ func Like(ctx *gin.Context) {
 				ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
 				return
 			}
+			//fmt.Println("====")
+			//fmt.Println(SenderId, LikeParam.Id)
+			//fmt.Println("====")
 			sysMsg = respModel.SysMsg{
 				Uid:       uint(SenderId),
 				Type:      3,
@@ -87,6 +90,9 @@ func Like(ctx *gin.Context) {
 				ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
 				return
 			}
+			//fmt.Println("====")
+			//fmt.Println(SenderId, LikeParam.Id)
+			//fmt.Println("====")
 			sysMsg = respModel.SysMsg{
 				Uid:       uint(SenderId),
 				Type:      4,
@@ -99,11 +105,15 @@ func Like(ctx *gin.Context) {
 				ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
 				return
 			}
+			//fmt.Println("====")
+			//fmt.Println(singerId, songName)
+			//fmt.Println("====")
 			sysMsg = respModel.SysMsg{
-				Uid:  uint(singerId),
-				Type: 2,
-				Song: songName,
-				Time: time.Now(),
+				Uid:       uint(singerId),
+				Type:      2,
+				Song:      songName,
+				ContentId: uint(LikeParam.Id),
+				Time:      time.Now(),
 			}
 		}
 
