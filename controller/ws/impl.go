@@ -246,6 +246,8 @@ func (conn *Connection) chatWatcher(data []byte, uid string) {
             return
         }
 		newConn, isConn := getNewConn(uint2str(newUsrMsg.ToUser))
+        newUsrMsg.CreatedAt = time.Now()
+        newUsrMsg.ToUserName = toUserName.Nickname
 		if !isConn {
 			if bErr := dao.UsrBackUp(newUsrMsg, 2); bErr != nil {
 				//conn.writeMessage([]byte(bErr.Error()))
@@ -260,8 +262,6 @@ func (conn *Connection) chatWatcher(data []byte, uid string) {
 			conn.writeMessage([]byte("Fail to storage data"))
 			return
 		}
-        newUsrMsg.CreatedAt = time.Now()
-        newUsrMsg.ToUserName = toUserName.Nickname
         newData, _ := json.Marshal(newUsrMsg)
 		newConn.writeMessage(newData)
 		conn.writeMessage([]byte("ok"))
