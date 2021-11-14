@@ -336,7 +336,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 				lenth := redisCli.LLen("healing2021:cover." + strconv.Itoa(1) + "." + value).Val()
 				size += int(lenth)
 			}
-			resp = make([]CoverDetails, size)
+			resp = make([]CoverDetails, 0)
 			vresp := make([]CoverDetails, size)
 			mresp := make(map[CoverDetails]bool)
 			for _, value := range hobby {
