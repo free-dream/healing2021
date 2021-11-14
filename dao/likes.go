@@ -203,3 +203,11 @@ func markMomentInPraise(momentId int) error {
 	err := mysqlDb.Create(&like).Error
 	return err
 }
+
+func ViolenceGetLikeNum(id int, ch chan int) int {
+	db := setting.MysqlConn()
+	num := 0
+	db.Select("praise").Where("cover_id=? and is_liked=?", id, 1).Count(&num)
+	ch <- id
+	return num
+}

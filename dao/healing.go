@@ -384,7 +384,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 					Table("praise").
 					Select("cover_id, count(*) as likes").
 					Where("cover_id = ? AND is_liked = ?", resp[i].ID, 1).
-					Group("cover_id").Row().Scan(resp[i].Likes)
+					Group("cover_id").Row().Scan(&resp[i].Likes)
 
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
@@ -468,6 +468,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			sort.Slice(resp, func(i, j int) bool {
 				return resp[i].CreatedAt > resp[j].CreatedAt
 			})
+			NewT := db.Table("praise").Select("cover_id,sum(id) as likes").Group("cover_id").Where("is_liked=1")
 			for i, _ := range resp {
 				//确认是否点赞
 				boolean, err := PackageCheckMysql(id, "cover", resp[i].ID)
@@ -480,11 +481,8 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 					resp[i].Check = 0
 				}
 				//
-				db.Order("likes desc").
-					Table("praise").
-					Select("cover_id, count(*) as likes").
-					Where("cover_id = ? AND is_liked = ?", resp[i].ID, 1).
-					Group("cover_id").Row().Scan(resp[i].Likes)
+				NewT.Select("sum(id) as likes").Where("cover_id=?", resp[i].Likes).Scan(&resp[i])
+
 			}
 
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
@@ -496,6 +494,10 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 
 	}
 
+}
+
+type Num struct {
+	N int `json:"n"`
 }
 
 //治愈系对应的录音
