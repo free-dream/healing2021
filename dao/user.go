@@ -213,7 +213,7 @@ type SelectionMsgV2 struct {
 }
 type CoverMsg struct {
 	ID          int    `json:"id"`
-	SelectionId int    `json:"selection_id"`
+	SelectionId string `json:"selection_id"`
 	SongName    string `json:"song_name"`
 	CreatedAt   string `json:"created_at"`
 	Likes       int    `json:"likes"`
@@ -221,7 +221,7 @@ type CoverMsg struct {
 }
 type CoverMsgV2 struct {
 	ID          int       `json:"id"`
-	SelectionId int       `json:"selection_id"`
+	SelectionId string    `json:"selection_id"`
 	SongName    string    `json:"song_name"`
 	CreatedAt   time.Time `json:"created_at"`
 }
