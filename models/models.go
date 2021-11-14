@@ -245,16 +245,10 @@ func CreateFakeCovers(uid int, name string, cid int, classicId int, module int) 
 }
 func AddFakeCovers() {
 	// 经典翻唱 5
-	for index := 1; index < 6; index++ {
+	for index := 1; index < 19; index++ {
 		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, 0, 1)
 	}
 
-	// 童年翻唱 3x13=39
-	for index := 1; index < 14; index++ {
-		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, index, 2)
-		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, index, 2)
-		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, index, 2)
-	}
 	CreateDummyCovers()
 }
 
@@ -283,7 +277,7 @@ func AddFakePraises() {
 }
 
 //假动态
-func CreateFakeMoment(id int, likes int, content string, songName string, selectId int, states string, picture string) {
+func CreateFakeMoment(id int, content string, songName string, selectId int, states string) {
 	Moment := statements.Moment{
 		UserId:      id,
 		Content:     content,
@@ -296,14 +290,9 @@ func CreateFakeMoment(id int, likes int, content string, songName string, select
 	db.Create(&Moment)
 }
 func AddFakeMoments() {
-	CreateFakeMoment(1, 2, "第一条假动态", "第一首假点歌", 1, "状态1", "图片1地址")
-	CreateFakeMoment(1, 2, "第二条假动态", "第二首假点歌", 1, "状态2", "图片2地址")
-	CreateFakeMoment(1, 2, "第三条假动态", "第三首假点歌", 1, "状态3", "图片3地址")
-	CreateFakeMoment(1, 2, "第四条假动态", "第四首假点歌", 1, "状态4", "图片4地址")
-	CreateFakeMoment(1, 2, "第五条假动态", "第五首假点歌", 1, "状态5", "图片5地址")
-	CreateFakeMoment(1, 2, "第六条假动态", "第六首假点歌", 1, "状态6", "图片6地址")
-	CreateFakeMoment(1, 2, "第七条假动态", "第七首假点歌", 1, "状态7", "图片7地址")
-	CreateFakeMoment(1, 2, "第八条假动态", "第八首假点歌", 1, "状态8", "图片8地址")
+	for i := 1; i < 60; i++ {
+		CreateFakeMoment(i, "第"+strconv.Itoa(i)+"条假动态", "第"+strconv.Itoa(i)+"首假点歌", 1, "状态"+strconv.Itoa(i))
+	}
 }
 
 // 假评论

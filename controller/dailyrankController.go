@@ -54,6 +54,7 @@ func GetAllrank(ctx *gin.Context) {
 		return
 	}
 	for i, cover := range raws {
+		//尽量避免查询出问题
 		nickname, err := dao.GetUserNickname(cover.UserId)
 		if err != nil {
 			if gorm.IsRecordNotFoundError(err) {
@@ -77,7 +78,7 @@ func GetAllrank(ctx *gin.Context) {
 			check = 0
 		}
 
-		//权宜之计
+		//取用头像
 		avatar, errA := dao.GetUserAvatar(cover.UserId)
 		if errA != nil {
 			log.Printf(errA.Error()) //一般不会出问题
@@ -85,13 +86,16 @@ func GetAllrank(ctx *gin.Context) {
 		//
 
 		respCover := resp.HotResp{
-			CoverId:  coverid,
-			Avatar:   avatar,
-			Nickname: nickname,
-			Posttime: cover.CreatedAt.String(),
-			Likes:    likes[i].Likes,
-			Songname: cover.SongName,
-			Check:    check,
+			CoverId:     coverid,
+			Avatar:      avatar,
+			Nickname:    nickname,
+			Posttime:    cover.CreatedAt.String(),
+			Likes:       likes[i].Likes,
+			Songname:    cover.SongName,
+			Check:       check,
+			Module:      cover.Module,
+			SelectionId: cover.SelectionId,
+			ClassicId:   cover.ClassicId,
 		}
 		respCovers = append(respCovers, respCover)
 	}
@@ -176,7 +180,7 @@ func GetDailyrank(ctx *gin.Context) {
 		}
 		//
 
-		//权宜之计
+		//取用头像
 		avatar, errA := dao.GetUserAvatar(cover.UserId)
 		if errA != nil {
 			log.Printf(errA.Error()) //一般不会出问题
@@ -184,13 +188,16 @@ func GetDailyrank(ctx *gin.Context) {
 		//
 
 		respCover := resp.HotResp{
-			CoverId:  likes[i].CoverId,
-			Avatar:   avatar,
-			Nickname: nickname,
-			Posttime: cover.CreatedAt.String(),
-			Songname: cover.SongName,
-			Likes:    likes[i].Likes,
-			Check:    check,
+			CoverId:     likes[i].CoverId,
+			Avatar:      avatar,
+			Nickname:    nickname,
+			Posttime:    cover.CreatedAt.String(),
+			Songname:    cover.SongName,
+			Likes:       likes[i].Likes,
+			Check:       check,
+			Module:      cover.Module,
+			SelectionId: cover.SelectionId,
+			ClassicId:   cover.ClassicId,
 		}
 		respCovers = append(respCovers, respCover)
 	}

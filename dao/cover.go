@@ -55,9 +55,15 @@ type CoverInfo struct {
 
 func GetCoverInfo(CoverId int) (int, string, error) {
 	MysqlDB := setting.MysqlConn()
-	coverInfo := CoverInfo{}
-	err := MysqlDB.Table("cover").Select("user_id,song_name").Where("id=?", CoverId).Scan(&coverInfo).Error
-	return coverInfo.Singer, coverInfo.SongName, err
+	//coverInfo := CoverInfo{}
+	//err := MysqlDB.Table("cover").Select("user_id,song_name").Where("id=?", CoverId).Scan(&coverInfo).Error
+	coverInfo := statements.Cover{}
+	err:=MysqlDB.Where("id=?", CoverId).First(&coverInfo).Error
+	if err != nil {
+		return 0, "", err
+	}
+	//return coverInfo.Singer, coverInfo.SongName, err
+	return coverInfo.UserId, coverInfo.SongName, err
 }
 
 // 判断某用户是否点赞

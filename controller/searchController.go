@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"fmt"
+	"log"
 	"regexp"
 	"strings"
 
@@ -53,6 +53,12 @@ func Search(ctx *gin.Context) {
 		return
 	}
 	keyword := key.Keyword
+	//空串处理
+	if keyword == "" {
+		respAll = append(respAll, respLen, respUsers, respSelections, respCovers)
+		ctx.JSON(200, respAll)
+		return
+	}
 
 	//确认是否是电话查询
 	if IsTelSearch(keyword) {
@@ -60,9 +66,6 @@ func Search(ctx *gin.Context) {
 		if err != nil {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 		}
-		//
-		fmt.Println("触发")
-		//
 		respLen.LenUser = lenuser
 		for _, user := range rawUsers {
 			if user.ID == 0 {
@@ -96,12 +99,25 @@ func Search(ctx *gin.Context) {
 		if cover.ID == 0 {
 			continue
 		}
+		var avatar string
+		if cover.Avatar == "" {
+			var errA1 error
+			avatar, errA1 = dao.GetUserAvatar(cover.UserId)
+			if errA1 != nil {
+				log.Printf(errA1.Error())
+			}
+		} else {
+			avatar = cover.Avatar
+		}
 		temp := respModel.CoversResp{
-			Avatar:   cover.Avatar,
-			Coverid:  int(cover.ID),
-			Nickname: nickname,
-			Posttime: cover.CreatedAt,
-			Songname: cover.SongName,
+			Avatar:      avatar,
+			Coverid:     int(cover.ID),
+			Nickname:    nickname,
+			Posttime:    cover.CreatedAt,
+			Songname:    cover.SongName,
+			Module:      cover.Module,
+			SelectionId: cover.SelectionId,
+			ClassicId:   cover.ClassicId,
 		}
 		respCovers = append(respCovers, temp)
 	}
@@ -120,7 +136,12 @@ func Search(ctx *gin.Context) {
 		if err != nil {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 		}
+		avatar, err1 := dao.GetUserAvatar(selection.UserId)
+		if err1 != nil {
+			log.Printf(err1.Error())
+		}
 		temp := respModel.SelectionResp{
+			Avatar:      avatar,
 			Selectionid: int(selection.ID),
 			Nickname:    nickname,
 			Posttime:    selection.CreatedAt,

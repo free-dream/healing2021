@@ -31,7 +31,7 @@ func SearchUserByTel(tel string) ([]statements.User, int, error) {
 	mysqlDb := setting.MysqlConn()
 	var data []statements.User
 	var counter int
-	db := mysqlDb.Limit(30).Where("phone_number = ? AND phone_search = ?", tel, 1).Find(&data)
+	db := mysqlDb.Limit(30).Where("phone_number = ? AND phone_search = ?", tel, 0).Find(&data)
 	err := db.Error
 	if err != nil {
 		return nil, -1, err
@@ -49,7 +49,7 @@ func SearchUserByKeyword(keyword string) ([]statements.User, int, error) {
 		width int
 		check bool
 	)
-	db1 := mysqlDb.Where("real_name_search = ? AND real_name = ?", 1, keyword).Find(&real)
+	db1 := mysqlDb.Where("real_name_search = ? AND real_name = ?", 0, keyword).Find(&real)
 	err := db1.Error
 	if err != nil {
 		log.Printf(err.Error())

@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -46,7 +45,7 @@ func GetMomentList(ctx *gin.Context) {
 	// 从数据库中得到经过筛选的一页 Momment 列表
 	AllMoment, ok := dao.GetMomentPage(Method, Keyword, Page)
 	if !ok {
-		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败"})
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败1"})
 		return
 	}
 
@@ -56,7 +55,7 @@ func GetMomentList(ctx *gin.Context) {
 		User := statements.User{}
 		User, ok := dao.GetUserById(OneMoment.UserId)
 		if !ok {
-			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败"})
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败2"})
 			return
 		}
 
@@ -161,7 +160,6 @@ func PostMoment(ctx *gin.Context) {
 	Moment.UserId = param.UserId
 	Moment.State = tools.EncodeStrArr(NewMoment.Status)
 
-	fmt.Println(Moment.Module)
 
 	// 存入数据库
 	if ok := dao.CreateMoment(Moment); !ok {
@@ -264,17 +262,24 @@ func PostComment(ctx *gin.Context) {
 	}
 
 	// 发送相应的系统消息[有 实际评论写入成功，但是系统消息发送失败 的不一致风险]
+	nickname, err := dao.GetUserNickname(UserId)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+		return
+	}
 	conn := ws.GetConn()
 	userId, err := dao.GetMomentSenderId(NewComment.DynamicsId)
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
 		return
 	}
+
 	err = conn.SendSystemMsg(respModel.SysMsg{
 		Uid:       uint(userId),
 		Type:      3,
 		ContentId: uint(commentId),
 		Time:      time.Now(),
+		FromUser: nickname,
 	})
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
