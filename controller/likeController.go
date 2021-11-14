@@ -80,7 +80,7 @@ func Like(ctx *gin.Context) {
 			//fmt.Println("====")
 			sysMsg = respModel.SysMsg{
 				Uid:       uint(SenderId),
-				Type:      3,
+				Type:      2,
 				ContentId: uint(LikeParam.Id),
 				Time:      time.Now(),
 			}
@@ -110,7 +110,7 @@ func Like(ctx *gin.Context) {
 			//fmt.Println("====")
 			sysMsg = respModel.SysMsg{
 				Uid:       uint(singerId),
-				Type:      2,
+				Type:      1,
 				Song:      songName,
 				ContentId: uint(LikeParam.Id),
 				Time:      time.Now(),
