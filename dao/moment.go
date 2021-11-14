@@ -10,8 +10,6 @@ import (
 // 获取指定的一页(十条)动态
 type ForPraiseMRecord struct {
 	MomentId int `gorm:"moment_id"`
-	Tot      int `gorm:"count(is_liked)"`
-	//Tot int `gorm:"tot"`
 }
 
 func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment, bool) {
@@ -27,9 +25,7 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 		// 先查点赞表找到对应的动态
 		var MomentRecords []ForPraiseMRecord
 		var MomentRecord ForPraiseMRecord
-		rows, err := MysqlDB.Model(&statements.Praise{}).Select("moment_id, count(is_liked)").Where("moment_id<>?", 0).Group("moment_id").Order("count(is_liked) DESC").Offset(Page * 10).Limit(10).Rows()
-		//SQLstr := "select aa.moment_id, tot1+tot2 as tot from (select moment_id, count(moment_id) as tot1 from moment_comment where is_deleted<>1 group by moment_id) as aa right outer join (select moment_id, count(is_liked) as tot2 from praise group by moment_id) as bb on aa.moment_id=bb.moment_id order by tot desc " + " limit " + strconv.Itoa(Page * 10) + ",10;"
-		//rows, err := MysqlDB.Raw(SQLstr).Rows()
+		rows, err := MysqlDB.Model(&statements.Praise{}).Select("moment_id").Where("moment_id<>?", 0).Group("moment_id").Order("count(is_liked) DESC").Limit(10).Offset(Page * 10).Rows()
 		if err == gorm.ErrRecordNotFound {
 			return AllMoment, true // 说明这时候就是空的
 		} else if err != nil {
@@ -51,10 +47,10 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 			MomentRecords = append(MomentRecords, MomentRecord)
 		}
 
-		//fmt.Println(len(MomentRecords))
 		for _, record := range MomentRecords {
 			moment := statements.Moment{}
-			if err := MysqlDB.Where("id=?", record.MomentId).First(&moment).Error; err != nil {
+			err := MysqlDB.Where("id=?", record.MomentId).First(&moment).Error
+			if err != nil {
 				return AllMoment, false
 			}
 			AllMoment = append(AllMoment, moment)
