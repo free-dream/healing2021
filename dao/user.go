@@ -335,7 +335,10 @@ func getPraises(value interface{}, tableName string, condition string) interface
 			resp.Check = 0
 		}
 		//
-		db.Table("praise").Where("cover_id=? and is_liked=?", resp.CoverId, 1).Count(&resp.Likes)
+		val := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp.ID) + " and is_liked=1;").Value
+		if val != nil {
+			resp.Likes = val.(int)
+		}
 		content[index] = resp
 		index++
 	}
@@ -368,7 +371,7 @@ func getCovers(tableName string, condition string, value int, module int) interf
 		resp.SelectionId = obj.SelectionId
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		resp.SongName = obj.SongName
-		val := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp.ID) + "and is_liked=1").Value
+		val := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp.ID) + " and is_liked=1;").Value
 		if val != nil {
 			resp.Likes = val.(int)
 		}
@@ -433,7 +436,7 @@ func getMoments(value interface{}, tableName string, condition string) interface
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		resp.SongName = obj.SongName
 		resp.Content = obj.Content
-		val := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp.ID) + "and is_liked=1").Value
+		val := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp.ID) + " and is_liked=1").Value
 		if val != nil {
 			resp.Likes = val.(int)
 		}

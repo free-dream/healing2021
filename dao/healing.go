@@ -57,7 +57,7 @@ func GetHealingPage(selectionId int, userId int) (interface{}, error) {
 	content := make(map[int]interface{})
 	for rows.Next() {
 		err = db.ScanRows(rows, &obj)
-		value := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(obj.ID) + "and is_liked=1").Value
+		value := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(obj.ID) + " and is_liked=1;").Value
 		if value != nil {
 			obj.Likes = value.(int)
 		}
@@ -379,7 +379,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 				} else {
 					resp[i].Check = 0
 				}
-				value := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp[i].ID) + "and is_liked=1").Value
+				value := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp[i].ID) + " and is_liked=1;").Value
 				if value != nil {
 					resp[i].Likes = value.(int)
 				}
@@ -407,7 +407,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 					resp[i].Check = 0
 				}
 				//
-				value := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp[i].ID) + "and is_liked=1").Value
+				value := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp[i].ID) + " and is_liked=1;").Value
 				if value != nil {
 					resp[i].Likes = value.(int)
 				}
@@ -450,7 +450,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 					resp[i].Check = 0
 				}
 				//
-				value := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp[i].ID) + "and is_liked=1").Value
+				value := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp[i].ID) + " and is_liked=1;").Value
 				if value != nil {
 					resp[i].Likes = value.(int)
 				}
@@ -477,7 +477,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 					resp[i].Check = 0
 				}
 				//
-				value := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp[i].ID) + "and is_liked=1").Value
+				value := db.Exec("select count(*) from praise where cover_id=" + strconv.Itoa(resp[i].ID) + " and is_liked=1;").Value
 				if value != nil {
 					resp[i].Likes = value.(int)
 				}
