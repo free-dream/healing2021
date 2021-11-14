@@ -17,16 +17,19 @@ func CronInit() *cron.Cron {
 	})
 
 	//	c.AddFunc("0 */1 * * *", func() {
-	/*	db := setting.MysqlConn()
-			redisCli := setting.RedisConn()
-			rows, _ := db.Exec("select cover_id,count(user_id) as lieks from praise where is_liked=1 group by cover_id;").Rows()
-			like := dao.LikeObj{}
-			defer rows.Close()
-			for rows.Next() {
-				db.ScanRows(rows, &like)
-				redisCli.HSet("healing2021:praise of cover", strconv.Itoa(like.CoverId), like.Likes)
-			}
-		})
-	*/
+	/*			redisCli := setting.RedisConn()
+				rows, _ := db.Exec("select cover_id,count(user_id) as lieks from praise where is_liked=1 group by cover_id;").Rows()
+				like := dao.LikeObj{}
+				for rows.Next() {
+					err:=db.ScanRows(rows, &like)
+					if err!=nil {
+						fmt.Println(err)
+						panic(err)
+					}
+					redisCli.HSet("healing2021:praise of cover", strconv.Itoa(like.CoverId), like.Likes)
+				}
+				rows.Close()
+				})*/
+
 	return c
 }

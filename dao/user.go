@@ -443,11 +443,6 @@ func getMoments(value interface{}, tableName string, condition string) interface
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		resp.SongName = obj.SongName
 		resp.Content = obj.Content
-		db.Order("likes desc").
-			Table("praise").
-			Select("cover_id, count(*) as likes").
-			Where("cover_id = ? AND is_liked = ?", resp.ID, 1).
-			Group("cover_id").Row().Scan(resp.Likes)
 		//插入check
 		coverid, _ := value.(int)
 		check, err := PackageCheckMysql(coverid, "moment", obj.ID)
