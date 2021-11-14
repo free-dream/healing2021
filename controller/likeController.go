@@ -64,9 +64,15 @@ func Like(ctx *gin.Context) {
 	}
 
 	//发送相应的系统消息[有 实际评论写入成功，但是系统消息发送失败 的不一致风险]
+	nickname, err := dao.GetUserNickname(UserId)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+		return
+	}
 	if LikeParam.Todo == 1 {
 		conn := ws.GetConn()
 		sysMsg := respModel.SysMsg{}
+
 
 		switch Type {
 		case "moment":
@@ -75,14 +81,12 @@ func Like(ctx *gin.Context) {
 				ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
 				return
 			}
-			//fmt.Println("====")
-			//fmt.Println(SenderId, LikeParam.Id)
-			//fmt.Println("====")
 			sysMsg = respModel.SysMsg{
 				Uid:       uint(SenderId),
 				Type:      2,
 				ContentId: uint(LikeParam.Id),
 				Time:      time.Now(),
+				FromUser: nickname,
 			}
 		case "momentcomment":
 			SenderId, err := dao.GetCommentSenderId(LikeParam.Id)
@@ -90,14 +94,12 @@ func Like(ctx *gin.Context) {
 				ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
 				return
 			}
-			//fmt.Println("====")
-			//fmt.Println(SenderId, LikeParam.Id)
-			//fmt.Println("====")
 			sysMsg = respModel.SysMsg{
 				Uid:       uint(SenderId),
 				Type:      4,
 				ContentId: uint(LikeParam.Id),
 				Time:      time.Now(),
+				FromUser: nickname,
 			}
 		case "cover":
 			singerId, songName, err := dao.GetCoverInfo(LikeParam.Id)
@@ -105,15 +107,13 @@ func Like(ctx *gin.Context) {
 				ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
 				return
 			}
-			//fmt.Println("====")
-			//fmt.Println(singerId, songName)
-			//fmt.Println("====")
 			sysMsg = respModel.SysMsg{
 				Uid:       uint(singerId),
 				Type:      1,
 				Song:      songName,
 				ContentId: uint(LikeParam.Id),
 				Time:      time.Now(),
+				FromUser: nickname,
 			}
 		}
 

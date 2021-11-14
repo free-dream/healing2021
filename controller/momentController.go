@@ -262,6 +262,11 @@ func PostComment(ctx *gin.Context) {
 	}
 
 	// 发送相应的系统消息[有 实际评论写入成功，但是系统消息发送失败 的不一致风险]
+	nickname, err := dao.GetUserNickname(UserId)
+	if err != nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+		return
+	}
 	conn := ws.GetConn()
 	userId, err := dao.GetMomentSenderId(NewComment.DynamicsId)
 	if err != nil {
@@ -274,6 +279,7 @@ func PostComment(ctx *gin.Context) {
 		Type:      3,
 		ContentId: uint(commentId),
 		Time:      time.Now(),
+		FromUser: nickname,
 	})
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
