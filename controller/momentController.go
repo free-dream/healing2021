@@ -128,7 +128,10 @@ func PostMoment(ctx *gin.Context) {
 		param.Language = NewMoment.Language
 		param.Remark = NewMoment.Remark
 		param.Style = NewMoment.Style
-		_, resp, err := dao.Select(param)
+		session := sessions.Default(ctx)
+		avatar := session.Get("headImgUrl").(string)
+		nickname := session.Get("nickname").(string)
+		_, resp, err := dao.Select(param, avatar, nickname)
 		if err != nil {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "点歌操作失败"})
 			return
@@ -159,7 +162,6 @@ func PostMoment(ctx *gin.Context) {
 	Moment.SongName = NewMoment.SongName
 	Moment.UserId = param.UserId
 	Moment.State = tools.EncodeStrArr(NewMoment.Status)
-
 
 	// 存入数据库
 	if ok := dao.CreateMoment(Moment); !ok {
@@ -279,7 +281,7 @@ func PostComment(ctx *gin.Context) {
 		Type:      3,
 		ContentId: uint(commentId),
 		Time:      time.Now(),
-		FromUser: nickname,
+		FromUser:  nickname,
 	})
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})

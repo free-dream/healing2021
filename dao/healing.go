@@ -177,7 +177,6 @@ func Pager(key string, page int) (interface{}, error) {
 }
 
 //获取点歌页
-//module1表示治愈系，2表示童年，但返回参数可能不同
 //可参考
 func GetSelections(id int, tag Tags) (interface{}, error) {
 	redisCli := setting.RedisConn()
@@ -349,6 +348,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 					err = json.Unmarshal(by, &vresp[index])
 					index++
 				}
+				//推荐去重
 				for _, val := range vresp {
 					if _, ok := mresp[val]; !ok {
 						resp = append(resp, val)
@@ -375,8 +375,8 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 				} else {
 					resp[i].Check = 0
 				}
-				//
-				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
+				db.Raw("select count(*) praise where cover_id="+strconv.Itoa(resp[i].ID)+"and is_liked=1", &resp[i].Likes)
+
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
 			fmt.Println(len(resp))
@@ -400,7 +400,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 					resp[i].Check = 0
 				}
 				//
-				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
+				db.Raw("select count(*) praise where cover_id="+strconv.Itoa(resp[i].ID)+"and is_liked=1", &resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
 			fmt.Println(len(resp))
@@ -439,7 +439,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 					resp[i].Check = 0
 				}
 				//
-				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
+				db.Raw("select count(*) praise where cover_id="+strconv.Itoa(resp[i].ID)+"and is_liked=1", &resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
 			if len(resp) > 10 {
@@ -462,7 +462,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 					resp[i].Check = 0
 				}
 				//
-				db.Table("praise").Where("cover_id=? and is_liked=?", resp[i].ID, 1).Count(&resp[i].Likes)
+				db.Raw("select count(*) praise where cover_id="+strconv.Itoa(resp[i].ID)+"and is_liked=1", &resp[i].Likes)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
 			if len(resp) > 10 {
@@ -542,12 +542,15 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 	return selection.UserId, coverDetails, err
 }
 
-func Select(selection statements.Selection) (int, SelectionDetails, error) {
+func Select(selection statements.Selection, avatar string, nickname string) (int, SelectionDetails, error) {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
 	user := statements.User{}
+
 	db.Table("user").Select("selection_num").Where("id=?", selection.UserId).Scan(&user)
 	if 0 < user.SelectionNum {
+		selection.Nickname = nickname
+		selection.Avatar = avatar
 		err := db.Table("selection").Create(&selection).Error
 		db.Table("user").Where("id=?", selection.UserId).Update("selection_num", user.SelectionNum-1)
 		selectionDetails := SelectionDetails{}

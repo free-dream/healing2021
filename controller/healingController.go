@@ -61,10 +61,13 @@ func Selector(ctx *gin.Context) {
 		panic(err)
 		// return
 	}
-	userid := sessions.Default(ctx).Get("user_id").(int)
+	session := sessions.Default(ctx)
+	userid := session.Get("user_id").(int)
+	avatar := session.Get("headImgUrl").(string)
+	nickname := session.Get("nickname").(string)
 
 	param.UserId = userid
-	num, resp, err := dao.Select(param)
+	num, resp, err := dao.Select(param, avatar, nickname)
 	if err != nil {
 		ctx.JSON(403, gin.H{
 			"message": "今日次数已用完",
