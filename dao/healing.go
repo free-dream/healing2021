@@ -494,7 +494,14 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 	//
 	var cover statements.Cover
 	cover.Avatar = avatar
-	cover.SelectionId = strconv.Itoa(selectionId)
+	switch module {
+	case 1:
+		cover.SelectionId = strconv.Itoa(selectionId)
+	case 2:
+		cover.ClassicId = selectionId
+
+	}
+
 	cover.UserId = userId
 	cover.SongName = selection.SongName
 	cover.File = file
@@ -505,7 +512,13 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 	coverDetails := CoverDetails{}
 
 	err := db.Model(&statements.Cover{}).Create(&cover).Error
-	db.Table("user").Select("cover.selection_id,cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
+	switch module {
+	case 1:
+		db.Table("user").Select("cover.selection_id,cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
+	case 2:
+		db.Table("user").Select("cover.classic_id,cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
+	}
+
 	if !isAnon {
 		coverDetails.CreatedAt = tools.DecodeTime(cover.CreatedAt)
 
