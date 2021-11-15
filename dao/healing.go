@@ -172,13 +172,17 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 		if err != nil {
 			panic(err)
 		}
-		/*if hobby == nil {
+		if hobby == nil {
 			VTable.Scan(&resp)
-		} else*/
-		VTable.
-			Where(" selection.language in " + "(" + strings.Join(hobby, ",") + ")" + "or selection.style in " + "(" + strings.Join(hobby, ",") + ")").
-			Scan(&resp)
-
+		} else {
+			for i := range hobby {
+				hobby[i] = "'" + hobby[i] + "'"
+			}
+			hobbyArr := strings.Join(hobby, ",")
+			VTable.
+				Where("selection.language in " + "(" + hobbyArr + ")" + " or selection.style in " + ("+hobbyArr)")).
+				Scan(&resp)
+		}
 		//第一次查询做缓存,与分页
 
 		if tag.RankWay == 1 {
@@ -279,9 +283,12 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 		if hobby == nil {
 			VTable.Scan(&resp)
 		} else {
-
+			for i := range hobby {
+				hobby[i] = "'" + hobby[i] + "'"
+			}
+			hobbyArr := strings.Join(hobby, ",")
 			VTable.
-				Where(" cover.language in " + "(" + strings.Join(hobby, ",") + ")" + "or cover.style in " + "(" + strings.Join(hobby, ",") + ")").
+				Where("cover.language in " + "(" + hobbyArr + ")" + " or cover.style in " + ("+hobbyArr)")).
 				Scan(&resp)
 		}
 
