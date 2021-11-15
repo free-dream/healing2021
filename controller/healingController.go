@@ -2,6 +2,7 @@ package controller
 
 import (
 	"strconv"
+	"time"
 
 	"git.100steps.top/100steps/healing2021_be/controller/ws"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
@@ -181,7 +182,9 @@ type RecordParams struct {
 //----------任务模块已植入此接口----------
 func Recorder(ctx *gin.Context) {
 	params := RecordParams{}
-	userID := sessions.Default(ctx).Get("user_id").(int)
+	session := sessions.Default(ctx)
+	userID := session.Get("user_id").(int)
+	nickname := session.Get("nickname").(string)
 	if err := ctx.ShouldBindJSON(&params); err != nil {
 		ctx.JSON(400, e.ErrMsgResponse{Message: err.Error()})
 		return
@@ -202,6 +205,8 @@ func Recorder(ctx *gin.Context) {
 		usrMsg.Message = ""
 		usrMsg.FromUser = uint(userID)
 		usrMsg.ToUser = uint(id)
+		usrMsg.FromUserName = nickname
+		usrMsg.CreatedAt = time.Now()
 		err = conn.SendUsrMsg(usrMsg)
 		if err != nil {
 			ctx.JSON(403, e.ErrMsgResponse{Message: err.Error()})
