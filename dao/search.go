@@ -1,10 +1,9 @@
 package dao
 
 import (
-	"log"
-
-	"git.100steps.top/100steps/healing2021_be/models/statements"
+	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
+	"github.com/jinzhu/gorm"
 )
 
 // const (
@@ -27,13 +26,19 @@ import (
 //仅能匹配歌名和用户名，无法进行风格或者语言的搜索
 
 //根据电话号码获取用户
-func SearchUserByTel(tel string) ([]statements.User, int, error) {
+func SearchUserByTel(tel string) ([]respModel.UserResp, int, error) {
 	mysqlDb := setting.MysqlConn()
-	var data []statements.User
+	var data []respModel.UserResp
 	var counter int
-	db := mysqlDb.Limit(30).Where("phone_number = ? AND phone_search = ?", tel, 0).Find(&data)
+	db := mysqlDb.Limit(30).
+		Table("user").
+		Select("avatar,nickname,signature,id").
+		Where("phone_number = ? AND phone_search = ?", tel, 0).
+		Find(&data)
 	err := db.Error
-	if err != nil {
+	if gorm.IsRecordNotFoundError(err) {
+		return data, 0, nil
+	} else if err != nil {
 		return nil, -1, err
 	}
 	db.Count(&counter)
@@ -41,59 +46,53 @@ func SearchUserByTel(tel string) ([]statements.User, int, error) {
 }
 
 //其它查询
-func SearchUserByKeyword(keyword string) ([]statements.User, int, error) {
+func SearchUserByKeyword(keyword string) ([]respModel.UserResp, int, error) {
 	mysqlDb := setting.MysqlConn()
-	var (
-		data  []statements.User
-		real  []statements.User
-		width int
-		check bool
-	)
-	db1 := mysqlDb.Where("real_name_search = ? AND real_name = ?", 0, keyword).Find(&real)
+	var data []respModel.UserResp
+	db1 := mysqlDb.Limit(30).
+		Table("user").
+		Select("avatar,nickname,signature,id").
+		Where("(real_name_search = ? AND real_name = ?) OR nickname = ?", 0, keyword, keyword).
+		Find(&data)
 	err := db1.Error
-	if err != nil {
-		log.Printf(err.Error())
-		check = false
-		width = 30
-	} else {
-		check = true
-		width = 20
-	}
-	db := mysqlDb.Limit(width).Where("nickname LIKE ?", "%"+keyword+"%").Find(&data)
-	err = db.Error
-	if err != nil {
+	if gorm.IsRecordNotFoundError(err) {
+		return data, 0, nil
+	} else if err != nil {
 		return nil, -1, err
 	}
-	if check {
-		for _, item := range data {
-			real = append(real, item)
-		}
-	}
-	return real, len(real), nil
+	return data, len(data), nil
 }
 
-func SearchCoverByKeyword(keyword string) ([]statements.Cover, int, error) {
+func SearchCoverByKeyword(keyword string) ([]respModel.CoversResp, int, error) {
 	mysqlDb := setting.MysqlConn()
-	var data []statements.Cover
-	var counter int
-	db := mysqlDb.Limit(30).Where("song_name LIKE ?", "%"+keyword+"%").Find(&data)
+	var data []respModel.CoversResp
+	db := mysqlDb.Limit(30).
+		Table("cover").
+		Select("id,avatar,song_name,nickname,classic_id,module,selection_id,created_at").
+		Where("song_name = ?", keyword).
+		Find(&data)
 	err := db.Error
-	if err != nil {
+	if gorm.IsRecordNotFoundError(err) {
+		return data, 0, nil
+	} else if err != nil {
 		return nil, -1, err
 	}
-	db.Count(&counter)
-	return data, counter, nil
+	return data, len(data), nil
 }
 
-func SearchSelectionByKeyword(keyword string) ([]statements.Selection, int, error) {
+func SearchSelectionByKeyword(keyword string) ([]respModel.SelectionResp, int, error) {
 	mysqlDb := setting.MysqlConn()
-	var data []statements.Selection
-	var counter int
-	db := mysqlDb.Limit(30).Where("song_name LIKE ?", "%"+keyword+"%").Find(&data)
+	var data []respModel.SelectionResp
+	db := mysqlDb.Limit(30).
+		Table("selection").
+		Select("avatar,nickname,created_at,song_name,id").
+		Where("song_name = ?", keyword).
+		Find(&data)
 	err := db.Error
-	if err != nil {
+	if gorm.IsRecordNotFoundError(err) {
+		return data, 0, nil
+	} else if err != nil {
 		return nil, -1, err
 	}
-	db.Count(&counter)
-	return data, counter, nil
+	return data, len(data), nil
 }
