@@ -243,14 +243,14 @@ func CreateFakeCovers(uid int, name string, cid int, classicId int, module int) 
 	db := setting.MysqlConn()
 	db.Create(&cover)
 }
-func AddFakeCovers() {
-	// 经典翻唱 5
-	for index := 1; index < 19; index++ {
-		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, 0, 1)
-	}
-
-	CreateDummyCovers()
-}
+//func AddFakeCovers() {
+//	// 经典翻唱 5
+//	for index := 1; index < 19; index++ {
+//		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, 0, 1)
+//	}
+//
+//	CreateDummyCovers()
+//}
 
 //假翻唱点赞表
 func CreatePraise() bool {
@@ -348,7 +348,7 @@ func FakeData() {
 	AddFakeMoments()
 	AddFakeComments()
 	AddFakeSelections()
-	AddFakeCovers()
+	// AddFakeCovers()
 	AddFakePraises()
 	//AddFakeClassic()
 }

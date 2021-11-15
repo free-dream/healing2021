@@ -91,14 +91,14 @@ func GetClassicIdByName(SongName string) (int, error) {
 	return ClassicId.Id, err
 }
 
-// 通过 classic_id 找 url
+// 通过 classic_id 找 file_url
 type ClassicUrl struct {
 	File string `gorm:"file"`
 }
-
 func GetClassicUrlById(ClassicId int) (string, error) {
 	db := setting.MysqlConn()
 	tmpClassicUrl := ClassicUrl{}
 	err := db.Select("file").Model(&statements.Classic{}).Where("id=?", ClassicId).Scan(&tmpClassicUrl).Error
 	return tmpClassicUrl.File, err
 }
+
