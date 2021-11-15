@@ -267,9 +267,9 @@ func GetUser(id int, module int) interface{} {
 	case 2:
 		resp["mySongs"] = getCovers("cover", "user_id=?", id, 0)
 	case 3:
-		resp["moments"] = getMoments(id, "moment", "user_id=?")
-	case 4:
 		resp["myLikes"] = getPraises(id, "praise", "praise.user_id=?")
+	case 4:
+		resp["moments"] = getMoments(id, "moment", "user_id=?")
 	}
 	return resp
 }
@@ -293,9 +293,9 @@ func GetCallee(id int, module int) interface{} {
 	case 2:
 		resp["mySongs"] = getCovers("cover", "user_id=? and is_anon=?", id, 1)
 	case 3:
-		resp["moments"] = getMoments(id, "moment", "user_id=?")
-	case 4:
 		resp["myLikes"] = getPraises(id, "praise", "praise.user_id=?")
+	case 4:
+		resp["moments"] = getMoments(id, "moment", "user_id=?")
 	}
 	return resp
 
