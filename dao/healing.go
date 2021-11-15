@@ -40,7 +40,7 @@ type CovMsg struct {
 //结构体疑似有bug
 func GetHealingPage(selectionId int, userId int) (interface{}, error) {
 	db := setting.MysqlConn()
-	redisCli := setting.RedisConn()
+	//redisCli := setting.RedisConn()
 	userMsg := UsrMsg{}
 	resp := make(map[string]interface{})
 	db.Table("selection").Select("selection.user_id,user.avatar,selection.id,selection.song_name,selection.style,selection.created_at,selection.remark,user.nickname").Joins("left join user on user.id=selection.user_id").Where("selection.id=?", selectionId).Scan(&userMsg)
@@ -58,10 +58,10 @@ func GetHealingPage(selectionId int, userId int) (interface{}, error) {
 	content := make(map[int]interface{})
 	for rows.Next() {
 		err = db.ScanRows(rows, &obj)
-		obj.Likes, err = strconv.Atoi(redisCli.HGet("healing2021:praise of cover", strconv.Itoa(obj.ID)).Val())
+		/*obj.Likes, err = strconv.Atoi(redisCli.HGet("healing2021:praise of cover", strconv.Itoa(obj.ID)).Val())
 		if err != nil {
 			continue
-		}
+		}*/
 	}
 	//插入点赞确认
 	check, err1 := PackageCheckMysql(userId, "cover", obj.ID)
