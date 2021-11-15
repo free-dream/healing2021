@@ -52,9 +52,7 @@ func AddLike(targetid int, targettype string, userid int) error {
 }
 
 //批量确认是否重复点赞
-func CheckInBundle(targetid int, targettype string, data interface{}) {
-
-}
+// func CheckInBundle(targetid int, targettype string, data interface{}) {}
 
 //liketype{0:cover;1:moment;comment:2}
 //throw回bool,交付接口处理点赞信息
