@@ -36,24 +36,25 @@ func GetAllrank(ctx *gin.Context) {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 			return
 		}
-		//更新点赞确认即可,视前端需求
-		for i, item := range respCovers {
-			bo, err := dao.PackageCheck(UserId, "cover", item.Cover_Id)
-			if err != nil {
-				log.Printf(err.Error())
-				respCovers[i].Check = 0
-			} else if bo {
-				respCovers[i].Check = 1
-			} else {
-				respCovers[i].Check = 0
-			}
-		}
 		//缓存
 		jsondata, _ := json.Marshal(respCovers)
 		cache := string(jsondata)
 		err = sandwich.CacheDailyRank("all", cache)
 		if err != nil {
 			log.Fatal("redis缓存出错")
+		}
+	}
+
+	//更新点赞确认即可,视前端需求
+	for i, item := range respCovers {
+		bo, err := dao.PackageCheck(UserId, "cover", item.Cover_Id)
+		if err != nil {
+			log.Printf(err.Error())
+			respCovers[i].Check = 0
+		} else if bo {
+			respCovers[i].Check = 1
+		} else {
+			respCovers[i].Check = 0
 		}
 	}
 
@@ -84,24 +85,25 @@ func GetDailyrank(ctx *gin.Context) {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 			return
 		}
-		//更新点赞确认即可,视前端需求
-		for i, item := range respCovers {
-			bo, err := dao.PackageCheck(UserId, "cover", item.Cover_Id)
-			if err != nil {
-				log.Printf(err.Error())
-				respCovers[i].Check = 0
-			} else if bo {
-				respCovers[i].Check = 1
-			} else {
-				respCovers[i].Check = 0
-			}
-		}
 		//缓存
 		jsondata, _ := json.Marshal(respCovers)
 		cache := string(jsondata)
 		err = sandwich.CacheDailyRank("all", cache)
 		if err != nil {
 			log.Fatal("redis缓存出错")
+		}
+	}
+
+	//更新点赞确认即可,视前端需求
+	for i, item := range respCovers {
+		bo, err := dao.PackageCheck(UserId, "cover", item.Cover_Id)
+		if err != nil {
+			log.Printf(err.Error())
+			respCovers[i].Check = 0
+		} else if bo {
+			respCovers[i].Check = 1
+		} else {
+			respCovers[i].Check = 0
 		}
 	}
 

@@ -22,6 +22,7 @@ func CheckMysql(lock *gorm.DB, user int, target int, kind string, likes int, cho
 
 	//redis检查
 	redisCheck, err1 := sandwich.Check(target, kind, user)
+	// db.RedisClient.Pipeline()
 	if err1 != nil {
 		log.Printf(err1.Error())
 	} else {
