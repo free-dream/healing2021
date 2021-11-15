@@ -203,7 +203,7 @@ func Recorder(ctx *gin.Context) {
 		usrMsg.SongId = uint(params.SelectionId)
 		usrMsg.Message = ""
 		usrMsg.FromUser = uint(userID)
-		usrMsg.ToUser = selection.ID
+		usrMsg.ToUser = uint(selection.UserId)
 		usrMsg.ToUserName = selection.Nickname
 		usrMsg.FromUserName = resp.Nickname
 		usrMsg.CreatedAt = time.Now()
