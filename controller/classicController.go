@@ -5,6 +5,7 @@ import (
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"strconv"
 )
 
@@ -26,7 +27,6 @@ func GetOriginalInfo(ctx *gin.Context) {
 }
 
 // 获取用户翻唱列表并排序
-
 func GetOriginalSingerList(ctx *gin.Context) {
 	ClassicIdStr := ctx.Query("classic_id")
 	ClassicId, err := strconv.Atoi(ClassicIdStr)
@@ -37,6 +37,10 @@ func GetOriginalSingerList(ctx *gin.Context) {
 
 	UserId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
 	CoverList, err := dao.GetCoverList(UserId, ClassicId)
+	if err == gorm.ErrRecordNotFound {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "未找到相关记录"})
+		return
+	}
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败"})
 		return

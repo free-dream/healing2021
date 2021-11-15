@@ -231,26 +231,31 @@ func CreateDummyCovers() {
 		db.Create(temp)
 	}
 }
-func CreateFakeCovers(uid int, name string, cid int, classicId int, module int) {
+func CreateFakeCovers(uid int, name string, sid int, classicId int, module int) {
 	cover := statements.Cover{
 		UserId:      uid,
 		SongName:    name,
-		SelectionId: strconv.Itoa(cid),
+		SelectionId: strconv.Itoa(sid),
 		Module:      module,
 		ClassicId:   classicId,
+		Nickname: "测试小子",
+		Language: "中文",
+		File: "address",
+		Style: "cool",
+		Avatar: "头像",
 	}
 
 	db := setting.MysqlConn()
 	db.Create(&cover)
 }
-func AddFakeCovers() {
-	// 经典翻唱 5
-	for index := 1; index < 19; index++ {
-		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, 0, 1)
-	}
-
-	CreateDummyCovers()
-}
+//func AddFakeCovers() {
+//	// 经典翻唱 5
+//	for index := 1; index < 19; index++ {
+//		CreateFakeCovers(index+2, "songName"+strconv.Itoa(index), index+1, 0, 1)
+//	}
+//
+//	CreateDummyCovers()
+//}
 
 //假翻唱点赞表
 func CreatePraise() bool {
@@ -270,7 +275,7 @@ func AddFakePraises() {
 		if CreatePraise() {
 			i++
 		}
-		if i > 50 {
+		if i > 30 {
 			break
 		}
 	}
@@ -344,12 +349,14 @@ func AddFakeClassic() {
 
 // 造点测试用的假数据
 func FakeData() {
-	AddFakeUsers()
-	AddFakeMoments()
-	AddFakeComments()
-	AddFakeSelections()
-	AddFakeCovers()
-	AddFakePraises()
+	//AddFakeUsers()
+	//AddFakeMoments()
+	//AddFakeComments()
+	//AddFakeSelections()
+	CreateFakeCovers(1, "刀剑如梦", 0, 45, 2)
+	CreateFakeCovers(1, "刀剑如梦", 0, 45, 2)
+	CreateFakeCovers(1, "刀剑如梦", 0, 45, 2)
+	//AddFakePraises()
 	//AddFakeClassic()
 }
 func AddClassic() {

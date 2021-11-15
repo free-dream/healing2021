@@ -440,8 +440,8 @@ func PostComment(ctx *gin.Context) {
 
 	// 存入数据库
 	commentId := 0
-	ok := false
-	if commentId, ok = dao.CreateComment(Comment); !ok {
+	commentId, err := dao.CreateComment(Comment)
+	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败"})
 		return
 	}

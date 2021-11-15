@@ -10,38 +10,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-//自定义错误
-type LikesExistError struct{}
-type ZeroUserIdError struct{}
-
-func (l *LikesExistError) Error() string {
-	return "点赞/取消点赞失败,redis记录不匹配"
-}
-
-func (l *ZeroUserIdError) Error() string {
-	return "当前用户id为0,无法点赞"
-}
-
-//重复点赞判断函数
-func IsLikesExistError(err error) bool {
-	if err.Error() == "点赞/取消点赞失败,redis记录不匹配" {
-		return true
-	} else {
-		return false
-	}
-}
-
-//0用户id判断参数
-func IsZeroUserIdError(err error) bool {
-	if err.Error() == "当前用户id为0,无法点赞" {
-		return true
-	} else {
-		return false
-	}
-}
-
 //包装一下给controller用
-func PackageCheckMysql(user int, kind string, target int) (bool, error) {
+func PackageCheck(user int, kind string, target int) (bool, error) {
 	db := setting.MysqlConn()
 	boolean, err := CheckMysql(db, user, target, kind, 1, true)
 	return boolean, err
@@ -49,14 +19,17 @@ func PackageCheckMysql(user int, kind string, target int) (bool, error) {
 
 //跳转mysql检查
 func CheckMysql(lock *gorm.DB, user int, target int, kind string, likes int, choose bool) (bool, error) {
+
 	//redis检查
 	redisCheck, err1 := sandwich.Check(target, kind, user)
+	// db.RedisClient.Pipeline()
 	if err1 != nil {
 		log.Printf(err1.Error())
 	} else {
 		return redisCheck, nil
 	}
-	//
+
+	//redis爆炸的保险，下面基本上不会触发，只是以防万一
 	var (
 		err  error
 		like tables.Praise
@@ -101,15 +74,14 @@ func CheckMysql(lock *gorm.DB, user int, target int, kind string, likes int, cho
 
 //基于直接点赞更新mysql，加锁
 func UpdateLikesByID(user int, target int, likes int, kind string) error {
-	if user == 0 {
-		var err error = &ZeroUserIdError{}
-		return err
-	}
-	mysqlDb := db.MysqlConn()
+
+	//直接走redis
 	var (
 		err  error
 		like tables.Praise
 	)
+
+	mysqlDb := db.MysqlConn()
 	//加行锁
 	lock := mysqlDb.Begin()
 	defer func() {
@@ -124,21 +96,6 @@ func UpdateLikesByID(user int, target int, likes int, kind string) error {
 	// 用户第一次进行点赞时没有记录能进行 update
 	// 若为取消点赞，应检查是否存有当前用户id,若为点赞，则反之
 
-	check, _ := sandwich.Check(target, kind, user)
-	if likes == -1 && check {
-		err = sandwich.CancelLike(target, kind, user)
-		if err != nil {
-			return err
-		}
-	} else if likes == 1 && !check {
-		err = sandwich.AddLike(target, kind, user)
-		if err != nil {
-			return err
-		}
-	} else {
-		var err1 error = &LikesExistError{}
-		return err1
-	}
 	if likes == 1 { //创建点赞表,更新coverLikes字段
 		switch kind {
 		case "cover":

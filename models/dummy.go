@@ -127,7 +127,7 @@ func GetAttr(selectionid int) (string, string, string, error) {
 //假点赞表
 func dummyLikes() (*statements.Praise, int, int) {
 	check1 := tools.GetRandomNumbers(10) + 1
-	check2 := tools.GetRandomNumbers(49) + 1
+	check2 := tools.GetRandomNumbers(29) + 1
 	return &statements.Praise{
 		CoverId: check2,
 		UserId:  check1,

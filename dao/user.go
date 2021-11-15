@@ -326,7 +326,7 @@ func getPraises(value interface{}, tableName string, condition string) interface
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		//插入点赞确认
 		userid, _ := value.(int)
-		check, err1 := PackageCheckMysql(userid, "cover", obj.ID)
+		check, err1 := PackageCheck(userid, "cover", obj.ID)
 		if err1 != nil {
 			log.Printf(err1.Error())
 			resp.Check = 0
@@ -381,7 +381,7 @@ func getCovers(tableName string, condition string, value int, module int) interf
 		*/
 		//插入点赞确认
 		userid := value
-		check, err1 := PackageCheckMysql(userid, "cover", obj.ID)
+		check, err1 := PackageCheck(userid, "cover", obj.ID)
 		if err1 != nil {
 			log.Printf(err1.Error())
 			resp.Check = 0
@@ -445,7 +445,7 @@ func getMoments(value interface{}, tableName string, condition string) interface
 		resp.Content = obj.Content
 		//插入check
 		coverid, _ := value.(int)
-		check, err := PackageCheckMysql(coverid, "moment", obj.ID)
+		check, err := PackageCheck(coverid, "moment", obj.ID)
 		if err != nil {
 			log.Printf("检查出错")
 			resp.Check = 0

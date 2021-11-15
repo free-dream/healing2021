@@ -9,8 +9,11 @@ import (
 	"math/rand"
 	"sort"
 	"strconv"
-	"strings"
 	"time"
+
+	"git.100steps.top/100steps/healing2021_be/models/statements"
+	"git.100steps.top/100steps/healing2021_be/pkg/setting"
+	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 )
 
 type UsrMsg struct {
@@ -74,8 +77,10 @@ func GetHealingPage(selectionId int, userId int) (interface{}, error) {
 	}
 	content[index] = obj
 	index++
+
 	resp["user"] = userMsg
 	resp["singer"] = content
+
 	return resp, err
 }
 
@@ -204,7 +209,9 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 				Having("selection.style in ? or selection.language in ?", hobby, hobby).
 				Scan(&resp)
 		}
+
 		//第一次查询做缓存,与分页
+
 		if tag.RankWay == 1 {
 			rand.Seed(time.Now().Unix())
 			//采用rand.Shuffle，将切片随机化处理后返回
@@ -215,6 +222,9 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 			}
 			return resp, err
 		} else {
+			sort.Slice(resp, func(i, j int) bool {
+				return resp[i].CreatedAt > resp[j].CreatedAt
+			})
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
 			if len(resp) > 10 {
 				resp = resp[0:10]
@@ -233,9 +243,10 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 		} else {
 			VTable.Scan(&resp)
 		}
+
 		if tag.RankWay == 1 {
-			//采用rand.Shuffle，将切片随机化处理后返回
 			rand.Seed(time.Now().Unix())
+			//采用rand.Shuffle，将切片随机化处理后返回
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
 			if len(resp) > 10 {
@@ -252,7 +263,9 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 			}
 			return resp, nil
 		}
+
 	}
+
 }
 
 type CoverDetails struct {
@@ -268,10 +281,17 @@ type CoverDetails struct {
 	SelectionId int    `json:"selection_id"`
 }
 
+//简单的翻唱对象
+type LikeObj struct {
+	Likes   int `json:"likes"`
+	CoverId int `json:"cover_id"`
+}
+
 //传入userid以确认
 func GetCovers(id int, tag Tags) (interface{}, error) {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
+	index := 0
 	var resp []CoverDetails
 	VTable := db.Table("cover").Select("sum(praise.is_liked) as likes,user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at ").
 		Joins("inner join user on user.id=cover.user_id").
@@ -294,7 +314,9 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 				Having("cover.style in ? or cover.language in ?", hobby, hobby).
 				Scan(&resp)
 		}
+
 		//第一次查询做缓存,与分页
+
 		if tag.RankWay == 1 {
 			rand.Seed(time.Now().Unix())
 			//采用rand.Shuffle，将切片随机化处理后返回
@@ -351,6 +373,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 				//确认是否点赞
 				go ViolenceGetLikeheck(id, resp[i], ch)
 			}
+
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
 			if len(resp) > 10 {
 				resp = resp[0:10]
@@ -405,7 +428,9 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 
 func Select(selection statements.Selection, avatar string, nickname string) (int, int, error) {
 	db := setting.MysqlConn()
+	redisCli := setting.RedisConn()
 	user := statements.User{}
+
 	db.Table("user").Select("selection_num").Where("id=?", selection.UserId).Scan(&user)
 	if 0 < user.SelectionNum {
 		selection.Nickname = nickname
