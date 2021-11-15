@@ -172,13 +172,12 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 		if err != nil {
 			panic(err)
 		}
-		if hobby == nil {
+		/*if hobby == nil {
 			VTable.Scan(&resp)
-		} else {
-			VTable.
-				Where("selection.style in ? or selection.language in ?", hobby, hobby).
-				Scan(&resp)
-		}
+		} else*/
+		VTable.
+			Where(" selection.language in " + "(" + strings.Join(hobby, ",") + ")" + "or selection.style in " + "(" + strings.Join(hobby, ",") + ")").
+			Scan(&resp)
 
 		//第一次查询做缓存,与分页
 
@@ -280,8 +279,9 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 		if hobby == nil {
 			VTable.Scan(&resp)
 		} else {
+
 			VTable.
-				Where("cover.style in ? or cover.language in ?", hobby, hobby).
+				Where(" cover.language in " + "(" + strings.Join(hobby, ",") + ")" + "or cover.style in " + "(" + strings.Join(hobby, ",") + ")").
 				Scan(&resp)
 		}
 
