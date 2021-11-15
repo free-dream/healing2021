@@ -184,7 +184,6 @@ func Recorder(ctx *gin.Context) {
 	params := RecordParams{}
 	session := sessions.Default(ctx)
 	userID := session.Get("user_id").(int)
-	nickname := session.Get("nickname").(string)
 	if err := ctx.ShouldBindJSON(&params); err != nil {
 		ctx.JSON(400, e.ErrMsgResponse{Message: err.Error()})
 		return
@@ -194,7 +193,7 @@ func Recorder(ctx *gin.Context) {
 		ctx.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
-	id, resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, userID, params.IsAnon)
+	selection, resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, userID, params.IsAnon)
 	if params.Module == 1 {
 		//推送到点歌用户
 		conn := ws.GetConn()
@@ -204,8 +203,9 @@ func Recorder(ctx *gin.Context) {
 		usrMsg.SongId = uint(params.SelectionId)
 		usrMsg.Message = ""
 		usrMsg.FromUser = uint(userID)
-		usrMsg.ToUser = uint(id)
-		usrMsg.FromUserName = nickname
+		usrMsg.ToUser = selection.ID
+		usrMsg.ToUserName = selection.Nickname
+		usrMsg.FromUserName = resp.Nickname
 		usrMsg.CreatedAt = time.Now()
 		err = conn.SendUsrMsg(usrMsg)
 		if err != nil {
