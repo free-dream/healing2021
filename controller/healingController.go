@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -28,12 +29,12 @@ func HealingPageFetcher(ctx *gin.Context) {
 	id := sessions.Default(ctx).Get("user_id").(int)
 	selectionId, err := strconv.Atoi(param)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 		// return
 	}
 	resp, err := dao.GetHealingPage(selectionId, id)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 		// return
 	}
 
