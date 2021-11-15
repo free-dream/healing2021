@@ -64,7 +64,7 @@ func GetHealingPage(selectionId int, userId int) (interface{}, error) {
 		}
 	}
 	//插入点赞确认
-	check, err1 := PackageCheckMysql(userId, "cover", obj.ID)
+	check, err1 := PackageCheck(userId, "cover", obj.ID)
 	if err1 != nil {
 		log.Printf(err1.Error())
 		obj.Check = 0
@@ -377,7 +377,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
 			for i, _ := range resp {
 				//确认是否点赞
-				boolean, err1 := PackageCheckMysql(id, "cover", resp[i].ID)
+				boolean, err1 := PackageCheck(id, "cover", resp[i].ID)
 				if err1 != nil {
 					log.Printf(err1.Error())
 					resp[i].Check = 0
@@ -405,7 +405,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			})
 			for i, _ := range resp {
 				//确认是否点赞
-				boolean, err1 := PackageCheckMysql(id, "cover", resp[i].ID)
+				boolean, err1 := PackageCheck(id, "cover", resp[i].ID)
 				if err1 != nil {
 					log.Printf(err1.Error())
 					resp[i].Check = 0
@@ -446,7 +446,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
 			for i, _ := range resp {
 				//确认是否点赞
-				boolean, err := PackageCheckMysql(id, "cover", resp[i].ID)
+				boolean, err := PackageCheck(id, "cover", resp[i].ID)
 				if err != nil {
 					log.Printf(err.Error())
 					resp[i].Check = 0
@@ -473,7 +473,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			})
 			for i, _ := range resp {
 				//确认是否点赞
-				boolean, err := PackageCheckMysql(id, "cover", resp[i].ID)
+				boolean, err := PackageCheck(id, "cover", resp[i].ID)
 				if err != nil {
 					log.Printf(err.Error())
 					resp[i].Check = 0
@@ -629,7 +629,7 @@ func PlayDevotion(userid int) (map[string]interface{}, error) {
 	for rows.Next() {
 		db.ScanRows(rows, &devotion)
 		//插入点赞确认
-		check, err1 := PackageCheckMysql(userid, "cover", devotion.ID)
+		check, err1 := PackageCheck(userid, "cover", devotion.ID)
 		if err1 != nil {
 			log.Printf(err1.Error())
 			devotion.Check = 0
@@ -656,7 +656,7 @@ func PlayDevotion(userid int) (map[string]interface{}, error) {
 			return resp, err
 		}
 		//插入点赞确认
-		check, err1 := PackageCheckMysql(userid, "cover", devotion.ID)
+		check, err1 := PackageCheck(userid, "cover", devotion.ID)
 		if err1 != nil {
 			log.Printf(err1.Error())
 			devotion.Check = 0

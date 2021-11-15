@@ -20,10 +20,10 @@ type RankingUResp struct {
 
 //每日热榜返回值
 type HotResp struct {
-	CoverId     int    `json:"cover_id"`
+	Cover_Id    int    `json:"cover_id"`
 	Avatar      string `json:"avatar"`
 	Nickname    string `json:"nickname"`
-	Posttime    string `json:"post_time"`
+	Created_at  string `json:"post_time"`
 	Likes       int    `json:"likes"`
 	Songname    string `json:"song_name"`
 	Check       int    `json:"check"`

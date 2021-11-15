@@ -2,6 +2,11 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
+	"strconv"
+	"syscall"
+
 	"git.100steps.top/100steps/healing2021_be/cron"
 	"git.100steps.top/100steps/healing2021_be/models"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
@@ -9,10 +14,6 @@ import (
 	"git.100steps.top/100steps/healing2021_be/router"
 	"git.100steps.top/100steps/healing2021_be/sandwich"
 	"github.com/fvbock/endless"
-	"io/ioutil"
-	"log"
-	"strconv"
-	"syscall"
 )
 
 // @Title healing2021

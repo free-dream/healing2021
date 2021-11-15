@@ -270,7 +270,7 @@ func AddFakePraises() {
 		if CreatePraise() {
 			i++
 		}
-		if i > 50 {
+		if i > 30 {
 			break
 		}
 	}
