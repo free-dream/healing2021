@@ -128,7 +128,9 @@ func SetupRouter() *gin.Engine {
 	api.POST("/healing/covers/jump", controller.JumpSongs)
 
 	// 广场 模块
-	api.GET("/dynamics/list/:method", controller.GetMomentList)
+	api.GET("/dynamics/list/new", controller.GetMomentNew)
+	api.GET("/dynamics/list/recommend", controller.GetMomentRecommend)
+	api.GET("/dynamics/list/search", controller.GetMomentSearch)
 	api.POST("/dynamics/send", controller.PostMoment) //植入任务 2021.11.1
 	api.GET("/dynamics/detail/:id", controller.GetMomentDetail)
 	api.POST("/dynamics/comment", controller.PostComment)
