@@ -10,27 +10,27 @@ type SumResp struct {
 
 // 搜索用户信息返回
 type UserResp struct {
-	Userid   int    `json:"user_id"`
-	Avatar   string `json:"avatar"`
-	Nickname string `json:"nickname"`
-	Slogan   string `json:"slogan"`
+	Id        int    `json:"user_id"`
+	Avatar    string `json:"avatar"`
+	Nickname  string `json:"nickname"`
+	Signature string `json:"slogan"`
 }
 
 // 搜索点歌信息返回
 type SelectionResp struct {
-	Selectionid int       `json:"selection_id"`
-	Avatar      string    `json:"avatar"`
-	Posttime    time.Time `json:"post_time"`
-	Songname    string    `json:"song_name"`
-	Nickname    string    `json:"nickname"`
+	Id         int       `json:"selection_id"`
+	Avatar     string    `json:"avatar"`
+	Created_at time.Time `json:"post_time"`
+	Song_name  string    `json:"song_name"`
+	Nickname   string    `json:"nickname"`
 }
 
 // 搜索翻唱信息返回
 type CoversResp struct {
-	Coverid     int       `json:"cover_id"`
+	Id          int       `json:"cover_id"`
 	Avatar      string    `json:"avatar"`
-	Posttime    time.Time `json:"post_time"`
-	Songname    string    `json:"song_name"`
+	Created_at  time.Time `json:"post_time"`
+	Song_name   string    `json:"song_name"`
 	Nickname    string    `json:"nickname"`
 	Module      int       `json:"module"`
 	SelectionId string    `json:"selection_id"`
