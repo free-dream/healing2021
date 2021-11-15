@@ -14,7 +14,6 @@ func GetPlayerInfo(UserId int, CoverId int) (respModel.PlayerResp, error) {
 	Cover := statements.Cover{}
 	err := MysqlDB.Where("id=?", CoverId).First(&Cover).Error
 	if err != nil {
-		fmt.Println(err)
 		return respModel.PlayerResp{}, err
 	}
 

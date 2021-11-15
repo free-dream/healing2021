@@ -40,7 +40,7 @@ type CovMsg struct {
 //结构体疑似有bug
 func GetHealingPage(selectionId int, userId int) (interface{}, error) {
 	db := setting.MysqlConn()
-	redisCli := setting.RedisConn()
+	//redisCli := setting.RedisConn()
 	userMsg := UsrMsg{}
 	resp := make(map[string]interface{})
 	db.Table("selection").Select("selection.user_id,user.avatar,selection.id,selection.song_name,selection.style,selection.created_at,selection.remark,user.nickname").Joins("left join user on user.id=selection.user_id").Where("selection.id=?", selectionId).Scan(&userMsg)
@@ -58,10 +58,10 @@ func GetHealingPage(selectionId int, userId int) (interface{}, error) {
 	content := make(map[int]interface{})
 	for rows.Next() {
 		err = db.ScanRows(rows, &obj)
-		obj.Likes, err = strconv.Atoi(redisCli.HGet("healing2021:praise of cover", strconv.Itoa(obj.ID)).Val())
+		/*obj.Likes, err = strconv.Atoi(redisCli.HGet("healing2021:praise of cover", strconv.Itoa(obj.ID)).Val())
 		if err != nil {
 			continue
-		}
+		}*/
 	}
 	//插入点赞确认
 	check, err1 := PackageCheck(userId, "cover", obj.ID)
@@ -502,7 +502,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 }
 
 //治愈系对应的录音
-func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool) (int, CoverDetails, error) {
+func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool) (statements.Selection, CoverDetails, error) {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
 
@@ -548,7 +548,7 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 
 		value, err1 := json.Marshal(coverDetails)
 		if err1 != nil {
-			return 0, coverDetails, err1
+			return selection, coverDetails, err1
 		}
 
 		if cover.Style == cover.Language && cover.Style != "" {
@@ -565,7 +565,7 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 		redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+"all", string(value))
 	}
 
-	return selection.UserId, coverDetails, err
+	return selection, coverDetails, err
 }
 
 func Select(selection statements.Selection, avatar string, nickname string) (int, SelectionDetails, error) {

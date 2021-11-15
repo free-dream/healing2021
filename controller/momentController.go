@@ -17,41 +17,101 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 拉取广场动态列表[三种模式:new/recommend/search]
-func GetMomentList(ctx *gin.Context) {
-	var MomentsResp []respModel.MomentResp
-	// 获取 url 参数
-	Method := ctx.Param("method")
-	Keyword := ctx.Query("keyword")
+//// 拉取广场动态列表[三种模式:new/recommend/search]
+//func GetMomentList(ctx *gin.Context) {
+//	var MomentsResp []respModel.MomentResp
+//	// 获取 url 参数
+//	Method := ctx.Param("method")
+//	Keyword := ctx.Query("keyword")
+//	page := ctx.Query("page")
+//
+//	// 模式判断和处理
+//	if Method != "new" && Method != "recommend" && Method != "search" {
+//		ctx.JSON(404, e.ErrMsgResponse{Message: "模式选择出错"})
+//		return
+//	}
+//
+//	// page 参数合法性判断
+//	Page, err := strconv.Atoi(page)
+//	if err != nil {
+//		ctx.JSON(403, e.ErrMsgResponse{Message: "page参数非法"})
+//		return
+//	}
+//
+//	if Keyword != "" {
+//		sandwich.PutInSearchWord(Keyword)
+//	}
+//
+//	// 从数据库中得到经过筛选的一页 Momment 列表
+//	AllMoment, ok := dao.GetMomentPage(Method, Keyword, Page)
+//	if !ok {
+//		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败1"})
+//		return
+//	}
+//
+//	// 获取和整理其他所需信息，装进 response
+//	UserId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
+//	for _, OneMoment := range AllMoment {
+//		User := statements.User{}
+//		User, ok := dao.GetUserById(OneMoment.UserId)
+//		if !ok {
+//			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败2"})
+//			return
+//		}
+//
+//		TmpMoment := respModel.MomentResp{
+//			Content:    OneMoment.Content,
+//			DynamicsId: int(OneMoment.ID),
+//			CreatedAt:  tools.DecodeTime(OneMoment.CreatedAt),
+//			Song:       OneMoment.SongName,
+//			Module:     OneMoment.Module,
+//			Lauds:      dao.CountMLaudsById(int(OneMoment.ID)),
+//			Lauded:     dao.HaveMLauded(UserId, int(OneMoment.ID)),
+//			Comments:   dao.CountCommentsById(int(OneMoment.ID)),
+//			Status:     tools.DecodeStrArr(OneMoment.State),
+//		}
+//
+//		// 点歌\分享\无歌曲 单独处理 songId
+//		switch OneMoment.Module {
+//		case 1:
+//			TmpMoment.SongId = OneMoment.SelectionId
+//			TmpMoment.Creator = dao.TransformUserInfo(User, OneMoment.SelectionId)
+//		case 2:
+//			TmpMoment.SongId = OneMoment.ClassicId
+//			TmpMoment.Creator = dao.TransformUserInfo(User, -1)
+//		case 0:
+//			TmpMoment.Creator = dao.TransformUserInfo(User, -1)
+//		default:
+//			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库中出现非法字段"})
+//			return
+//		}
+//
+//		MomentsResp = append(MomentsResp, TmpMoment)
+//	}
+//
+//	ctx.JSON(200, MomentsResp)
+//}
+
+// 动态获取拆分
+func GetMomentNew(ctx *gin.Context)  {
 	page := ctx.Query("page")
 
-	// 模式判断和处理
-	if Method != "new" && Method != "recommend" && Method != "search" {
-		ctx.JSON(404, e.ErrMsgResponse{Message: "模式选择出错"})
-		return
-	}
-
-	// page 参数合法性判断
-	Page, err := strconv.Atoi(page)
+	pages, err := strconv.Atoi(page)
 	if err != nil {
 		ctx.JSON(403, e.ErrMsgResponse{Message: "page参数非法"})
 		return
 	}
 
-	if Keyword != "" {
-		sandwich.PutInSearchWord(Keyword)
-	}
-
-	// 从数据库中得到经过筛选的一页 Momment 列表
-	AllMoment, ok := dao.GetMomentPage(Method, Keyword, Page)
-	if !ok {
+	momentPage, err := dao.GetMomentPageNew(pages)
+	if err!=nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败1"})
 		return
 	}
 
-	// 获取和整理其他所需信息，装进 response
-	UserId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
-	for _, OneMoment := range AllMoment {
+	// 信息整理
+	var momentsResp []respModel.MomentResp
+	userId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
+	for _, OneMoment := range momentPage {
 		User := statements.User{}
 		User, ok := dao.GetUserById(OneMoment.UserId)
 		if !ok {
@@ -66,7 +126,7 @@ func GetMomentList(ctx *gin.Context) {
 			Song:       OneMoment.SongName,
 			Module:     OneMoment.Module,
 			Lauds:      dao.CountMLaudsById(int(OneMoment.ID)),
-			Lauded:     dao.HaveMLauded(UserId, int(OneMoment.ID)),
+			Lauded:     dao.HaveMLauded(userId, int(OneMoment.ID)),
 			Comments:   dao.CountCommentsById(int(OneMoment.ID)),
 			Status:     tools.DecodeStrArr(OneMoment.State),
 		}
@@ -85,11 +145,133 @@ func GetMomentList(ctx *gin.Context) {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库中出现非法字段"})
 			return
 		}
-
-		MomentsResp = append(MomentsResp, TmpMoment)
+		momentsResp = append(momentsResp, TmpMoment)
 	}
 
-	ctx.JSON(200, MomentsResp)
+	ctx.JSON(200, momentsResp)
+}
+
+// 动态推荐
+func GetMomentRecommend(ctx *gin.Context)  {
+	page := ctx.Query("page")
+
+	pages, err := strconv.Atoi(page)
+	if err != nil {
+		ctx.JSON(403, e.ErrMsgResponse{Message: "page参数非法"})
+		return
+	}
+
+	momentPage, err := dao.GetMomentPageRecommend(pages)
+	if err!=nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败1"})
+		return
+	}
+
+	// 信息整理
+	var momentsResp []respModel.MomentResp
+	userId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
+	for _, OneMoment := range momentPage {
+		User := statements.User{}
+		User, ok := dao.GetUserById(OneMoment.UserId)
+		if !ok {
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败2"})
+			return
+		}
+
+		TmpMoment := respModel.MomentResp{
+			Content:    OneMoment.Content,
+			DynamicsId: int(OneMoment.ID),
+			CreatedAt:  tools.DecodeTime(OneMoment.CreatedAt),
+			Song:       OneMoment.SongName,
+			Module:     OneMoment.Module,
+			Lauds:      dao.CountMLaudsById(int(OneMoment.ID)),
+			Lauded:     dao.HaveMLauded(userId, int(OneMoment.ID)),
+			Comments:   dao.CountCommentsById(int(OneMoment.ID)),
+			Status:     tools.DecodeStrArr(OneMoment.State),
+		}
+
+		// 点歌\分享\无歌曲 单独处理 songId
+		switch OneMoment.Module {
+		case 1:
+			TmpMoment.SongId = OneMoment.SelectionId
+			TmpMoment.Creator = dao.TransformUserInfo(User, OneMoment.SelectionId)
+		case 2:
+			TmpMoment.SongId = OneMoment.ClassicId
+			TmpMoment.Creator = dao.TransformUserInfo(User, -1)
+		case 0:
+			TmpMoment.Creator = dao.TransformUserInfo(User, -1)
+		default:
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库中出现非法字段"})
+			return
+		}
+		momentsResp = append(momentsResp, TmpMoment)
+	}
+
+	ctx.JSON(200, momentsResp)
+}
+
+// 动态搜索
+func GetMomentSearch(ctx *gin.Context)  {
+	keywords := ctx.Query("keyword")
+	page := ctx.Query("page")
+
+	pages, err := strconv.Atoi(page)
+	if err != nil {
+		ctx.JSON(403, e.ErrMsgResponse{Message: "page参数非法"})
+		return
+	}
+
+	if keywords != "" {
+		sandwich.PutInSearchWord(keywords)
+	}
+
+	momentPage, err := dao.GetMomentPageSearch(pages, keywords)
+	if err!=nil {
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败1"})
+		return
+	}
+
+	// 信息整理
+	var momentsResp []respModel.MomentResp
+	userId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
+	for _, OneMoment := range momentPage {
+		User := statements.User{}
+		User, ok := dao.GetUserById(OneMoment.UserId)
+		if !ok {
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败2"})
+			return
+		}
+
+		TmpMoment := respModel.MomentResp{
+			Content:    OneMoment.Content,
+			DynamicsId: int(OneMoment.ID),
+			CreatedAt:  tools.DecodeTime(OneMoment.CreatedAt),
+			Song:       OneMoment.SongName,
+			Module:     OneMoment.Module,
+			Lauds:      dao.CountMLaudsById(int(OneMoment.ID)),
+			Lauded:     dao.HaveMLauded(userId, int(OneMoment.ID)),
+			Comments:   dao.CountCommentsById(int(OneMoment.ID)),
+			Status:     tools.DecodeStrArr(OneMoment.State),
+		}
+
+		// 点歌\分享\无歌曲 单独处理 songId
+		switch OneMoment.Module {
+		case 1:
+			TmpMoment.SongId = OneMoment.SelectionId
+			TmpMoment.Creator = dao.TransformUserInfo(User, OneMoment.SelectionId)
+		case 2:
+			TmpMoment.SongId = OneMoment.ClassicId
+			TmpMoment.Creator = dao.TransformUserInfo(User, -1)
+		case 0:
+			TmpMoment.Creator = dao.TransformUserInfo(User, -1)
+		default:
+			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库中出现非法字段"})
+			return
+		}
+		momentsResp = append(momentsResp, TmpMoment)
+	}
+
+	ctx.JSON(200, momentsResp)
 }
 
 // 发布动态
@@ -164,7 +346,8 @@ func PostMoment(ctx *gin.Context) {
 	Moment.State = tools.EncodeStrArr(NewMoment.Status)
 
 	// 存入数据库
-	if ok := dao.CreateMoment(Moment); !ok {
+	err := dao.CreateMoment(Moment)
+	if err!=nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入失败"})
 		return
 	}
@@ -257,8 +440,8 @@ func PostComment(ctx *gin.Context) {
 
 	// 存入数据库
 	commentId := 0
-	ok := false
-	if commentId, ok = dao.CreateComment(Comment); !ok {
+	commentId, err := dao.CreateComment(Comment)
+	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败"})
 		return
 	}
