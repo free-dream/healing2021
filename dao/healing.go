@@ -502,7 +502,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 }
 
 //治愈系对应的录音
-func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool) (int, CoverDetails, error) {
+func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool) (statements.Selection, CoverDetails, error) {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
 
@@ -548,7 +548,7 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 
 		value, err1 := json.Marshal(coverDetails)
 		if err1 != nil {
-			return 0, coverDetails, err1
+			return selection, coverDetails, err1
 		}
 
 		if cover.Style == cover.Language && cover.Style != "" {
@@ -565,7 +565,7 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 		redisCli.RPush("healing2021:cover."+strconv.Itoa(module)+"."+"all", string(value))
 	}
 
-	return selection.UserId, coverDetails, err
+	return selection, coverDetails, err
 }
 
 func Select(selection statements.Selection, avatar string, nickname string) (int, SelectionDetails, error) {

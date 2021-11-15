@@ -2,6 +2,7 @@ package controller
 
 import (
 	"strconv"
+	"time"
 
 	"git.100steps.top/100steps/healing2021_be/controller/ws"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
@@ -181,7 +182,8 @@ type RecordParams struct {
 //----------任务模块已植入此接口----------
 func Recorder(ctx *gin.Context) {
 	params := RecordParams{}
-	userID := sessions.Default(ctx).Get("user_id").(int)
+	session := sessions.Default(ctx)
+	userID := session.Get("user_id").(int)
 	if err := ctx.ShouldBindJSON(&params); err != nil {
 		ctx.JSON(400, e.ErrMsgResponse{Message: err.Error()})
 		return
@@ -191,7 +193,7 @@ func Recorder(ctx *gin.Context) {
 		ctx.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
-	id, resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, userID, params.IsAnon)
+	selection, resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, userID, params.IsAnon)
 	if params.Module == 1 {
 		//推送到点歌用户
 		conn := ws.GetConn()
@@ -201,7 +203,10 @@ func Recorder(ctx *gin.Context) {
 		usrMsg.SongId = uint(params.SelectionId)
 		usrMsg.Message = ""
 		usrMsg.FromUser = uint(userID)
-		usrMsg.ToUser = uint(id)
+		usrMsg.ToUser = uint(selection.UserId)
+		usrMsg.ToUserName = selection.Nickname
+		usrMsg.FromUserName = resp.Nickname
+		usrMsg.CreatedAt = time.Now()
 		err = conn.SendUsrMsg(usrMsg)
 		if err != nil {
 			ctx.JSON(403, e.ErrMsgResponse{Message: err.Error()})
