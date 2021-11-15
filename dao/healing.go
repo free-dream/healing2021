@@ -176,7 +176,7 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 			VTable.Scan(&resp)
 		} else {
 			VTable.
-				Having("selection.style in ? or selection.language in ?", hobby, hobby).
+				Where("selection.style in ? or selection.language in ?", hobby, hobby).
 				Scan(&resp)
 		}
 
@@ -204,11 +204,11 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 	} else {
 		if ok := strings.Contains(LanguageConst, tag.Label); ok {
 			VTable.
-				Having("selection.language=?", tag.Label).
+				Where("selection.language=?", tag.Label).
 				Scan(&resp)
 		} else if ok = strings.Contains(StyleConst, tag.Label); ok {
 			VTable.
-				Having("selection.style=?", tag.Label).
+				Where("selection.style=?", tag.Label).
 				Scan(&resp)
 		} else {
 			VTable.Scan(&resp)
@@ -281,7 +281,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			VTable.Scan(&resp)
 		} else {
 			VTable.
-				Having("cover.style in ? or cover.language in ?", hobby, hobby).
+				Where("cover.style in ? or cover.language in ?", hobby, hobby).
 				Scan(&resp)
 		}
 
@@ -311,11 +311,11 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 	} else {
 		if ok := strings.Contains(LanguageConst, tag.Label); ok {
 			VTable.
-				Having("cover.language=?", tag.Label).
+				Where("cover.language=?", tag.Label).
 				Scan(&resp)
 		} else if ok = strings.Contains(StyleConst, tag.Label); ok {
 			VTable.
-				Having("cover.style=?", tag.Label).
+				Where("cover.style=?", tag.Label).
 				Scan(&resp)
 		} else {
 			VTable.Scan(&resp)
