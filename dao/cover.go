@@ -31,9 +31,8 @@ func GetCoverList(UserId int, ClassicId int) ([]respModel.CoverResp, error) {
 		}
 
 		coverResp := respModel.CoverResp{
-
 			CoverId:  int(cover.ID),
-			Nickname: cover.Nickname, // 翻唱者
+			Nickname: PlayerResp.Nickname, // 翻唱者
 			Avatar:   cover.Avatar,
 			PostTime: tools.DecodeTime(cover.CreatedAt),
 			File:     PlayerResp.File,

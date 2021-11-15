@@ -29,9 +29,6 @@ func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment
 		if err == gorm.ErrRecordNotFound {
 			return AllMoment, true // 说明这时候就是空的
 		} else if err != nil {
-			fmt.Println("====")
-			fmt.Println(err)
-			fmt.Println("====")
 			return AllMoment, false
 		}
 		defer rows.Close()
