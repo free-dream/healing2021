@@ -46,8 +46,8 @@ func main() {
 		//time.Sleep(time.Second * 2)
 		//models.FakeData()
 	}
-	models.AddClassic()
-	models.AddDevotion()
+	//models.AddClassic()
+	//models.AddDevotion()
 	routers := router.SetupRouter()
 
 	defer setting.DB.Close()

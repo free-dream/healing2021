@@ -26,9 +26,14 @@ func GetCoverList(UserId int, ClassicId int) ([]respModel.CoverResp, error) {
 		if err != nil && err != gorm.ErrRecordNotFound{
 			return coversResp, err
 		}
+		nickname, err := GetUserNickname(cover.UserId)
+		if err != nil && err != gorm.ErrRecordNotFound{
+			return coversResp, err
+		}
 		cResp := respModel.CoverResp{
 			CoverId:  int(cover.ID),
-			Nickname: cover.Nickname, // 翻唱者
+			//Nickname: cover.Nickname, // 翻唱者
+			Nickname: nickname, // 翻唱者
 			Avatar:   cover.Avatar,
 			PostTime: tools.DecodeTime(cover.CreatedAt),
 			File:     cover.File,
