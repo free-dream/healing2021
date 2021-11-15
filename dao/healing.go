@@ -180,7 +180,7 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 			}
 			hobbyArr := strings.Join(hobby, ",")
 			VTable.
-				Where("selection.language in " + "(" + hobbyArr + ")" + " or selection.style in " + ("+hobbyArr)")).
+				Where("selection.language in " + "(" + hobbyArr + ")" + " or selection.style in " + "(" + hobbyArr + ")").
 				Scan(&resp)
 		}
 		//第一次查询做缓存,与分页
@@ -288,7 +288,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			}
 			hobbyArr := strings.Join(hobby, ",")
 			VTable.
-				Where("cover.language in " + "(" + hobbyArr + ")" + " or cover.style in " + ("+hobbyArr)")).
+				Where("cover.language in " + "(" + hobbyArr + ")" + " or cover.style in " + "(" + hobbyArr + ")").
 				Scan(&resp)
 		}
 
