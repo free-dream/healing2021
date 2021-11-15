@@ -373,12 +373,12 @@ func getCovers(tableName string, condition string, value int, module int) interf
 		resp.SelectionId = obj.SelectionId
 		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
 		resp.SongName = obj.SongName
-		db.Order("likes desc").
-			Table("praise").
-			Select("cover_id, count(*) as likes").
-			Where("cover_id = ? AND is_liked = ?", resp.ID, 1).
-			Group("cover_id").Row().Scan(resp.Likes)
-
+		/*db.Order("likes desc").
+		Table("praise").
+		Select("cover_id, count(*) as likes").
+		Where("cover_id = ? AND is_liked = ?", resp.ID, 1).
+		Group("cover_id").Row().Scan(resp.Likes)
+		*/
 		//插入点赞确认
 		userid := value
 		check, err1 := PackageCheckMysql(userid, "cover", obj.ID)

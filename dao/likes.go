@@ -204,10 +204,15 @@ func markMomentInPraise(momentId int) error {
 	return err
 }
 
-func ViolenceGetLikeNum(id int, ch chan int) int {
-	db := setting.MysqlConn()
-	num := 0
-	db.Select("praise").Where("cover_id=? and is_liked=?", id, 1).Count(&num)
-	ch <- id
-	return num
+func ViolenceGetLikeheck(id int, resp CoverDetails, ch chan CoverDetails) {
+	boolean, err := PackageCheckMysql(id, "cover", resp.ID)
+	if err != nil {
+		log.Printf(err.Error())
+		resp.Check = 0
+	} else if boolean {
+		resp.Check = 1
+	} else {
+		resp.Check = 0
+	}
+	ch <- resp
 }

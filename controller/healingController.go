@@ -69,7 +69,7 @@ func Selector(ctx *gin.Context) {
 	nickname := session.Get("nickname").(string)
 
 	param.UserId = userid
-	num, resp, err := dao.Select(param, avatar, nickname)
+	_, num, err := dao.Select(param, avatar, nickname)
 	if err != nil {
 		ctx.JSON(403, gin.H{
 			"message": "今日次数已用完",
@@ -82,7 +82,6 @@ func Selector(ctx *gin.Context) {
 	//
 	ctx.JSON(200, gin.H{
 		"selection_num": num,
-		"resp":          resp,
 	})
 }
 

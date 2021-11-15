@@ -93,7 +93,7 @@ import (
 //}
 
 // 动态获取拆分
-func GetMomentNew(ctx *gin.Context)  {
+func GetMomentNew(ctx *gin.Context) {
 	page := ctx.Query("page")
 
 	pages, err := strconv.Atoi(page)
@@ -103,7 +103,7 @@ func GetMomentNew(ctx *gin.Context)  {
 	}
 
 	momentPage, err := dao.GetMomentPageNew(pages)
-	if err!=nil {
+	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败1"})
 		return
 	}
@@ -152,7 +152,7 @@ func GetMomentNew(ctx *gin.Context)  {
 }
 
 // 动态推荐
-func GetMomentRecommend(ctx *gin.Context)  {
+func GetMomentRecommend(ctx *gin.Context) {
 	page := ctx.Query("page")
 
 	pages, err := strconv.Atoi(page)
@@ -162,7 +162,7 @@ func GetMomentRecommend(ctx *gin.Context)  {
 	}
 
 	momentPage, err := dao.GetMomentPageRecommend(pages)
-	if err!=nil {
+	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败1"})
 		return
 	}
@@ -211,7 +211,7 @@ func GetMomentRecommend(ctx *gin.Context)  {
 }
 
 // 动态搜索
-func GetMomentSearch(ctx *gin.Context)  {
+func GetMomentSearch(ctx *gin.Context) {
 	keywords := ctx.Query("keyword")
 	page := ctx.Query("page")
 
@@ -226,7 +226,7 @@ func GetMomentSearch(ctx *gin.Context)  {
 	}
 
 	momentPage, err := dao.GetMomentPageSearch(pages, keywords)
-	if err!=nil {
+	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败1"})
 		return
 	}
@@ -313,12 +313,12 @@ func PostMoment(ctx *gin.Context) {
 		session := sessions.Default(ctx)
 		avatar := session.Get("headImgUrl").(string)
 		nickname := session.Get("nickname").(string)
-		_, resp, err := dao.Select(param, avatar, nickname)
+		selectionId, _, err := dao.Select(param, avatar, nickname)
 		if err != nil {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "点歌操作失败"})
 			return
 		}
-		Moment.SelectionId = resp.ID
+		Moment.SelectionId = selectionId
 	case 2:
 		Moment.ClassicId = NewMoment.ClassicId
 	default: // 出现错误
@@ -347,7 +347,7 @@ func PostMoment(ctx *gin.Context) {
 
 	// 存入数据库
 	err := dao.CreateMoment(Moment)
-	if err!=nil {
+	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库写入失败"})
 		return
 	}
