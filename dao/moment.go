@@ -163,7 +163,6 @@ func CountCommentsById(MomentId int) int {
 
 	// 用聚类函数来操作
 	err := MysqlDB.Model(&statements.MomentComment{}).Where("moment_id=? and is_deleted=?", MomentId, 0).Count(&Tot).Error
-	fmt.Println(err)
 	if err != nil {
 		return -1
 	}
@@ -171,21 +170,10 @@ func CountCommentsById(MomentId int) int {
 }
 
 // 创建新评论,返回创建好的评论的 id
-//type CommentId struct {
-//	Id int `gorm:"id"`
-//}
-func CreateComment(Comment statements.MomentComment) (int, bool) {
-	MysqlDB := setting.MysqlConn()
-	if err := MysqlDB.Create(&Comment).Error; err != nil {
-		return 0, false
-	}
-
-	//var commentId CommentId
-	//if err := MysqlDB.Model(&statements.MomentComment{}).Where("user_id=? and moment_id=? and comment=?", Comment.UserId, Comment.MomentId, Comment.Comment).Scan(&commentId).Error; err != nil {
-	//	fmt.Println(err)
-	//	return 0, false
-	//}
-	return int(Comment.ID), true
+func CreateComment(Comment statements.MomentComment) (int, error) {
+	db := setting.MysqlConn()
+	err := db.Create(&Comment).Error
+	return int(Comment.ID), err
 }
 
 // 拉取一个动态下的评论列表
