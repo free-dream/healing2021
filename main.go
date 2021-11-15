@@ -2,11 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"log"
-	"strconv"
-	"syscall"
-
 	"git.100steps.top/100steps/healing2021_be/cron"
 	"git.100steps.top/100steps/healing2021_be/models"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
@@ -14,6 +9,10 @@ import (
 	"git.100steps.top/100steps/healing2021_be/router"
 	"git.100steps.top/100steps/healing2021_be/sandwich"
 	"github.com/fvbock/endless"
+	"io/ioutil"
+	"log"
+	"strconv"
+	"syscall"
 )
 
 // @Title healing2021
@@ -22,20 +21,8 @@ import (
 
 func main() {
 	models.TableInit()
-	/*if tools.IsDebug() {
-		statements.TableClean()
-		time.Sleep(time.Second * 2)
-		models.FakeData()
-	}
-	models.AddClassic()
-	models.AddDevotion()*/
-	routers := router.SetupRouter()
-
-	defer setting.DB.Close()
-	defer setting.TokenGetCli.Close()
-	defer setting.RedisClient.Close()
-	var port string
 	if tools.IsDebug() {
+		//statements.TableClean()
 		//controller.LoadTestData()
 		for i := 0; i < 10; i++ {
 			sandwich.PutInHotSong(tools.EncodeSong(
@@ -56,6 +43,18 @@ func main() {
 		sandwich.PutInStates("干饭")
 		sandwich.PutInStates("无语")
 
+		//time.Sleep(time.Second * 2)
+		//models.FakeData()
+	}
+	models.AddClassic()
+	models.AddDevotion()
+	routers := router.SetupRouter()
+
+	defer setting.DB.Close()
+	defer setting.TokenGetCli.Close()
+	defer setting.RedisClient.Close()
+	var port string
+	if tools.IsDebug() {
 		port = ":8008"
 	} else {
 		port = ":8005"

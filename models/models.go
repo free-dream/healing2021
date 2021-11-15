@@ -231,13 +231,18 @@ func CreateDummyCovers() {
 		db.Create(temp)
 	}
 }
-func CreateFakeCovers(uid int, name string, cid int, classicId int, module int) {
+func CreateFakeCovers(uid int, name string, sid int, classicId int, module int) {
 	cover := statements.Cover{
 		UserId:      uid,
 		SongName:    name,
-		SelectionId: strconv.Itoa(cid),
+		SelectionId: strconv.Itoa(sid),
 		Module:      module,
 		ClassicId:   classicId,
+		Nickname: "测试小子",
+		Language: "中文",
+		File: "address",
+		Style: "cool",
+		Avatar: "头像",
 	}
 
 	db := setting.MysqlConn()
@@ -344,12 +349,14 @@ func AddFakeClassic() {
 
 // 造点测试用的假数据
 func FakeData() {
-	AddFakeUsers()
-	AddFakeMoments()
-	AddFakeComments()
-	AddFakeSelections()
-	// AddFakeCovers()
-	AddFakePraises()
+	//AddFakeUsers()
+	//AddFakeMoments()
+	//AddFakeComments()
+	//AddFakeSelections()
+	CreateFakeCovers(1, "刀剑如梦", 0, 45, 2)
+	CreateFakeCovers(1, "刀剑如梦", 0, 45, 2)
+	CreateFakeCovers(1, "刀剑如梦", 0, 45, 2)
+	//AddFakePraises()
 	//AddFakeClassic()
 }
 func AddClassic() {
