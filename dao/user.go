@@ -3,7 +3,6 @@ package dao
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"strconv"
 	"time"
 
@@ -193,6 +192,12 @@ func UpdateUser(user *statements.User, id int, avatar string) (string, error) {
 	return avatar, nil
 }
 
+func UpdateBackground(openid string, background string) error {
+	db := setting.MysqlConn()
+	err := db.Table("user").Where("openid=?", openid).Update("background", background).Error
+	return err
+}
+
 type UserMsg struct {
 	Avatar    string `json:"avatar"`
 	Nickname  string `json:"nickname"`
@@ -241,6 +246,125 @@ type PraiseMsgV2 struct {
 	CreatedAt   time.Time `json:"created_at"`
 	ID          int       `json:"id"`
 }
+
+func GetUser(id int, module int) interface{} {
+	resp := make(map[string]interface{})
+	switch module {
+	case 1:
+		resp["mySelections"] = getSelections(id)
+	case 2:
+		resp["mySongs"] = getCovers(id, 1)
+	case 3:
+		resp["myLikes"] = getPraises(id)
+	case 4:
+		resp["moments"] = getMoments(id)
+	}
+	return resp
+}
+
+func GetCallee(id int, module int) interface{} {
+	resp := make(map[string]interface{})
+	db := setting.MysqlConn()
+	switch module {
+	case 1:
+		user := UserMsg{}
+		db.Table("user").Select("nickname,signature,sex,avatar,school,id").Where("id=?", id).Scan(&user)
+		resp["message"] = user
+		resp["mySelections"] = getSelections(id)
+	case 2:
+		resp["mySongs"] = getCovers(id, 2)
+	case 3:
+		resp["myLikes"] = getPraises(id)
+	case 4:
+		resp["moments"] = getMoments(id)
+	}
+	return resp
+
+}
+
+//返回所有信息采用扫描行的方式
+
+func getPraises(user_id int) interface{} {
+	cover := []CoverDetails{}
+	db := setting.MysqlConn()
+	db.Table("cover").Select("sum(praise.is_liked) as likes,user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at ").
+		Joins("inner join user on user.id=cover.user_id").
+		Joins("inner join praise on cover.id=praise.cover_id").
+		Group("cover_id").Order("created_at desc").
+		Where("praise.user_id=?", user_id).
+		Scan(&cover)
+	ch := make(chan CoverDetails, 15)
+	for i, _ := range cover {
+		//确认是否点赞
+		go ViolenceGetLikeheckC(user_id, cover[i], ch)
+	}
+
+	return cover
+}
+func getCovers(user_id int, anon int) interface{} {
+	cover := []CoverDetails{}
+	db := setting.MysqlConn()
+	Vtable := db.Table("cover").Select("sum(praise.is_liked) as likes,user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at ").
+		Joins("inner join user on user.id=cover.user_id").
+		Joins("inner join praise on cover.id=praise.cover_id").
+		Group("cover_id").Order("cover.created_at desc")
+	switch anon {
+	case 1:
+		Vtable.Having("cover.user_id=?", user_id).
+			Scan(&cover)
+	case 2:
+		Vtable.Having("cover.user_id=? and cover.is_anon=0", user_id).
+			Scan(&cover)
+	}
+	ch := make(chan CoverDetails, 15)
+	for i, _ := range cover {
+		//确认是否点赞
+		go ViolenceGetLikeheckC(user_id, cover[i], ch)
+	}
+
+	return cover
+}
+func getSelections(user_id int) interface{} {
+	db := setting.MysqlConn()
+	selection := []SelectionMsg{}
+	db.Table("selection").Select("song_name,id,created_at,remark").
+		Where("user_id=?", user_id).
+		Scan(&selection)
+	return selection
+}
+
+func getMoments(user_id int) interface{} {
+	moment2 := []MomentMsgV2{}
+	moment := []MomentMsg{}
+	db := setting.MysqlConn()
+	db.Table("moment").Select("sum(praise.is_liked) as likes,moment.content,moment.state,moment.song_name,moment.id,moment.created_at").
+		Joins("inner join praise on moment.id=praise.moment_id").
+		Group("moment.id").Order("moment.created_at desc").
+		Where("moment.user_id=?", user_id).
+		Scan(&moment2)
+	ch := make(chan MomentMsgV2, 15)
+	for i, _ := range moment {
+		//确认是否点赞
+		go ViolenceGetLikeheckM(user_id, moment2[i], ch)
+		moment[i].State = tools.DecodeStrArr(moment2[i].State)
+		moment[i].ID = moment2[i].ID
+		moment[i].CreatedAt = tools.DecodeTime(moment2[i].CreatedAt)
+		moment[i].Likes = moment2[i].Likes
+		moment[i].SongName = moment2[i].SongName
+		moment[i].Content = moment2[i].Content
+	}
+	return moment
+}
+
+type MomentMsgV2 struct {
+	SongName  string    `json:"song_name"`
+	CreatedAt time.Time `json:"created_at"`
+	ID        int       `json:"id"`
+	State     string    `json:"state"`
+	Content   string    `json:"content"`
+	Likes     int       `json:"likes"`
+	Check     int       `json:"check"`
+}
 type MomentMsg struct {
 	SongName  string   `json:"song_name"`
 	CreatedAt string   `json:"created_at"`
@@ -249,218 +373,4 @@ type MomentMsg struct {
 	Content   string   `json:"content"`
 	Likes     int      `json:"likes"`
 	Check     int      `json:"check"`
-}
-type MomentMsgV2 struct {
-	SongName  string    `json:"song_name"`
-	CreatedAt time.Time `json:"created_at"`
-	ID        int       `json:"id"`
-	State     string    `json:"state"`
-	Content   string    `json:"content"`
-}
-
-func GetUser(id int, module int) interface{} {
-
-	resp := make(map[string]interface{})
-	switch module {
-	case 1:
-		resp["mySelections"] = getSelections(id, "selection", "user_id=?")
-	case 2:
-		resp["mySongs"] = getCovers("cover", "user_id=?", id, 0)
-	case 3:
-		resp["myLikes"] = getPraises(id, "praise", "praise.user_id=?")
-	case 4:
-		resp["moments"] = getMoments(id, "moment", "user_id=?")
-	}
-	return resp
-}
-
-func UpdateBackground(openid string, background string) error {
-	db := setting.MysqlConn()
-	err := db.Table("user").Where("openid=?", openid).Update("background", background).Error
-	return err
-}
-
-func GetCallee(id int, module int) interface{} {
-
-	resp := make(map[string]interface{})
-	db := setting.MysqlConn()
-	switch module {
-	case 1:
-		user := UserMsg{}
-		db.Table("user").Select("nickname,signature,sex,avatar,school,id").Where("id=?", id).Scan(&user)
-		resp["message"] = user
-		resp["mySelections"] = getSelections(id, "selection", "user_id=?")
-	case 2:
-		resp["mySongs"] = getCovers("cover", "user_id=? and is_anon=?", id, 1)
-	case 3:
-		resp["myLikes"] = getPraises(id, "praise", "praise.user_id=?")
-	case 4:
-		resp["moments"] = getMoments(id, "moment", "user_id=?")
-	}
-	return resp
-
-}
-
-//返回所有信息采用扫描行的方式
-
-func getPraises(value interface{}, tableName string, condition string) interface{} {
-	db := setting.MysqlConn()
-	redisCli := setting.RedisConn()
-	obj := PraiseMsgV2{}
-	resp := PraiseMsg{}
-	rows, err := db.Table(tableName).Joins("left join cover on cover.id=praise.cover_id").Where(condition, value).Rows()
-	index := 0
-	content := make(map[int]interface{})
-	if err != nil {
-		panic(err)
-	}
-	defer rows.Close()
-	for rows.Next() {
-		err = db.ScanRows(rows, &obj)
-		if err != nil {
-			panic(err)
-		}
-		resp.ID = obj.ID
-		resp.CoverId = obj.CoverId
-		resp.SelectionId = obj.SelectionId
-		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
-		//插入点赞确认
-		userid, _ := value.(int)
-		check, err1 := PackageCheck(userid, "cover", obj.ID)
-		if err1 != nil {
-			log.Printf(err1.Error())
-			resp.Check = 0
-		} else if check {
-			resp.Check = 1
-		} else {
-			resp.Check = 0
-		}
-		//
-		resp.Likes, err1 = strconv.Atoi(redisCli.HGet("healing2021:praise of cover", strconv.Itoa(resp.ID)).Val())
-		if err1 != nil {
-			continue
-		}
-		content[index] = resp
-		index++
-	}
-	return content
-}
-func getCovers(tableName string, condition string, value int, module int) interface{} {
-	db := setting.MysqlConn()
-	redisCli := setting.RedisConn()
-	obj := CoverMsgV2{}
-	resp := CoverMsg{}
-	rows, _ := db.Rows()
-	var err error
-	if module == 0 {
-		rows, err = db.Table(tableName).Where(condition, value).Rows()
-	} else {
-		rows, err = db.Table(tableName).Where(condition, value, 0).Rows()
-	}
-
-	index := 0
-	content := make(map[int]interface{})
-	if err != nil {
-		panic(err)
-	}
-	defer rows.Close()
-	for rows.Next() {
-		err = db.ScanRows(rows, &obj)
-		if err != nil {
-			panic(err)
-		}
-		resp.ID = obj.ID
-		resp.SelectionId = obj.SelectionId
-		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
-		resp.SongName = obj.SongName
-		/*db.Order("likes desc").
-		Table("praise").
-		Select("cover_id, count(*) as likes").
-		Where("cover_id = ? AND is_liked = ?", resp.ID, 1).
-		Group("cover_id").Row().Scan(resp.Likes)
-		*/
-		//插入点赞确认
-		userid := value
-		check, err1 := PackageCheck(userid, "cover", obj.ID)
-		if err1 != nil {
-			log.Printf(err1.Error())
-			resp.Check = 0
-		} else if check {
-			resp.Check = 1
-		} else {
-			resp.Check = 0
-		}
-		//
-		resp.Likes, err1 = strconv.Atoi(redisCli.HGet("healing2021:praise of cover", strconv.Itoa(resp.ID)).Val())
-		if err1 != nil {
-			continue
-		}
-		content[index] = resp
-		index++
-	}
-	return content
-}
-func getSelections(value interface{}, tableName string, condition string) interface{} {
-	db := setting.MysqlConn()
-	obj := SelectionMsgV2{}
-	resp := SelectionMsg{}
-	rows, err := db.Table(tableName).Where(condition, value).Rows()
-	index := 0
-	content := make(map[int]interface{})
-	if err != nil {
-		panic(err)
-	}
-	defer rows.Close()
-	for rows.Next() {
-		err = db.ScanRows(rows, &obj)
-		if err != nil {
-			panic(err)
-		}
-		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
-		resp.SongName = obj.SongName
-		resp.ID = obj.ID
-		content[index] = resp
-		index++
-	}
-	return content
-}
-
-func getMoments(value interface{}, tableName string, condition string) interface{} {
-	db := setting.MysqlConn()
-	obj := MomentMsgV2{}
-	resp := MomentMsg{}
-	rows, err := db.Table(tableName).Where(condition, value).Rows()
-	index := 0
-	content := make(map[int]interface{})
-	if err != nil {
-		panic(err)
-	}
-	defer rows.Close()
-	for rows.Next() {
-		err = db.ScanRows(rows, &obj)
-		resp.State = tools.DecodeStrArr(obj.State)
-		resp.ID = obj.ID
-		resp.CreatedAt = tools.DecodeTime(obj.CreatedAt)
-		resp.SongName = obj.SongName
-		resp.Content = obj.Content
-		//插入check
-		coverid, _ := value.(int)
-		check, err := PackageCheck(coverid, "moment", obj.ID)
-		if err != nil {
-			log.Printf("检查出错")
-			resp.Check = 0
-		} else if check {
-			resp.Check = 1
-		} else {
-			resp.Check = 0
-		}
-		//
-		db.Table("praise").Where("moment_id=? and is_liked=?", resp.ID, 1).Count(&resp.Likes)
-		if err != nil {
-			panic(err)
-		}
-		content[index] = resp
-		index++
-	}
-	return content
 }

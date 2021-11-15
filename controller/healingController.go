@@ -32,14 +32,15 @@ func HealingPageFetcher(ctx *gin.Context) {
 		fmt.Println(err)
 		// return
 	}
-	resp, err := dao.GetHealingPage(selectionId, id)
+	userMsg, covers := dao.GetHealingPage(selectionId, id)
 	if err != nil {
 		fmt.Println(err)
 		// return
 	}
 
 	ctx.JSON(200, gin.H{
-		"resp": resp,
+		"user":  userMsg,
+		"cover": covers,
 	})
 }
 
@@ -223,9 +224,6 @@ func Recorder(ctx *gin.Context) {
 
 //献唱接口
 func DevotionPlayer(ctx *gin.Context) {
-	resp, err := dao.PlayDevotion(sessions.Default(ctx).Get("user_id").(int))
-	if err != nil {
-		panic(err)
-	}
+	resp := dao.PlayDevotion(sessions.Default(ctx).Get("user_id").(int))
 	ctx.JSON(200, resp)
 }

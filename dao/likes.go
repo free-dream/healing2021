@@ -161,8 +161,8 @@ func markMomentInPraise(momentId int) error {
 	return err
 }
 
-func ViolenceGetLikeheck(id int, resp CoverDetails, ch chan CoverDetails) {
-	boolean, err := PackageCheckMysql(id, "cover", resp.ID)
+func ViolenceGetLikeheckC(id int, resp CoverDetails, ch chan CoverDetails) {
+	boolean, err := PackageCheck(id, "cover", resp.ID)
 	if err != nil {
 		log.Printf(err.Error())
 		resp.Check = 0
@@ -171,5 +171,31 @@ func ViolenceGetLikeheck(id int, resp CoverDetails, ch chan CoverDetails) {
 	} else {
 		resp.Check = 0
 	}
+	ch <- resp
+}
+func ViolenceGetLikeheckD(id int, resp DevMsg, ch chan DevMsg) {
+	boolean, err := PackageCheck(id, "devotion", resp.ID)
+	if err != nil {
+		log.Printf(err.Error())
+		resp.Check = 0
+	} else if boolean {
+		resp.Check = 1
+	} else {
+		resp.Check = 0
+	}
+	ch <- resp
+}
+
+func ViolenceGetLikeheckM(id int, resp MomentMsgV2, ch chan MomentMsgV2) {
+	boolean, err := PackageCheck(id, "cover", resp.ID)
+	if err != nil {
+		log.Printf(err.Error())
+		resp.Check = 0
+	} else if boolean {
+		resp.Check = 1
+	} else {
+		resp.Check = 0
+	}
+
 	ch <- resp
 }

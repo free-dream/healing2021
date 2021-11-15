@@ -9,11 +9,8 @@ import (
 	"math/rand"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
-
-	"git.100steps.top/100steps/healing2021_be/models/statements"
-	"git.100steps.top/100steps/healing2021_be/pkg/setting"
-	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 )
 
 type UsrMsg struct {
@@ -39,49 +36,22 @@ type CovMsg struct {
 //处理治愈详情页
 //点赞数debug，尚未测试
 //结构体疑似有bug
-func GetHealingPage(selectionId int, userId int) (interface{}, error) {
+func GetHealingPage(selectionId int, userId int) (interface{}, interface{}) {
 	db := setting.MysqlConn()
-	//redisCli := setting.RedisConn()
 	userMsg := UsrMsg{}
-	resp := make(map[string]interface{})
+	obj := []CoverDetails{}
 	db.Table("selection").Select("selection.user_id,user.avatar,selection.id,selection.song_name,selection.style,selection.created_at,selection.remark,user.nickname").Joins("left join user on user.id=selection.user_id").Where("selection.id=?", selectionId).Scan(&userMsg)
-	/*if err!=nil{
-		panic(err)
-		return nil, err
-	}*/
-	rows, err := db.Table("cover").
-		Select("user.avatar,cover.file,cover.user_id,user.nickname,cover.id").
-		Joins("left join user on user.id=cover.user_id").Where("cover.selection_id=?", selectionId).Rows()
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	index := 0
-	obj := CovMsg{}
-	content := make(map[int]interface{})
-	for rows.Next() {
-		err = db.ScanRows(rows, &obj)
-		/*obj.Likes, err = strconv.Atoi(redisCli.HGet("healing2021:praise of cover", strconv.Itoa(obj.ID)).Val())
-		if err != nil {
-			continue
-		}*/
-	}
-	//插入点赞确认
-	/*ch:=make(chan CoverDetails,15)
-	for i, _ := range resp {
+	db.Table("cover").Select("sum(praise.is_liked) as likes,user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at ").
+		Joins("inner join user on user.id=cover.user_id").
+		Joins("inner join praise on cover.id=praise.cover_id").
+		Having("seletion_id=?", selectionId).
+		Group("cover_id").Order("created_at desc")
+	ch := make(chan CoverDetails, 15)
+	for i, _ := range obj {
 		//确认是否点赞
-		go ViolenceGetLikeheck(resp[i], resp[i], ch)
-	}*/
-	if err != nil {
-		return nil, err
+		go ViolenceGetLikeheckC(userId, obj[i], ch)
 	}
-	content[index] = obj
-	index++
-
-	resp["user"] = userMsg
-	resp["singer"] = content
-
-	return resp, err
+	return userMsg, obj
 }
 
 //获取广告url
@@ -191,7 +161,7 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 	var resp []SelectionDetails
 	VTable := db.Table("selection").Select("user.sex,user.avatar,user.nickname,selection.id,selection.song_name,selection.user_id,selection.id,selection.created_at,selection.remark ").
 		Joins("inner join user on user.id=selection.user_id").
-		Order("created_at desc")
+		Order("selection.created_at desc")
 	if tag.Label == "recommend" {
 		var hobby []string
 		by, err := redisCli.HGet("healing2021:hobby", strconv.Itoa(id)).Bytes()
@@ -291,12 +261,12 @@ type LikeObj struct {
 func GetCovers(id int, tag Tags) (interface{}, error) {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
-	index := 0
 	var resp []CoverDetails
 	VTable := db.Table("cover").Select("sum(praise.is_liked) as likes,user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at ").
 		Joins("inner join user on user.id=cover.user_id").
 		Joins("inner join praise on cover.id=praise.cover_id").
-		Group("cover_id").Order("created_at desc")
+		Group("cover_id").
+		Order("cover.created_at desc")
 	if tag.Label == "recommend" {
 		var hobby []string
 		by, err := redisCli.HGet("healing2021:hobby", strconv.Itoa(id)).Bytes()
@@ -324,7 +294,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			ch := make(chan CoverDetails, 15)
 			for i, _ := range resp {
 				//确认是否点赞
-				go ViolenceGetLikeheck(id, resp[i], ch)
+				go ViolenceGetLikeheckC(id, resp[i], ch)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
 			if len(resp) > 10 {
@@ -357,7 +327,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			ch := make(chan CoverDetails, 15)
 			for i, _ := range resp {
 				//确认是否点赞
-				go ViolenceGetLikeheck(id, resp[i], ch)
+				go ViolenceGetLikeheckC(id, resp[i], ch)
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
 			if len(resp) > 10 {
@@ -371,7 +341,7 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			ch := make(chan CoverDetails, 15)
 			for i, _ := range resp {
 				//确认是否点赞
-				go ViolenceGetLikeheck(id, resp[i], ch)
+				go ViolenceGetLikeheckC(id, resp[i], ch)
 			}
 
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
@@ -428,7 +398,6 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 
 func Select(selection statements.Selection, avatar string, nickname string) (int, int, error) {
 	db := setting.MysqlConn()
-	redisCli := setting.RedisConn()
 	user := statements.User{}
 
 	db.Table("user").Select("selection_num").Where("id=?", selection.UserId).Scan(&user)
@@ -453,64 +422,30 @@ type DevMsg struct {
 	Check    int    `json:"check"`
 }
 
-func PlayDevotion(userid int) (map[string]interface{}, error) {
-	resp := make(map[string]interface{})
-	content := make(map[int]interface{})
-	content2 := make(map[int]interface{})
-	likes := 0
-	index := 0
+func PlayDevotion(userid int) interface{} {
 	db := setting.MysqlConn()
-	devotion := DevMsg{}
-	rows, err := db.Table("devotion").Where("singer=?", "阿细").Rows()
-	if err != nil {
-		return resp, err
+	devotion := []DevMsg{}
+	devotion2 := []DevMsg{}
+	resp := map[string][]DevMsg{}
+	db.Table("devotion").Select("devotion.id,devotion.song_name,devotion.file,sum(praise.is_liked) as likes,devotion.check").
+		Where("singer=阿细").
+		Joins("inner join praise on praise.devotion_id=devotion.id").
+		Scan(&devotion)
+	ch := make(chan DevMsg, 15)
+	for i, _ := range devotion {
+		//确认是否点赞
+		go ViolenceGetLikeheckD(userid, devotion[i], ch)
 	}
-	defer rows.Close()
-	for rows.Next() {
-		db.ScanRows(rows, &devotion)
-		//插入点赞确认
-		check, err1 := PackageCheckMysql(userid, "cover", devotion.ID)
-		if err1 != nil {
-			log.Printf(err1.Error())
-			devotion.Check = 0
-		} else if check {
-			devotion.Check = 1
-		} else {
-			devotion.Check = 0
-		}
-		//
-		db.Table("praise").Where("devotion_id=?", devotion.ID).Count(&likes)
-		devotion.Likes = likes
-		content[index] = devotion
-		index++
+	resp["阿细"] = devotion
+	db.Table("devotion").Select("devotion.id,devotion.song_name,devotion.file,sum(praise.is_liked) as likes,devotion.check").
+		Where("singer=梁山山").
+		Joins("inner join praise on praise.devotion_id=devotion.id").
+		Scan(&devotion2)
+	for i, _ := range devotion {
+		//确认是否点赞
+		go ViolenceGetLikeheckD(userid, devotion[i], ch)
 	}
-	resp["阿细"] = content
-	index = 0
-	rows, err = db.Table("devotion").Where("singer=?", "梁山山").Rows()
-	if err != nil {
-		return resp, err
-	}
-	for rows.Next() {
-		db.ScanRows(rows, &devotion)
-		if err != nil {
-			return resp, err
-		}
-		//插入点赞确认
-		check, err1 := PackageCheckMysql(userid, "cover", devotion.ID)
-		if err1 != nil {
-			log.Printf(err1.Error())
-			devotion.Check = 0
-		} else if check {
-			devotion.Check = 1
-		} else {
-			devotion.Check = 0
-		}
-		//
-		db.Table("praise").Where("devotion_id=?", devotion.ID).Count(&likes)
-		devotion.Likes = likes
-		content2[index] = devotion
-		index++
-	}
-	resp["梁山山"] = content2
-	return resp, err
+
+	resp["梁山山"] = devotion2
+	return resp
 }
