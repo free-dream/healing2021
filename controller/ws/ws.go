@@ -80,6 +80,7 @@ func WsHandler(ctx *gin.Context) {
 	for {
 		if data, err = conn.readMessage(); err != nil {
 			conn.Close()
+            return
             fmt.Println("Close6:")
 		}
 		conn.heartBeatCheck(data)
