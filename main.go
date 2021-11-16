@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"git.100steps.top/100steps/healing2021_be/dao"
-	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"io/ioutil"
 	"log"
 	"syscall"
@@ -24,9 +23,9 @@ import (
 func main() {
 	models.TableInit()
 	if tools.IsDebug() {
-		statements.TableClean()
+		/*statements.TableClean()
 		models.AddClassic()
-		models.AddDevotion()
+		models.AddDevotion()*/
 		//controller.LoadTestData()
 		//for i := 0; i < 10; i++ {
 		//	sandwich.PutInHotSong(tools.EncodeSong(
