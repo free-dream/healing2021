@@ -1,7 +1,7 @@
 package ws
 
 import (
-	//"fmt"
+	"fmt"
 	//"time"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -107,7 +107,9 @@ func WsData(ctx *gin.Context) {
 	}
 	ctx.JSON(200, resp)
     conn := GetConn()
-    fmt.Printf("connmap:%v\nuid:%v\nid:%v\n",ConnMap.Load(uid), conn.uid, uid)
+    load, ok := ConnMap.Load(uid)
+    load2, ok2 := ConnMap.Load(conn.uid)
+    fmt.Printf("load:%v  ok:%v\nload2:%v   ok:%\nuid:%v\nid:%v\n",load ,ok ,load2 ,ok2 , conn.uid, uid)
 	return
 }
 
