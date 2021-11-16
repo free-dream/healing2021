@@ -38,11 +38,6 @@ func GetStates() []string {
 		panic(err)
 	}
 
-	// 测试
-	//for _, val := range Values {
-	//	fmt.Println(val)
-	//}
-
 	return Values
 }
 
@@ -70,11 +65,6 @@ func GetSearchWord() []string {
 	if err != nil && err != redis.Nil {
 		panic(err)
 	}
-
-	// 测试
-	//for _, val := range Values {
-	//	fmt.Println(val)
-	//}
 
 	return Values
 }
@@ -104,10 +94,6 @@ func GetHotSong() []string {
 		panic(err)
 	}
 
-	// 测试
-	//for _, val := range Values {
-	//	fmt.Println(val)
-	//}
-
 	return Values
 }
+
