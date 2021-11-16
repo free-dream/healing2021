@@ -41,17 +41,14 @@ func GetHealingPage(selectionId int, userId int) (interface{}, interface{}) {
 	userMsg := UsrMsg{}
 	obj := []CoverDetails{}
 	db.Table("selection").Select("selection.user_id,user.avatar,selection.id,selection.song_name,selection.style,selection.created_at,selection.remark,user.nickname").Joins("left join user on user.id=selection.user_id").Where("selection.id=?", selectionId).Scan(&userMsg)
-	db.Table("cover").Select("sum(praise.is_liked) as likes,user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at ").
-		Joins("inner join user on user.id=cover.user_id").
-		Joins("inner join praise on cover.id=praise.cover_id").
-		Having("selection_id=?", selectionId).
-		Group("cover_id").
-		Order("created_at desc").
+	db.Raw("select likes,avatar,nickname,selection_id,song_name,file,user_id,id,created_at from (select user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at from cover inner join user on user.id=cover.user_id where cover.selection_id=" + strconv.Itoa(selectionId) + ")" + " as A left join (select cover_id,sum(is_liked) as likes from praise group by cover_id) as B on A.id=B.cover_id order by created_at desc").
 		Scan(&obj)
-	ch := make(chan CoverDetails, 15)
+	ch := make(chan int, 15)
 	for i, _ := range obj {
 		//确认是否点赞
-		go ViolenceGetLikeheckC(userId, obj[i], ch)
+		ViolenceGetLikeheckC(userId, obj[i], ch)
+		obj[i].Check = <-ch
+
 	}
 	return userMsg, obj
 }
@@ -267,11 +264,6 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
 	var resp []CoverDetails
-	VTable := db.Table("cover").Select("sum(praise.is_liked) as likes,user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at ").
-		Joins("inner join user on user.id=cover.user_id").
-		Joins("inner join praise on cover.id=praise.cover_id").
-		Group("cover_id").
-		Order("cover.created_at desc")
 	if tag.Label == "recommend" {
 		var hobby []string
 		by, err := redisCli.HGet("healing2021:hobby", strconv.Itoa(id)).Bytes()
@@ -283,14 +275,14 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			panic(err)
 		}
 		if hobby == nil {
-			VTable.Scan(&resp)
+			db.Raw("select likes,avatar,nickname,selection_id,song_name,file,user_id,id,created_at from (select user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at from cover inner join user on user.id=cover.user_id) as A left join (select cover_id,sum(is_liked) as likes from praise group by cover_id) as B on A.id=B.cover_id order by created_at desc").
+				Scan(&resp).Scan(&resp)
 		} else {
 			for i := range hobby {
 				hobby[i] = "'" + hobby[i] + "'"
 			}
 			hobbyArr := strings.Join(hobby, ",")
-			VTable.
-				Where("cover.language in " + "(" + hobbyArr + ")" + " or cover.style in " + "(" + hobbyArr + ")").
+			db.Raw("select likes,avatar,nickname,selection_id,song_name,file,user_id,id,created_at from (select user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at from cover inner join user on user.id=cover.user_id where cover.language in " + "(" + hobbyArr + ")" + " or cover.style in " + "(" + hobbyArr + ")" + ") as A left join (select cover_id,sum(is_liked) as likes from praise group by cover_id) as B on A.id=B.cover_id order by created_at desc").
 				Scan(&resp)
 		}
 
@@ -300,10 +292,11 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			rand.Seed(time.Now().Unix())
 			//采用rand.Shuffle，将切片随机化处理后返回
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
-			ch := make(chan CoverDetails, 15)
+			ch := make(chan int, 15)
 			for i, _ := range resp {
 				//确认是否点赞
-				go ViolenceGetLikeheckC(id, resp[i], ch)
+				ViolenceGetLikeheckC(id, resp[i], ch)
+				resp[i].Check = <-ch
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
 			if len(resp) > 10 {
@@ -319,24 +312,24 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 		}
 	} else {
 		if ok := strings.Contains(LanguageConst, tag.Label); ok {
-			VTable.
-				Where("cover.language=?", tag.Label).
+			db.Raw("select likes,avatar,nickname,selection_id,song_name,file,user_id,id,created_at from (select user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at from cover inner join user on user.id=cover.user_id where cover.language=" + "'" + tag.Label + "'" + ")" + " as A left join (select cover_id,sum(is_liked) as likes from praise group by cover_id) as B on A.id=B.cover_id order by created_at desc").
 				Scan(&resp)
 		} else if ok = strings.Contains(StyleConst, tag.Label); ok {
-			VTable.
-				Where("cover.style=?", tag.Label).
+			db.Raw("select likes,avatar,nickname,selection_id,song_name,file,user_id,id,created_at from (select user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at from cover inner join user on user.id=cover.user_id where cover.style=" + "'" + tag.Label + "'" + ")" + " as A left join (select cover_id,sum(is_liked) as likes from praise group by cover_id) as B on A.id=B.cover_id order by created_at desc").
 				Scan(&resp)
 		} else {
-			VTable.Scan(&resp)
+			db.Raw("select likes,avatar,nickname,selection_id,song_name,file,user_id,id,created_at from (select user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at from cover inner join user on user.id=cover.user_id) as A left join (select cover_id,sum(is_liked) as likes from praise group by cover_id) as B on A.id=B.cover_id order by created_at desc").
+				Scan(&resp)
 		}
 		if tag.RankWay == 1 {
 			//采用rand.Shuffle，将切片随机化处理后返回
 			rand.Seed(time.Now().Unix())
 			rand.Shuffle(len(resp), func(i, j int) { resp[i], resp[j] = resp[j], resp[i] })
-			ch := make(chan CoverDetails, 15)
+			ch := make(chan int, 15)
 			for i, _ := range resp {
 				//确认是否点赞
-				go ViolenceGetLikeheckC(id, resp[i], ch)
+				ViolenceGetLikeheckC(id, resp[i], ch)
+				resp[i].Check = <-ch
 			}
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
 			if len(resp) > 10 {
@@ -347,10 +340,11 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 			sort.Slice(resp, func(i, j int) bool {
 				return resp[i].CreatedAt > resp[j].CreatedAt
 			})
-			ch := make(chan CoverDetails, 15)
+			ch := make(chan int, 15)
 			for i, _ := range resp {
 				//确认是否点赞
-				go ViolenceGetLikeheckC(id, resp[i], ch)
+				ViolenceGetLikeheckC(id, resp[i], ch)
+				resp[i].Check = <-ch
 			}
 
 			Cache("healing2021:home."+strconv.Itoa(id), resp)
@@ -440,10 +434,11 @@ func PlayDevotion(userid int) interface{} {
 		Where("singer=阿细").
 		Joins("inner join praise on praise.devotion_id=devotion.id").
 		Scan(&devotion)
-	ch := make(chan DevMsg, 15)
+	ch := make(chan int, 15)
 	for i, _ := range devotion {
 		//确认是否点赞
 		go ViolenceGetLikeheckD(userid, devotion[i], ch)
+		devotion[i].Check = <-ch
 	}
 	resp["阿细"] = devotion
 	db.Table("devotion").Select("devotion.id,devotion.song_name,devotion.file,sum(praise.is_liked) as likes,devotion.check").
@@ -453,6 +448,7 @@ func PlayDevotion(userid int) interface{} {
 	for i, _ := range devotion {
 		//确认是否点赞
 		go ViolenceGetLikeheckD(userid, devotion[i], ch)
+		devotion[i].Check = <-ch
 	}
 
 	resp["梁山山"] = devotion2

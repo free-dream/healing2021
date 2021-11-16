@@ -293,10 +293,11 @@ func getPraises(user_id int) interface{} {
 		Group("cover_id").Order("created_at desc").
 		Where("praise.user_id=?", user_id).
 		Scan(&cover)
-	ch := make(chan CoverDetails, 15)
+	ch := make(chan int, 15)
 	for i, _ := range cover {
 		//确认是否点赞
-		go ViolenceGetLikeheckC(user_id, cover[i], ch)
+		ViolenceGetLikeheckC(user_id, cover[i], ch)
+		cover[i].Check = <-ch
 	}
 
 	return cover
@@ -304,22 +305,19 @@ func getPraises(user_id int) interface{} {
 func getCovers(user_id int, anon int) interface{} {
 	cover := []CoverDetails{}
 	db := setting.MysqlConn()
-	Vtable := db.Table("cover").Select("sum(praise.is_liked) as likes,user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at ").
-		Joins("inner join user on user.id=cover.user_id").
-		Joins("inner join praise on cover.id=praise.cover_id").
-		Group("cover_id").Order("cover.created_at desc")
 	switch anon {
 	case 1:
-		Vtable.Having("cover.user_id=?", user_id).
+		db.Raw("select likes,avatar,nickname,selection_id,song_name,file,user_id,id,created_at from (select user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at from cover inner join user on user.id=cover.user_id where cover.user_id=" + strconv.Itoa(user_id) + ")" + " as A left join (select cover_id,sum(is_liked) as likes from praise group by cover_id) as B on A.id=B.cover_id order by created_at desc").
 			Scan(&cover)
 	case 2:
-		Vtable.Having("cover.user_id=? and cover.is_anon=0", user_id).
+		db.Raw("select likes,avatar,nickname,selection_id,song_name,file,user_id,id,created_at from (select user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at from cover inner join user on user.id=cover.user_id where cover.user_id=" + strconv.Itoa(user_id) + " and cover.is_anon=0)" + " as A left join (select cover_id,sum(is_liked) as likes from praise group by cover_id) as B on A.id=B.cover_id order by created_at desc").
 			Scan(&cover)
 	}
-	ch := make(chan CoverDetails, 15)
+	ch := make(chan int, 15)
 	for i, _ := range cover {
 		//确认是否点赞
 		go ViolenceGetLikeheckC(user_id, cover[i], ch)
+		cover[i].Check = <-ch
 	}
 
 	return cover
@@ -338,14 +336,15 @@ func getMoments(user_id int) interface{} {
 	moment := []MomentMsg{}
 	db := setting.MysqlConn()
 	db.Table("moment").Select("sum(praise.is_liked) as likes,moment.content,moment.state,moment.song_name,moment.id,moment.created_at").
-		Joins("inner join praise on moment.id=praise.moment_id").
+		Joins("left join praise on moment.id=praise.moment_id").
 		Group("moment.id").Order("moment.created_at desc").
 		Where("moment.user_id=?", user_id).
 		Scan(&moment2)
-	ch := make(chan MomentMsgV2, 15)
+	ch := make(chan int, 15)
 	for i, _ := range moment {
 		//确认是否点赞
-		go ViolenceGetLikeheckM(user_id, moment2[i], ch)
+		ViolenceGetLikeheckM(user_id, moment2[i], ch)
+		moment[i].Check = <-ch
 		moment[i].State = tools.DecodeStrArr(moment2[i].State)
 		moment[i].ID = moment2[i].ID
 		moment[i].CreatedAt = tools.DecodeTime(moment2[i].CreatedAt)

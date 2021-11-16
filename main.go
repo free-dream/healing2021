@@ -23,7 +23,9 @@ import (
 func main() {
 	models.TableInit()
 	if tools.IsDebug() {
-		//statements.TableClean()
+		/*statements.TableClean()
+		models.AddClassic()
+		models.AddDevotion()*/
 		//controller.LoadTestData()
 		//for i := 0; i < 10; i++ {
 		//	sandwich.PutInHotSong(tools.EncodeSong(
@@ -55,8 +57,6 @@ func main() {
 	// 动态推荐页的缓存更新
 	go dao.UpdateMomentPage()
 
-	//models.AddClassic()
-	//models.AddDevotion()
 	routers := router.SetupRouter()
 
 	defer setting.DB.Close()

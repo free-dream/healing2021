@@ -161,41 +161,38 @@ func markMomentInPraise(momentId int) error {
 	return err
 }
 
-func ViolenceGetLikeheckC(id int, resp CoverDetails, ch chan CoverDetails) {
+func ViolenceGetLikeheckC(id int, resp CoverDetails, ch chan int) {
 	boolean, err := PackageCheck(id, "cover", resp.ID)
 	if err != nil {
 		log.Printf(err.Error())
-		resp.Check = 0
+		ch <- 0
 	} else if boolean {
-		resp.Check = 1
+		ch <- 1
 	} else {
-		resp.Check = 0
+		ch <- 0
 	}
-	ch <- resp
+
 }
-func ViolenceGetLikeheckD(id int, resp DevMsg, ch chan DevMsg) {
+func ViolenceGetLikeheckD(id int, resp DevMsg, ch chan int) {
 	boolean, err := PackageCheck(id, "devotion", resp.ID)
 	if err != nil {
 		log.Printf(err.Error())
-		resp.Check = 0
+		ch <- 0
 	} else if boolean {
-		resp.Check = 1
+		ch <- 1
 	} else {
-		resp.Check = 0
+		ch <- 0
 	}
-	ch <- resp
 }
 
-func ViolenceGetLikeheckM(id int, resp MomentMsgV2, ch chan MomentMsgV2) {
+func ViolenceGetLikeheckM(id int, resp MomentMsgV2, ch chan int) {
 	boolean, err := PackageCheck(id, "cover", resp.ID)
 	if err != nil {
 		log.Printf(err.Error())
-		resp.Check = 0
+		ch <- 0
 	} else if boolean {
-		resp.Check = 1
+		ch <- 1
 	} else {
-		resp.Check = 0
+		ch <- 0
 	}
-
-	ch <- resp
 }
