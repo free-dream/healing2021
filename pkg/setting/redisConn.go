@@ -45,6 +45,3 @@ func init() {
 func RedisConn() *redis.Client {
 	return RedisClient
 }
-func RedisTokenConn() *redis.Client {
-	return TokenGetCli
-}
