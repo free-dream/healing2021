@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"git.100steps.top/100steps/healing2021_be/dao"
 	"io/ioutil"
 	"log"
 	"strconv"
@@ -52,6 +53,9 @@ func main() {
 	//启动点赞后台和点赞message后台
 	go controller.LikeDaemon()
 	go controller.MsgDaemon()
+
+	// 动态推荐页的缓存更新
+	go dao.UpdateMomentPage()
 
 	//models.AddClassic()
 	//models.AddDevotion()
