@@ -38,7 +38,7 @@ func wsInit(w http.ResponseWriter, r *http.Request, wsConn *websocket.Conn, id s
 	}
 
     Conn.uid = id
-	Conn.storage(id)
+	Conn.storageAndRecovery()
 	return true
 }
 
@@ -72,7 +72,7 @@ func WsHandler(ctx *gin.Context) {
 			conn.Close()
 		}
 		conn.heartBeatCheck(data)
-		conn.chatWatcher(data, uid)
+		conn.chatWatcher(data)
 	}
 }
 
@@ -105,8 +105,6 @@ func WsData(ctx *gin.Context) {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "can not get data"})
 		return
 	}
-	dao.SysUpdate(uid)
-	dao.UsrUpdate(uid)
 	ctx.JSON(200, resp)
 	return
 }
