@@ -1,7 +1,7 @@
 package ws
 
 import (
-	"fmt"
+	//"fmt"
 	//"time"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -27,26 +27,19 @@ func wsInit(w http.ResponseWriter, r *http.Request, wsConn *websocket.Conn, id s
 			return true
 		},
 	}
-    fmt.Println("Reboot2:")
 	if wsConn, err = upgrader.Upgrade(w, r, nil); err != nil {
 		log.Println(err)
 		return false
 	}
-    fmt.Println("Reboot3:")
 
 	if Conn, err = initConnection(wsConn); err != nil {
 		log.Println(err)
 		Conn.Close()
-        fmt.Println("Close0:")
 		return false
 	}
-    fmt.Println("Reboot4:")
 
     Conn.uid = id
 	Conn.storageAndRecovery()
-    load, ok := ConnMap.Load(id)
-    load2, ok2 := ConnMap.Load(Conn.uid)
-    fmt.Printf("load:%v  ok:%v\nload2:%v   ok:%\nuid:%v\nid:%v\n",load ,ok ,load2 ,ok2 , Conn.uid, id)
 	return true
 }
 
@@ -69,19 +62,16 @@ func WsHandler(ctx *gin.Context) {
 	//TestUid++
 	//fmt.Printf("uid:%v\n",uid)
 
-    fmt.Println("Reboot1:")
 	if isInit := wsInit(ctx.Writer, ctx.Request, wsConn, uid); isInit != true {
 		return
 	}
 	conn := GetConn()
 	conn.writeMessage([]byte("Hello, ws!"))
-    fmt.Println("Reboot5:")
 
 	for {
 		if data, err = conn.readMessage(); err != nil {
 			conn.Close()
             return
-            fmt.Println("Close6:")
 		}
 		conn.heartBeatCheck(data)
 		conn.chatWatcher(data)
@@ -118,10 +108,6 @@ func WsData(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, resp)
-    conn := GetConn()
-    load, ok := ConnMap.Load(uint2str(uid))
-    load2, ok2 := ConnMap.Load(conn.uid)
-    fmt.Printf("load:%v  ok:%v\nload2:%v   ok:%\nuid:%v\nid:%v\n",load ,ok ,load2 ,ok2 , conn.uid, uid)
 	return
 }
 
