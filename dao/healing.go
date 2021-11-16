@@ -87,14 +87,15 @@ const LanguageConst = "国语 粤语 日语 英语"
 const StyleConst = "流行 古风 民谣 摇滚 RAP ACG 其他"
 
 type SelectionDetails struct {
-	Nickname  string `json:"nickname"`
-	ID        int    `json:"id"`
-	SongName  string `json:"song_name"`
-	UserId    int    `json:"user_id"`
-	CreatedAt string `json:"created_at"`
-	Avatar    string `json:"avatar"`
-	Remark    string `json:"remark"`
-	Sex       int    `json:"sex"`
+	Nickname    string `json:"nickname"`
+	ID          int    `json:"id"`
+	SongName    string `json:"song_name"`
+	UserId      int    `json:"user_id"`
+	CreatedAt   string `json:"created_at"`
+	Avatar      string `json:"avatar"`
+	Remark      string `json:"remark"`
+	Sex         int    `json:"sex"`
+	PhoneNumber string `json:"phone_number"`
 }
 
 //为分页器做缓存
@@ -158,7 +159,7 @@ func GetSelections(id int, tag Tags) (interface{}, error) {
 	db := setting.MysqlConn()
 	redisCli := setting.RedisConn()
 	var resp []SelectionDetails
-	VTable := db.Table("selection").Select("user.sex,user.avatar,user.nickname,selection.id,selection.song_name,selection.user_id,selection.id,selection.created_at,selection.remark ").
+	VTable := db.Table("selection").Select("user.phone_number,user.sex,user.avatar,user.nickname,selection.id,selection.song_name,selection.user_id,selection.id,selection.created_at,selection.remark ").
 		Joins("inner join user on user.id=selection.user_id").
 		Order("selection.created_at desc")
 	if tag.Label == "recommend" {
