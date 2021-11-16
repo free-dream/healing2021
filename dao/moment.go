@@ -5,57 +5,39 @@ import (
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"github.com/jinzhu/gorm"
+	"time"
 )
 
-//func GetMomentPage(Method string, Keyword string, Page int) ([]statements.Moment, bool) {
-//	MysqlDB := setting.MysqlConn()
-//	var AllMoment []statements.Moment
-//	if Method == "new" {
-//		// 按时间排序
-//		if err := MysqlDB.Order("created_at DESC").Offset(Page * 10).Limit(10).Find(&AllMoment).Error; err != nil {
-//			return AllMoment, false
-//		}
-//	} else if Method == "recommend" {
-//		// 按点赞排序
-//		// 先查点赞表找到对应的动态
-//		var MomentRecords []ForPraiseMRecord
-//		var MomentRecord ForPraiseMRecord
-//		rows, err := MysqlDB.Model(&statements.Praise{}).Select("moment_id").Where("moment_id<>?", 0).Group("moment_id").Order("count(is_liked) DESC").Limit(10).Offset(Page * 10).Rows()
-//		if err == gorm.ErrRecordNotFound {
-//			return AllMoment, true // 说明这时候就是空的
-//		} else if err != nil {
-//			return AllMoment, false
-//		}
-//		defer rows.Close()
-//		for rows.Next() {
-//			// 全扫描进结构体
-//			err := MysqlDB.ScanRows(rows, &MomentRecord)
-//			if err != nil {
-//				break
-//			}
-//			if len(MomentRecords) > 0 && MomentRecord.MomentId == MomentRecords[len(MomentRecords)-1].MomentId {
-//				break
-//			}
-//			MomentRecords = append(MomentRecords, MomentRecord)
-//		}
-//
-//		for _, record := range MomentRecords {
-//			moment := statements.Moment{}
-//			err := MysqlDB.Where("id=?", record.MomentId).First(&moment).Error
-//			if err != nil {
-//				return AllMoment, false
-//			}
-//			AllMoment = append(AllMoment, moment)
-//		}
-//	} else {
-//		// 模糊查找
-//		Fuzzy := "%" + Keyword + "%"
-//		if err := MysqlDB.Where("content LIKE ? or song_name LIKE ? or state LIKE ?", Fuzzy, Fuzzy, Fuzzy).Order("created_at DESC").Offset(Page * 10).Limit(10).Find(&AllMoment).Error; err != nil {
-//			return AllMoment, false
-//		}
-//	}
-//	return AllMoment, true
-//}
+var momentPageCache []int
+
+// 定时更新推荐动态
+func UpdateMomentPage()  {
+	db := setting.MysqlConn()
+	for {
+		//执行代码
+		time.Sleep(time.Second * 10)
+		rows, err := db.Model(&statements.Praise{}).Select("moment_id").Where("moment_id<>?", 0).Group("moment_id").Order("count(is_liked) DESC").Rows()
+		if err != nil {
+			fmt.Println("动态推荐更新失败")
+		}
+		defer rows.Close()
+
+		var momentRecord ForPraiseMRecord
+		var tmpCache []int
+		for rows.Next() {
+			// 全扫描进结构体
+			err := db.ScanRows(rows, &momentRecord)
+			if err != nil {
+				break
+			}
+			tmpCache = append(tmpCache, momentRecord.MomentId)
+		}
+		momentPageCache = tmpCache
+
+		t := time.NewTimer(time.Second * 200)
+		<-t.C
+	}
+}
 
 // 获取指定的一页(十条)动态
 // 拆分动态获取 one -> three
@@ -72,26 +54,18 @@ func GetMomentPageRecommend(page int) ([]statements.Moment, error) {
 	db := setting.MysqlConn()
 	var momentPage []statements.Moment
 
-	rows, err := db.Model(&statements.Praise{}).Select("moment_id").Where("moment_id<>?", 0).Group("moment_id").Order("count(is_liked) DESC").Offset(page * 10).Limit(10).Rows()
-	if err != nil {
-		return momentPage, err
-	}
-	defer rows.Close()
+	left := page*10
+	right := left+10
 
-	var momentRecords []ForPraiseMRecord
-	var momentRecord ForPraiseMRecord
-	for rows.Next() {
-		// 全扫描进结构体
-		err := db.ScanRows(rows, &momentRecord)
-		if err != nil {
-			break
-		}
-		momentRecords = append(momentRecords, momentRecord)
+	if left>len(momentPageCache) {
+		return momentPage, nil
+	} else if right>len(momentPageCache) {
+		right = len(momentPageCache)
 	}
 
-	for _, record := range momentRecords {
+	for _, record := range momentPageCache[left:right] {
 		moment := statements.Moment{}
-		err := db.Where("id=?", record.MomentId).First(&moment).Error
+		err := db.Where("id=?", record).First(&moment).Error
 		if err != nil {
 			return momentPage, err
 		}

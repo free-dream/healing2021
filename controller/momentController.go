@@ -1,11 +1,7 @@
 package controller
 
 import (
-	"strconv"
-	"time"
-
-	"git.100steps.top/100steps/healing2021_be/controller/ws"
-
+	"fmt"
 	"git.100steps.top/100steps/healing2021_be/controller/task"
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
@@ -15,84 +11,11 @@ import (
 	"git.100steps.top/100steps/healing2021_be/sandwich"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
-//// 拉取广场动态列表[三种模式:new/recommend/search]
-//func GetMomentList(ctx *gin.Context) {
-//	var MomentsResp []respModel.MomentResp
-//	// 获取 url 参数
-//	Method := ctx.Param("method")
-//	Keyword := ctx.Query("keyword")
-//	page := ctx.Query("page")
-//
-//	// 模式判断和处理
-//	if Method != "new" && Method != "recommend" && Method != "search" {
-//		ctx.JSON(404, e.ErrMsgResponse{Message: "模式选择出错"})
-//		return
-//	}
-//
-//	// page 参数合法性判断
-//	Page, err := strconv.Atoi(page)
-//	if err != nil {
-//		ctx.JSON(403, e.ErrMsgResponse{Message: "page参数非法"})
-//		return
-//	}
-//
-//	if Keyword != "" {
-//		sandwich.PutInSearchWord(Keyword)
-//	}
-//
-//	// 从数据库中得到经过筛选的一页 Momment 列表
-//	AllMoment, ok := dao.GetMomentPage(Method, Keyword, Page)
-//	if !ok {
-//		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败1"})
-//		return
-//	}
-//
-//	// 获取和整理其他所需信息，装进 response
-//	UserId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
-//	for _, OneMoment := range AllMoment {
-//		User := statements.User{}
-//		User, ok := dao.GetUserById(OneMoment.UserId)
-//		if !ok {
-//			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败2"})
-//			return
-//		}
-//
-//		TmpMoment := respModel.MomentResp{
-//			Content:    OneMoment.Content,
-//			DynamicsId: int(OneMoment.ID),
-//			CreatedAt:  tools.DecodeTime(OneMoment.CreatedAt),
-//			Song:       OneMoment.SongName,
-//			Module:     OneMoment.Module,
-//			Lauds:      dao.CountMLaudsById(int(OneMoment.ID)),
-//			Lauded:     dao.HaveMLauded(UserId, int(OneMoment.ID)),
-//			Comments:   dao.CountCommentsById(int(OneMoment.ID)),
-//			Status:     tools.DecodeStrArr(OneMoment.State),
-//		}
-//
-//		// 点歌\分享\无歌曲 单独处理 songId
-//		switch OneMoment.Module {
-//		case 1:
-//			TmpMoment.SongId = OneMoment.SelectionId
-//			TmpMoment.Creator = dao.TransformUserInfo(User, OneMoment.SelectionId)
-//		case 2:
-//			TmpMoment.SongId = OneMoment.ClassicId
-//			TmpMoment.Creator = dao.TransformUserInfo(User, -1)
-//		case 0:
-//			TmpMoment.Creator = dao.TransformUserInfo(User, -1)
-//		default:
-//			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库中出现非法字段"})
-//			return
-//		}
-//
-//		MomentsResp = append(MomentsResp, TmpMoment)
-//	}
-//
-//	ctx.JSON(200, MomentsResp)
-//}
-
 // 动态获取拆分
+// 最新动态
 func GetMomentNew(ctx *gin.Context) {
 	page := ctx.Query("page")
 
@@ -163,7 +86,7 @@ func GetMomentRecommend(ctx *gin.Context) {
 
 	momentPage, err := dao.GetMomentPageRecommend(pages)
 	if err != nil {
-		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败1"})
+		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败1：出现了找不到的记录"})
 		return
 	}
 
@@ -439,37 +362,37 @@ func PostComment(ctx *gin.Context) {
 	}
 
 	// 存入数据库
-	commentId := 0
+	//commentId := 0
 	commentId, err := dao.CreateComment(Comment)
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败"})
 		return
 	}
-
+	fmt.Println(commentId)
 	// 发送相应的系统消息[有 实际评论写入成功，但是系统消息发送失败 的不一致风险]
-	nickname, err := dao.GetUserNickname(UserId)
-	if err != nil {
-		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
-		return
-	}
-	conn := ws.GetConn()
-	userId, err := dao.GetMomentSenderId(NewComment.DynamicsId)
-	if err != nil {
-		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
-		return
-	}
-
-	err = conn.SendSystemMsg(respModel.SysMsg{
-		Uid:       uint(userId),
-		Type:      3,
-		ContentId: uint(commentId),
-		Time:      time.Now(),
-		FromUser:  nickname,
-	})
-	if err != nil {
-		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
-		return
-	}
+	//nickname, err := dao.GetUserNickname(UserId)
+	//if err != nil {
+	//	ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+	//	return
+	//}
+	//conn := ws.GetConn()
+	//userId, err := dao.GetMomentSenderId(NewComment.DynamicsId)
+	//if err != nil {
+	//	ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+	//	return
+	//}
+	//
+	//err = conn.SendSystemMsg(respModel.SysMsg{
+	//	Uid:       uint(userId),
+	//	Type:      3,
+	//	ContentId: uint(commentId),
+	//	Time:      time.Now(),
+	//	FromUser:  nickname,
+	//})
+	//if err != nil {
+	//	ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+	//	return
+	//}
 
 	ctx.JSON(200, e.ErrMsgResponse{Message: "评论发布成功"})
 }

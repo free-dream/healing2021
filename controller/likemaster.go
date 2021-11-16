@@ -14,16 +14,16 @@ var (
 	normaltasks    []int //声明不同任务表，以对用户做区分,目前仅有普通用户，假任务使用
 	updatelikechan chan interface{}
 	likemsgchan1   chan interface{}
-	likemsgchan2   chan interface{}
-	likemsgchan3   chan interface{}
+	// likemsgchan2   chan interface{}
+	// likemsgchan3   chan interface{}
 )
 
 func init() {
 	normaltasks = []int{1, 2, 3} //任务初始化标注于中间件
-	updatelikechan = make(chan interface{}, 30)
-	likemsgchan1 = make(chan interface{}, 30)
-	likemsgchan2 = make(chan interface{}, 30)
-	likemsgchan3 = make(chan interface{}, 30)
+	updatelikechan = make(chan interface{}, 200)
+	likemsgchan1 = make(chan interface{}, 200)
+	// likemsgchan2 = make(chan interface{}, 30)
+	// likemsgchan3 = make(chan interface{}, 30)
 }
 
 //挂在后台专门用来处理like表更新和发like消息
@@ -38,7 +38,6 @@ func sendMsg(target int, Type string, nickname string) {
 	sysMsg := respModel.SysMsg{}
 
 	var err error
-
 	switch Type {
 	case "moment":
 		SenderId, err := dao.GetMomentSenderId(target)
@@ -88,6 +87,7 @@ func sendMsg(target int, Type string, nickname string) {
 			}
 		}
 	}
+
 	err = conn.SendSystemMsg(sysMsg)
 	if err != nil {
 		log.Printf("系统消息发送失败")
@@ -122,17 +122,17 @@ func MsgDaemon() {
 			target, _ := temp[1].(int)
 			Type, _ := temp[2].(string)
 			sendMsg(target, Type, nickname)
-		case data := <-likemsgchan2:
-			temp, _ := data.([]interface{})
-			nickname, _ := temp[0].(string)
-			target, _ := temp[1].(int)
-			Type, _ := temp[2].(string)
-			sendMsg(target, Type, nickname)
-		case data := <-likemsgchan2:
-			temp, _ := data.([]interface{})
-			nickname, _ := temp[0].(string)
-			target, _ := temp[1].(int)
-			Type, _ := temp[2].(string)
+			// case data := <-likemsgchan2:
+			// 	temp, _ := data.([]interface{})
+			// 	nickname, _ := temp[0].(string)
+			// 	target, _ := temp[1].(int)
+			// 	Type, _ := temp[2].(string)
+			// 	sendMsg(target, Type, nickname)
+			// case data := <-likemsgchan2:
+			// 	temp, _ := data.([]interface{})
+			// 	nickname, _ := temp[0].(string)
+			// 	target, _ := temp[1].(int)
+			// 	Type, _ := temp[2].(string)
 			sendMsg(target, Type, nickname)
 		default:
 			time.Sleep(time.Millisecond * 10)

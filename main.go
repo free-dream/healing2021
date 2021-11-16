@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"git.100steps.top/100steps/healing2021_be/dao"
+	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"io/ioutil"
 	"log"
-	"strconv"
 	"syscall"
 
 	"git.100steps.top/100steps/healing2021_be/controller"
@@ -13,7 +14,6 @@ import (
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"git.100steps.top/100steps/healing2021_be/router"
-	"git.100steps.top/100steps/healing2021_be/sandwich"
 	"github.com/fvbock/endless"
 )
 
@@ -24,26 +24,26 @@ import (
 func main() {
 	models.TableInit()
 	if tools.IsDebug() {
-		//statements.TableClean()
+		statements.TableClean()
 		//controller.LoadTestData()
-		for i := 0; i < 10; i++ {
-			sandwich.PutInHotSong(tools.EncodeSong(
-				tools.HotSong{
-					SongName: "歌曲" + strconv.Itoa(i),
-					Language: "中文",
-					Style:    "轻松",
-				}))
-			sandwich.PutInSearchWord("热词" + strconv.Itoa(i))
-		}
-		sandwich.PutInStates("迷茫")
-		sandwich.PutInStates("听音乐")
-		sandwich.PutInStates("摸鱼")
-		sandwich.PutInStates("唱歌")
-		sandwich.PutInStates("头秃")
-		sandwich.PutInStates("发呆")
-		sandwich.PutInStates("睡觉")
-		sandwich.PutInStates("干饭")
-		sandwich.PutInStates("无语")
+		//for i := 0; i < 10; i++ {
+		//	sandwich.PutInHotSong(tools.EncodeSong(
+		//		tools.HotSong{
+		//			SongName: "歌曲" + strconv.Itoa(i),
+		//			Language: "中文",
+		//			Style:    "轻松",
+		//		}))
+		//	sandwich.PutInSearchWord("热词" + strconv.Itoa(i))
+		//}
+		//sandwich.PutInStates("迷茫")
+		//sandwich.PutInStates("听音乐")
+		//sandwich.PutInStates("摸鱼")
+		//sandwich.PutInStates("唱歌")
+		//sandwich.PutInStates("头秃")
+		//sandwich.PutInStates("发呆")
+		//sandwich.PutInStates("睡觉")
+		//sandwich.PutInStates("干饭")
+		//sandwich.PutInStates("无语")
 
 		//time.Sleep(time.Second * 2)
 		//models.FakeData()
@@ -52,6 +52,9 @@ func main() {
 	//启动点赞后台和点赞message后台
 	go controller.LikeDaemon()
 	go controller.MsgDaemon()
+
+	// 动态推荐页的缓存更新
+	go dao.UpdateMomentPage()
 
 	//models.AddClassic()
 	//models.AddDevotion()

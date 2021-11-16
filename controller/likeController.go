@@ -5,7 +5,6 @@ import (
 
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
-	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"git.100steps.top/100steps/healing2021_be/sandwich"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -87,15 +86,16 @@ func Like(ctx *gin.Context) {
 		//生成消息随机发送到3个通道的一个，防止爆炸
 		likemsg := make([]interface{}, 0)
 		likemsg = append(likemsg, nickname, LikeParam.Id, Type)
-		choose := tools.GetRandomNumbers(3)
-		switch choose {
-		case 0:
-			likemsgchan1 <- likemsg
-		case 1:
-			likemsgchan2 <- likemsg
-		case 2:
-			likemsgchan3 <- likemsg
-		}
+		likemsgchan1 <- likemsg
+		// choose := tools.GetRandomNumbers(3)
+		// switch choose {
+		// case 0:
+		// 	likemsgchan1 <- likemsg
+		// case 1:
+		// 	likemsgchan2 <- likemsg
+		// case 2:
+		// 	likemsgchan3 <- likemsg
+		// }
 	}
 	// go func() {
 	// 	defer wg.Done()
