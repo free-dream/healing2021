@@ -20,7 +20,7 @@ var (
 	//TestUid int = 1
 )
 
-func wsInit(w http.ResponseWriter, r *http.Request, wsConn *websocket.Conn, uid string) bool {
+func wsInit(w http.ResponseWriter, r *http.Request, wsConn *websocket.Conn, id string) bool {
 	var err error
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
@@ -37,7 +37,8 @@ func wsInit(w http.ResponseWriter, r *http.Request, wsConn *websocket.Conn, uid 
 		return false
 	}
 
-	Conn.storage(uid)
+    Conn.uid = id
+	Conn.storage(id)
 	return true
 }
 

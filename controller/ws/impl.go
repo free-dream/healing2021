@@ -24,6 +24,7 @@ type Connection struct {
 
 	mutex    sync.Mutex
 	isClosed bool
+    uid      string
 }
 
 var (
@@ -171,6 +172,7 @@ func (conn *Connection) Close() {
 		conn.isClosed = true
 	}
 	conn.mutex.Unlock()
+    ConnMap.Delete(conn.uid)
 }
 
 func (conn *Connection) readLoop() {
