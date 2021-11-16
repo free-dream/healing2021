@@ -1,11 +1,7 @@
 package controller
 
 import (
-	"strconv"
-	"time"
-
-	"git.100steps.top/100steps/healing2021_be/controller/ws"
-
+	"fmt"
 	"git.100steps.top/100steps/healing2021_be/controller/task"
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
@@ -15,6 +11,7 @@ import (
 	"git.100steps.top/100steps/healing2021_be/sandwich"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 // 动态获取拆分
@@ -365,37 +362,37 @@ func PostComment(ctx *gin.Context) {
 	}
 
 	// 存入数据库
-	commentId := 0
+	//commentId := 0
 	commentId, err := dao.CreateComment(Comment)
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作失败"})
 		return
 	}
-
+	fmt.Println(commentId)
 	// 发送相应的系统消息[有 实际评论写入成功，但是系统消息发送失败 的不一致风险]
-	nickname, err := dao.GetUserNickname(UserId)
-	if err != nil {
-		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
-		return
-	}
-	conn := ws.GetConn()
-	userId, err := dao.GetMomentSenderId(NewComment.DynamicsId)
-	if err != nil {
-		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
-		return
-	}
-
-	err = conn.SendSystemMsg(respModel.SysMsg{
-		Uid:       uint(userId),
-		Type:      3,
-		ContentId: uint(commentId),
-		Time:      time.Now(),
-		FromUser:  nickname,
-	})
-	if err != nil {
-		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
-		return
-	}
+	//nickname, err := dao.GetUserNickname(UserId)
+	//if err != nil {
+	//	ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+	//	return
+	//}
+	//conn := ws.GetConn()
+	//userId, err := dao.GetMomentSenderId(NewComment.DynamicsId)
+	//if err != nil {
+	//	ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+	//	return
+	//}
+	//
+	//err = conn.SendSystemMsg(respModel.SysMsg{
+	//	Uid:       uint(userId),
+	//	Type:      3,
+	//	ContentId: uint(commentId),
+	//	Time:      time.Now(),
+	//	FromUser:  nickname,
+	//})
+	//if err != nil {
+	//	ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+	//	return
+	//}
 
 	ctx.JSON(200, e.ErrMsgResponse{Message: "评论发布成功"})
 }
