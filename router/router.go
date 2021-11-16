@@ -39,12 +39,18 @@ func SetupRouter() *gin.Engine {
 	if err != nil {
 		log.Panicln(err.Error())
 	}
+	var url string
 	r.Use(sessions.Sessions("healing2021_session", store))
+	if tools.IsDebug() {
+		url = tools.GetConfig("domain", "testUrl")
+	} else {
+		url = tools.GetConfig("domain", "url")
+	}
 
 	ginwechat.UpdateEngine(r, &ginwechat.Config{
 		Appid:     "wx293bc6f4ee88d87d",
 		Appsecret: "",
-		BaseUrl:   "https://healing2021.test.100steps.top",
+		BaseUrl:   url,
 		StoreSession: func(ctx *gin.Context, wechatUser *ginwechat.WechatUser) error {
 			redirect, _ := ctx.GetQuery("redirect")
 			user_id := controller.Login(wechatUser.OpenID, wechatUser.Nickname, wechatUser.HeadImgUrl)
