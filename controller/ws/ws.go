@@ -1,7 +1,7 @@
 package ws
 
 import (
-	//"fmt"
+	"fmt"
 	//"time"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -39,6 +39,9 @@ func wsInit(w http.ResponseWriter, r *http.Request, wsConn *websocket.Conn, id s
 
     Conn.uid = id
 	Conn.storageAndRecovery()
+    load, ok := ConnMap.Load(id)
+    load2, ok2 := ConnMap.Load(Conn.uid)
+    fmt.Printf("load:%v  ok:%v\nload2:%v   ok:%\nuid:%v\nid:%v\n",load ,ok ,load2 ,ok2 , Conn.uid, id)
 	return true
 }
 
@@ -106,6 +109,10 @@ func WsData(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, resp)
+    conn := GetConn()
+    load, ok := ConnMap.Load(uint2str(uid))
+    load2, ok2 := ConnMap.Load(conn.uid)
+    fmt.Printf("load:%v  ok:%v\nload2:%v   ok:%\nuid:%v\nid:%v\n",load ,ok ,load2 ,ok2 , conn.uid, uid)
 	return
 }
 
