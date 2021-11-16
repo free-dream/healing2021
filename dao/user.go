@@ -293,10 +293,11 @@ func getPraises(user_id int) interface{} {
 		Group("cover_id").Order("created_at desc").
 		Where("praise.user_id=?", user_id).
 		Scan(&cover)
-	//ch := make(chan CoverDetails, 15)
+	ch := make(chan int, 15)
 	for i, _ := range cover {
 		//确认是否点赞
-		ViolenceGetLikeheckC(user_id, cover[i])
+		ViolenceGetLikeheckC(user_id, cover[i], ch)
+		cover[i].Check = <-ch
 	}
 
 	return cover
@@ -312,10 +313,11 @@ func getCovers(user_id int, anon int) interface{} {
 		db.Raw("select likes,avatar,nickname,selection_id,song_name,file,user_id,id,created_at from (select user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at from cover inner join user on user.id=cover.user_id where cover.user_id=" + strconv.Itoa(user_id) + " and cover.is_anon=0)" + " as A left join (select cover_id,sum(is_liked) as likes from praise group by cover_id) as B on A.id=B.cover_id order by created_at desc").
 			Scan(&cover)
 	}
-	//ch := make(chan CoverDetails, 15)
+	ch := make(chan int, 15)
 	for i, _ := range cover {
 		//确认是否点赞
-		go ViolenceGetLikeheckC(user_id, cover[i])
+		go ViolenceGetLikeheckC(user_id, cover[i], ch)
+		cover[i].Check = <-ch
 	}
 
 	return cover
@@ -338,10 +340,11 @@ func getMoments(user_id int) interface{} {
 		Group("moment.id").Order("moment.created_at desc").
 		Where("moment.user_id=?", user_id).
 		Scan(&moment2)
-	//ch := make(chan MomentMsgV2, 15)
+	ch := make(chan int, 15)
 	for i, _ := range moment {
 		//确认是否点赞
-		ViolenceGetLikeheckM(user_id, moment2[i])
+		ViolenceGetLikeheckM(user_id, moment2[i], ch)
+		moment[i].Check = <-ch
 		moment[i].State = tools.DecodeStrArr(moment2[i].State)
 		moment[i].ID = moment2[i].ID
 		moment[i].CreatedAt = tools.DecodeTime(moment2[i].CreatedAt)
