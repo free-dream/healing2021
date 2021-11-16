@@ -44,8 +44,10 @@ func GetHealingPage(selectionId int, userId int) (interface{}, interface{}) {
 	db.Table("cover").Select("sum(praise.is_liked) as likes,user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at ").
 		Joins("inner join user on user.id=cover.user_id").
 		Joins("inner join praise on cover.id=praise.cover_id").
-		Having("seletion_id=?", selectionId).
-		Group("cover_id").Order("created_at desc")
+		Having("selection_id=?", selectionId).
+		Group("cover_id").
+		Order("created_at desc").
+		Scan(&obj)
 	ch := make(chan CoverDetails, 15)
 	for i, _ := range obj {
 		//确认是否点赞
