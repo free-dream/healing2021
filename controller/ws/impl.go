@@ -183,14 +183,12 @@ func (conn *Connection) readLoop() {
 	for {
 		if _, data, err = conn.wsConnect.ReadMessage(); err != nil {
 			conn.Close()
-            fmt.Println("Close1:")
 			return
 		}
 		select {
 		case conn.inChan <- data:
 		case <-conn.closeChan:
 			conn.Close()
-            fmt.Println("Close2:")
 			return
 		}
 	}
@@ -206,12 +204,10 @@ func (conn *Connection) writeLoop() {
 		case data = <-conn.outChan:
 		case <-conn.closeChan:
 			conn.Close()
-            fmt.Println("Close3:")
 			return
 		}
 		if err = conn.wsConnect.WriteMessage(websocket.TextMessage, data); err != nil {
 			conn.Close()
-            fmt.Println("Close4:")
 			return
 		}
 	}
@@ -221,7 +217,6 @@ func (conn *Connection) heartBeatCheck(data []byte) {
 	if reflect.DeepEqual(data, []byte("heartbeat")) {
 		if err := conn.writeMessage(data); err != nil {
 			conn.Close()
-            fmt.Println("Close5:")
 			return
 		}
 	}
