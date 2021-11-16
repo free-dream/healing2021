@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -28,7 +27,7 @@ func init() {
 
 //挂在后台专门用来处理like表更新和发like消息
 //考虑到点赞是发信息的两倍，分开处理发信息和点赞
-//这样的话消息可能会有延迟，但本身不必要强行同步所以没问题(确信)
+//这样的话高压下消息会有延迟，不过这是可以接受的
 
 //发送消息专门拉一个函数出来
 //消息发送失败就不回显了，直接log
@@ -41,9 +40,6 @@ func sendMsg(target int, Type string, nickname string) {
 	case "moment":
 		SenderId, err := dao.GetMomentSenderId(target)
 		if err != nil {
-			//
-			fmt.Println("发送失败")
-			//
 			log.Printf("系统消息发送失败")
 			return
 		}
@@ -57,9 +53,6 @@ func sendMsg(target int, Type string, nickname string) {
 	case "momentcomment":
 		SenderId, err := dao.GetCommentSenderId(target)
 		if err != nil {
-			//
-			fmt.Println("发送失败")
-			//
 			log.Printf("系统消息发送失败")
 			return
 		}
@@ -73,9 +66,6 @@ func sendMsg(target int, Type string, nickname string) {
 	case "cover":
 		singerId, songName, err := dao.GetCoverInfo(target)
 		if err != nil {
-			//
-			fmt.Println("发送失败")
-			//
 			log.Printf("系统消息发送失败")
 			return
 		}
@@ -90,15 +80,9 @@ func sendMsg(target int, Type string, nickname string) {
 	}
 	err = conn.SendSystemMsg(sysMsg)
 	if err != nil {
-		//
-		fmt.Println("发送失败")
-		//
 		log.Printf("系统消息发送失败")
 		return
 	}
-	//
-	fmt.Println("发送成功")
-	//
 }
 
 //必须顺序处理，否则有可能先取消后点赞
@@ -118,8 +102,7 @@ func LikeDaemon() {
 	}
 }
 
-//发消息可以拉协程
-//看起来好丑，不过效率应该还好
+//看起来好丑，不过效率还不错
 func MsgDaemon() {
 	for {
 		select {
@@ -128,19 +111,19 @@ func MsgDaemon() {
 			nickname, _ := temp[0].(string)
 			target, _ := temp[1].(int)
 			Type, _ := temp[2].(string)
-			go sendMsg(target, Type, nickname)
+			sendMsg(target, Type, nickname)
 		case data := <-likemsgchan2:
 			temp, _ := data.([]interface{})
 			nickname, _ := temp[0].(string)
 			target, _ := temp[1].(int)
 			Type, _ := temp[2].(string)
-			go sendMsg(target, Type, nickname)
+			sendMsg(target, Type, nickname)
 		case data := <-likemsgchan2:
 			temp, _ := data.([]interface{})
 			nickname, _ := temp[0].(string)
 			target, _ := temp[1].(int)
 			Type, _ := temp[2].(string)
-			go sendMsg(target, Type, nickname)
+			sendMsg(target, Type, nickname)
 		default:
 			time.Sleep(time.Millisecond * 10)
 		}

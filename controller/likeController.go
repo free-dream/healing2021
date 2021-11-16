@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"log"
 
 	"git.100steps.top/100steps/healing2021_be/dao"
@@ -85,9 +84,6 @@ func Like(ctx *gin.Context) {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
 			return
 		}
-		//
-		fmt.Println("发送消息")
-		//
 		//生成消息随机发送到3个通道的一个，防止爆炸
 		likemsg := make([]interface{}, 0)
 		likemsg = append(likemsg, nickname, LikeParam.Id, Type)
