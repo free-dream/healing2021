@@ -106,6 +106,8 @@ func WsData(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, resp)
+    conn := GetConn()
+    fmt.Printf("connmap:%v\nuid:%v\nid:%v\n",ConnMap.Load(uid), conn.uid, uid)
 	return
 }
 
