@@ -431,7 +431,7 @@ func PlayDevotion(userid int) interface{} {
 	devotion := []DevMsg{}
 	devotion2 := []DevMsg{}
 	resp := map[string][]DevMsg{}
-	db.Table("devotion").Select("devotion.id,devotion.song_name,devotion.file,sum(praise.is_liked) as likes,devotion.check").
+	db.Table("devotion").Select("devotion.id,devotion.song_name,devotion.file,sum(praise.is_liked) as likes").
 		Where("singer=阿细").
 		Joins("inner join praise on praise.devotion_id=devotion.id").
 		Scan(&devotion)
@@ -442,7 +442,7 @@ func PlayDevotion(userid int) interface{} {
 		devotion[i].Check = <-ch
 	}
 	resp["阿细"] = devotion
-	db.Table("devotion").Select("devotion.id,devotion.song_name,devotion.file,sum(praise.is_liked) as likes,devotion.check").
+	db.Table("devotion").Select("devotion.id,devotion.song_name,devotion.file,sum(praise.is_liked) as likes").
 		Where("singer=梁山山").
 		Joins("inner join praise on praise.devotion_id=devotion.id").
 		Scan(&devotion2)
