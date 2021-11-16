@@ -2,6 +2,7 @@ package controller
 
 import (
 	"log"
+	"strconv"
 	"time"
 
 	"git.100steps.top/100steps/healing2021_be/controller/ws"
@@ -35,7 +36,9 @@ func init() {
 func sendMsg(target int, Type string, nickname string) {
 	conn := ws.GetConn()
 	sysMsg := respModel.SysMsg{}
+
 	var err error
+
 	switch Type {
 	case "moment":
 		SenderId, err := dao.GetMomentSenderId(target)
@@ -43,25 +46,30 @@ func sendMsg(target int, Type string, nickname string) {
 			log.Printf("系统消息发送失败")
 			return
 		}
-		sysMsg = respModel.SysMsg{
-			Uid:       uint(SenderId),
-			Type:      2,
-			ContentId: uint(target),
-			Time:      time.Now(),
-			FromUser:  nickname,
+		if dao.Filter("healing2021:"+strconv.Itoa(SenderId)+" liked "+Type+"."+strconv.Itoa(target), "1") {
+			sysMsg = respModel.SysMsg{
+				Uid:       uint(SenderId),
+				Type:      2,
+				ContentId: uint(target),
+				Time:      time.Now(),
+				FromUser:  nickname,
+			}
 		}
+
 	case "momentcomment":
 		SenderId, err := dao.GetCommentSenderId(target)
 		if err != nil {
 			log.Printf("系统消息发送失败")
 			return
 		}
-		sysMsg = respModel.SysMsg{
-			Uid:       uint(SenderId),
-			Type:      4,
-			ContentId: uint(target),
-			Time:      time.Now(),
-			FromUser:  nickname,
+		if dao.Filter("healing2021:"+strconv.Itoa(SenderId)+" liked "+Type+"."+strconv.Itoa(target), "1") {
+			sysMsg = respModel.SysMsg{
+				Uid:       uint(SenderId),
+				Type:      4,
+				ContentId: uint(target),
+				Time:      time.Now(),
+				FromUser:  nickname,
+			}
 		}
 	case "cover":
 		singerId, songName, err := dao.GetCoverInfo(target)
@@ -69,13 +77,15 @@ func sendMsg(target int, Type string, nickname string) {
 			log.Printf("系统消息发送失败")
 			return
 		}
-		sysMsg = respModel.SysMsg{
-			Uid:       uint(singerId),
-			Type:      1,
-			Song:      songName,
-			ContentId: uint(target),
-			Time:      time.Now(),
-			FromUser:  nickname,
+		if dao.Filter("healing2021:"+strconv.Itoa(singerId)+" liked "+Type+"."+strconv.Itoa(target), "1") {
+			sysMsg = respModel.SysMsg{
+				Uid:       uint(singerId),
+				Type:      1,
+				Song:      songName,
+				ContentId: uint(target),
+				Time:      time.Now(),
+				FromUser:  nickname,
+			}
 		}
 	}
 	err = conn.SendSystemMsg(sysMsg)
