@@ -15,6 +15,7 @@ func UpdateMomentPage()  {
 	db := setting.MysqlConn()
 	for {
 		//执行代码
+		time.Sleep(time.Second * 10)
 		rows, err := db.Model(&statements.Praise{}).Select("moment_id").Where("moment_id<>?", 0).Group("moment_id").Order("count(is_liked) DESC").Rows()
 		if err != nil {
 			fmt.Println("动态推荐更新失败")
@@ -31,8 +32,9 @@ func UpdateMomentPage()  {
 			}
 			tmpCache = append(tmpCache, momentRecord.MomentId)
 		}
+		momentPageCache = tmpCache
 
-		t := time.NewTimer(time.Second * 300)
+		t := time.NewTimer(time.Second * 200)
 		<-t.C
 	}
 }
