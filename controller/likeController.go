@@ -1,14 +1,12 @@
 package controller
 
 import (
+	"fmt"
 	"log"
-	"sync"
-	"time"
 
-	"git.100steps.top/100steps/healing2021_be/controller/ws"
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
-	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
+	"git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"git.100steps.top/100steps/healing2021_be/sandwich"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -74,79 +72,107 @@ func Like(ctx *gin.Context) {
 		return
 	}
 
-	// 写入点赞表
-	wg := sync.WaitGroup{}
-	wg.Add(2)
-	go func() {
-		defer wg.Done()
-		dao.UpdateLikesByID(UserId, LikeParam.Id, LikeParam.Todo, Type)
-	}()
+	//交给后台更新点赞表
+	updatemsg := make([]interface{}, 0)
+	updatemsg = append(updatemsg, UserId, LikeParam.Id, LikeParam.Todo, Type)
+	updatelikechan <- updatemsg
 
-	//发送相应的系统消息[有 实际评论写入成功，但是系统消息发送失败 的不一致风险]
-	go func() {
-		defer wg.Done()
+	//扔给后台发送消息
+	if LikeParam.Todo == 1 {
+		//干脆缓存用户nickname?
 		nickname, err := dao.GetUserNickname(UserId)
 		if err != nil {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
 			return
 		}
-
-		if LikeParam.Todo == 1 {
-			conn := ws.GetConn()
-			sysMsg := respModel.SysMsg{}
-
-			switch Type {
-			case "moment":
-				SenderId, err := dao.GetMomentSenderId(LikeParam.Id)
-				if err != nil {
-					ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
-					return
-				}
-				sysMsg = respModel.SysMsg{
-					Uid:       uint(SenderId),
-					Type:      2,
-					ContentId: uint(LikeParam.Id),
-					Time:      time.Now(),
-					FromUser:  nickname,
-				}
-			case "momentcomment":
-				SenderId, err := dao.GetCommentSenderId(LikeParam.Id)
-				if err != nil {
-					ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
-					return
-				}
-				sysMsg = respModel.SysMsg{
-					Uid:       uint(SenderId),
-					Type:      4,
-					ContentId: uint(LikeParam.Id),
-					Time:      time.Now(),
-					FromUser:  nickname,
-				}
-			case "cover":
-				singerId, songName, err := dao.GetCoverInfo(LikeParam.Id)
-				if err != nil {
-					ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
-					return
-				}
-				sysMsg = respModel.SysMsg{
-					Uid:       uint(singerId),
-					Type:      1,
-					Song:      songName,
-					ContentId: uint(LikeParam.Id),
-					Time:      time.Now(),
-					FromUser:  nickname,
-				}
-			}
-
-			err = conn.SendSystemMsg(sysMsg)
-			if err != nil {
-				ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
-				return
-			}
+		//
+		fmt.Println("发送消息")
+		//
+		//生成消息随机发送到3个通道的一个，防止爆炸
+		likemsg := make([]interface{}, 0)
+		likemsg = append(likemsg, nickname, LikeParam.Id, Type)
+		choose := tools.GetRandomNumbers(3)
+		switch choose {
+		case 0:
+			likemsgchan1 <- likemsg
+		case 1:
+			likemsgchan2 <- likemsg
+		case 2:
+			likemsgchan3 <- likemsg
 		}
-	}()
+	}
+	// go func() {
+	// 	defer wg.Done()
+	// 	dao.UpdateLikesByID(UserId, LikeParam.Id, LikeParam.Todo, Type)
+	// }()
 
-	wg.Wait()
+	//发送相应的系统消息[有 实际评论写入成功，但是系统消息发送失败 的不一致风险]
+	// wg := sync.WaitGroup{}
+	// wg.Add(1)
+	// go func() {
+	// 	defer wg.Done()
+	// 	nickname, err := dao.GetUserNickname(UserId)
+	// 	if err != nil {
+	// 		ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+	// 		return
+	// 	}
+
+	// 	if LikeParam.Todo == 1 {
+	// 		conn := ws.GetConn()
+	// 		sysMsg := respModel.SysMsg{}
+
+	// 		switch Type {
+	// 		case "moment":
+	// 			SenderId, err := dao.GetMomentSenderId(LikeParam.Id)
+	// 			if err != nil {
+	// 				ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+	// 				return
+	// 			}
+	// 			sysMsg = respModel.SysMsg{
+	// 				Uid:       uint(SenderId),
+	// 				Type:      2,
+	// 				ContentId: uint(LikeParam.Id),
+	// 				Time:      time.Now(),
+	// 				FromUser:  nickname,
+	// 			}
+	// 		case "momentcomment":
+	// 			SenderId, err := dao.GetCommentSenderId(LikeParam.Id)
+	// 			if err != nil {
+	// 				ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+	// 				return
+	// 			}
+	// 			sysMsg = respModel.SysMsg{
+	// 				Uid:       uint(SenderId),
+	// 				Type:      4,
+	// 				ContentId: uint(LikeParam.Id),
+	// 				Time:      time.Now(),
+	// 				FromUser:  nickname,
+	// 			}
+	// 		case "cover":
+	// 			singerId, songName, err := dao.GetCoverInfo(LikeParam.Id)
+	// 			if err != nil {
+	// 				ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+	// 				return
+	// 			}
+	// 			sysMsg = respModel.SysMsg{
+	// 				Uid:       uint(singerId),
+	// 				Type:      1,
+	// 				Song:      songName,
+	// 				ContentId: uint(LikeParam.Id),
+	// 				Time:      time.Now(),
+	// 				FromUser:  nickname,
+	// 			}
+	// 		}
+
+	// 		err = conn.SendSystemMsg(sysMsg)
+	// 		if err != nil {
+	// 			ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
+	// 			return
+	// 		}
+	// 	}
+	// }()
+
+	// wg.Wait()
 	// ctx.JSON(200, e.ErrMsgResponse{Message: "操作成功"})
 	return
 }

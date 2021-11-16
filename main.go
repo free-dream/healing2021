@@ -2,6 +2,12 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
+	"strconv"
+	"syscall"
+
+	"git.100steps.top/100steps/healing2021_be/controller"
 	"git.100steps.top/100steps/healing2021_be/cron"
 	"git.100steps.top/100steps/healing2021_be/models"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
@@ -9,10 +15,6 @@ import (
 	"git.100steps.top/100steps/healing2021_be/router"
 	"git.100steps.top/100steps/healing2021_be/sandwich"
 	"github.com/fvbock/endless"
-	"io/ioutil"
-	"log"
-	"strconv"
-	"syscall"
 )
 
 // @Title healing2021
@@ -46,6 +48,11 @@ func main() {
 		//time.Sleep(time.Second * 2)
 		//models.FakeData()
 	}
+
+	//启动点赞后台和点赞message后台
+	go controller.LikeDaemon()
+	go controller.MsgDaemon()
+
 	//models.AddClassic()
 	//models.AddDevotion()
 	routers := router.SetupRouter()
