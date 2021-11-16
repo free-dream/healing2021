@@ -337,8 +337,9 @@ func getMoments(user_id int) interface{} {
 	db := setting.MysqlConn()
 	db.Table("moment").Select("sum(praise.is_liked) as likes,moment.content,moment.state,moment.song_name,moment.id,moment.created_at").
 		Joins("left join praise on moment.id=praise.moment_id").
-		Group("moment.id").Order("moment.created_at desc").
 		Where("moment.user_id=?", user_id).
+		Group("moment.id").
+		Order("moment.created_at desc").
 		Scan(&moment2)
 	ch := make(chan int, 15)
 	for i, _ := range moment {
