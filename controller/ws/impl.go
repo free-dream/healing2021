@@ -129,11 +129,11 @@ func initConnection(wsConn *websocket.Conn) (conn *Connection, err error) {
 	return
 }
 
-func (conn *Connection) storage(uid string) {
-	ConnMap.Store(uid, conn)
-	uBufferInit(uid)
-	//fmt.Println(ConnMap)
-	//fmt.Printf("buffer:%v\n",MsgBuffer)
+func (conn *Connection) storageAndRecovery() {
+	ConnMap.Store(conn.uid, conn)
+	uBufferInit(conn.uid)
+    dao.SysUpdate(str2uint(conn.uid))
+    dao.UsrUpdate(str2uint(conn.uid))
 }
 
 func getNewConn(uid string) (*Connection, bool) {
@@ -222,7 +222,7 @@ func (conn *Connection) heartBeatCheck(data []byte) {
 	}
 }
 
-func (conn *Connection) chatWatcher(data []byte, uid string) {
+func (conn *Connection) chatWatcher(data []byte) {
 	newUsrMsg := respModel.UsrMsg{}
 	if ok := json.Unmarshal(data, &newUsrMsg); ok == nil {
 		if !filter(uint2str(newUsrMsg.FromUser), "^[1-9][0-9]*$") {
@@ -233,7 +233,7 @@ func (conn *Connection) chatWatcher(data []byte, uid string) {
 			conn.writeMessage([]byte("error format"))
 			return
 		}
-		if uint2str(newUsrMsg.FromUser) != uid {
+		if uint2str(newUsrMsg.FromUser) != conn.uid {
 			conn.writeMessage([]byte("error format"))
 			return
 		}
