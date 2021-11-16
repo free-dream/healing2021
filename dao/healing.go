@@ -45,7 +45,9 @@ func GetHealingPage(selectionId int, userId int) (interface{}, interface{}) {
 		Joins("inner join user on user.id=cover.user_id").
 		Joins("inner join praise on cover.id=praise.cover_id").
 		Having("selection_id=?", selectionId).
-		Group("cover_id").Order("created_at desc")
+		Group("cover_id").
+		Order("created_at desc").
+		Scan(&obj)
 	ch := make(chan CoverDetails, 15)
 	for i, _ := range obj {
 		//确认是否点赞
