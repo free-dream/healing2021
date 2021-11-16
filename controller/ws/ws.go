@@ -28,6 +28,7 @@ func wsInit(w http.ResponseWriter, r *http.Request, wsConn *websocket.Conn, id s
 		},
 	}
 	if wsConn, err = upgrader.Upgrade(w, r, nil); err != nil {
+		log.Println(err)
 		return false
 	}
 
@@ -64,11 +65,13 @@ func WsHandler(ctx *gin.Context) {
 	//TestUid++
 	//fmt.Printf("uid:%v\n",uid)
 
+    fmt.Println("Reboot1:")
 	if isInit := wsInit(ctx.Writer, ctx.Request, wsConn, uid); isInit != true {
 		return
 	}
 	conn := GetConn()
 	conn.writeMessage([]byte("Hello, ws!"))
+    fmt.Println("Reboot2:")
 
 	for {
 		if data, err = conn.readMessage(); err != nil {
