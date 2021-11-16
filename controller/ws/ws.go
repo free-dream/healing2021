@@ -69,13 +69,13 @@ func WsHandler(ctx *gin.Context) {
 	//TestUid++
 	//fmt.Printf("uid:%v\n",uid)
 
-    fmt.Println("Reboot5:")
+    fmt.Println("Reboot1:")
 	if isInit := wsInit(ctx.Writer, ctx.Request, wsConn, uid); isInit != true {
 		return
 	}
 	conn := GetConn()
 	conn.writeMessage([]byte("Hello, ws!"))
-    fmt.Println("Reboot4:")
+    fmt.Println("Reboot5:")
 
 	for {
 		if data, err = conn.readMessage(); err != nil {
