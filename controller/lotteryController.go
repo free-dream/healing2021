@@ -4,6 +4,7 @@ import (
 	"git.100steps.top/100steps/healing2021_be/dao"
 	"git.100steps.top/100steps/healing2021_be/pkg/e"
 	resp "git.100steps.top/100steps/healing2021_be/pkg/respModel"
+	"git.100steps.top/100steps/healing2021_be/sandwich"
 
 	// "git.100steps.top/100steps/healing2021_be/pkg/tools"
 	"github.com/gin-contrib/sessions"
@@ -139,23 +140,11 @@ func GetTasktable(ctx *gin.Context) {
 	//读取任务信息并拼合成对应数据体系
 	for _, table := range task_table {
 		//获取对应task
-		taskid := table.TaskId
-		task, err := dao.GetTasks(taskid)
-		if err != nil {
-			ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
-		}
-		//生成任务返回
-		taskresp := resp.TaskResp{
-			ID:   taskid,
-			Max:  task.Max,
-			Text: task.Text,
-		}
 		//生成任务返回表
 		tasktableresp := resp.TaskTableResp{
-			Counter: table.Counter,
-			Task:    taskresp,
+			Counter: sandwich.GetCacheTaskPoints(userid, table.ID),
+			Task:    table,
 		}
-
 		respTasks = append(respTasks, tasktableresp)
 	}
 	ctx.JSON(200, respTasks)

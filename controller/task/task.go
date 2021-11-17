@@ -89,4 +89,3 @@ func ChangePoints(userid int, tid int, points float32) error {
 }
 
 // 在用户首次登录时创建对应的任务表已实现于dao/task.go
-// func CreateTaskTable(userid int, taskid int) error {

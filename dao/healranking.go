@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
+	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	db "git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
 
@@ -14,18 +15,31 @@ const (
 )
 
 //基于学校获取排名
-func GetRankingBySchool(school string) ([]tables.User, error) {
+func GetRankingBySchool(school string) ([]respModel.RankingResp, error) {
 	mysqlDb := db.MysqlConn()
 
-	var users []tables.User
+	var users []respModel.RankingResp
 	var err error = nil
 	if school != "All" {
-		//按Points倒序排列
-		err = mysqlDb.Where("School = ?", school).Order("Points desc").Limit(10).Find(&users).Error
+		err = mysqlDb.
+			Limit(10).
+			Table("user").
+			Select("id as userid,avatar,nickname").
+			Where("School = ?", school).
+			Order("points desc").
+			Find(&users).
+			Error
 	} else if school == "All" {
-		err = mysqlDb.Order("Points desc").Limit(10).Find(&users).Error
+		err = mysqlDb.
+			Limit(10).
+			Table("user").
+			Select("id as userid,avatar,nickname").
+			Order("points desc").
+			Find(&users).
+			Error
 	}
 	if err != nil {
+		panic(err)
 		return nil, err
 	}
 	return users, nil
@@ -36,7 +50,9 @@ func GetRankByCUserId(userid int) (string, error) {
 	mysqlDb := db.MysqlConn()
 	var users []tables.User
 	//同分以字母序为准
-	err := mysqlDb.Limit(1000).Order("Points desc,Nickname").Find(&users).Error
+	err := mysqlDb.Limit(1000).
+		Order("Points desc,Nickname").
+		Find(&users).Error
 	if err != nil {
 		return "", err
 	}

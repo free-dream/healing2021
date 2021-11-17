@@ -195,6 +195,14 @@ func Recorder(ctx *gin.Context) {
 		return
 	}
 	selection, resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, userID, params.IsAnon)
+
+	//给自己点歌判断
+	if dao.IsHealingMyselfError(err) {
+		ctx.JSON(405, e.ErrMsgResponse{Message: err.Error()})
+		return
+	}
+	//
+
 	if params.Module == 1 {
 		//推送到点歌用户
 		conn := ws.GetConn()

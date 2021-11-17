@@ -3,6 +3,7 @@ package dao
 import (
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
+	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	db "git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
 
@@ -43,10 +44,16 @@ func CheckTasks(userid int) (bool, error) {
 }
 
 //提取task_table
-func GetTasktables(userid int) ([]tables.TaskTable, error) {
+func GetTasktables(userid int) ([]respModel.TaskResp, error) {
 	mysqlDb := db.MysqlConn()
-	var tasktables []tables.TaskTable
-	err := mysqlDb.Where("user_id = ?", userid).Find(&tasktables).Error
+	var tasktables []respModel.TaskResp
+	err := mysqlDb.
+		Table("task_table").
+		Select("task.text,task.max,task_id as id").
+		Joins("left join task on task.id = task_id").
+		Where("user_id = ?", userid).
+		Find(&tasktables).
+		Error
 	if err != nil {
 		return nil, err
 	}

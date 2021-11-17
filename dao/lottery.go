@@ -4,7 +4,6 @@ import (
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	db "git.100steps.top/100steps/healing2021_be/pkg/setting"
-	"git.100steps.top/100steps/healing2021_be/sandwich"
 	"github.com/jinzhu/gorm"
 )
 
@@ -16,22 +15,37 @@ var (
 	MysqlDb = db.MysqlConn()
 )
 
-//先从缓存里拿，拿不到再读取数据库，后增加缓存
+//总积分直接从数据库里拿
 func GetUserPoints(userid int) (int, error) {
-	temp := sandwich.GetCachePoints(userid)
-	if temp < 0 {
-		var user tables.User
-		err := MysqlDb.Where("id = ?", userid).First(&user).Error
-		if err != nil {
-			return -1, err
-		}
-		err = sandwich.UpdateCachePoints(userid, user.Points)
-		if err != nil {
-			return -1, err
-		}
-		return user.Points, err
+	var user tables.User
+	err := MysqlDb.Where("id = ?", userid).First(&user).Error
+	if err != nil {
+		return -1, err
 	}
-	return temp, nil
+	return user.Points, err
+}
+
+//方便后改就不放在respModel里了
+type UserInfoAN struct {
+	Avatar   string `json:"avatar"`
+	Nickname string `json:"nickname"`
+}
+
+//同时获取用户的avatar和nickname
+func GetUserInfo(userid int) ([]string, error) {
+	var data UserInfoAN
+	err := MysqlDb.
+		Table("user").
+		Select("avatar,nickname").
+		Where("id = ?", userid).
+		Find(&data).Error
+	if err != nil {
+		return nil, err
+	}
+	resp := make([]string, 2)
+	resp[0] = data.Avatar
+	resp[1] = data.Nickname
+	return resp, nil
 }
 
 //获取用户的nickname
@@ -44,7 +58,7 @@ func GetUserNickname(userid int) (string, error) {
 	return user.Nickname, nil
 }
 
-//获取用户的avatar
+//获取用户的avatar,暂时用
 func GetUserAvatar(userid int) (string, error) {
 	var user tables.User
 	err := MysqlDb.Where("id = ? AND avatar_visible = ?", userid, 0).First(&user).Error
