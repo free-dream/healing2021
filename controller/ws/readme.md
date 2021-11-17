@@ -13,7 +13,7 @@ conn.SendUsrMsg(respModel.UsrMsg) error
 2 : 动态被点赞 （song 填空串，contentId 填相应动态、评论的id，2-4同理）
 3 : 动态被评论 
 4 : 评论被点赞
-5 ： 经典点歌被翻唱 
+5 ：经典点歌被翻唱 
 6 : 歌曲评为热榜（song 填入相应翻唱歌名，contentId 填0，1、5、6）
 */
 

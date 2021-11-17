@@ -80,6 +80,8 @@ func SetupRouter() *gin.Engine {
 	api := r.Group("/api")
 	//中间件登陆拦截
 	api.Use(middleware.IdentityCheck())
+	//任务初始化
+	api.Use(middleware.TaskInit())
 	// ws
 	api.GET("/ws", ws.WsHandler)
 	api.GET("/ws/history", ws.WsData)
