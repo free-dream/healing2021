@@ -17,6 +17,5 @@ func Authentication() func(*gin.Context) {
 			ctx.JSON(403, "无管理员权限")
 			ctx.Abort()
 		}
-
 	}
 }

@@ -37,23 +37,14 @@ func GetRanking(ctx *gin.Context) {
 		}
 	}
 
-	//生成返回模块
-	rankresps = make([]resp.RankingResp, 0)
 	//提取数据
 	raws, err := dao.GetRankingBySchool(school)
 	if err != nil {
 		ctx.JSON(500, e.ErrMsgResponse{Message: "数据库操作出错"})
 	}
-	for _, user := range raws {
-		temp := new(resp.RankingResp)
-		temp.Userid = int(user.ID)
-		temp.Avatar = user.Avatar
-		temp.Nickname = user.Nickname
-		rankresps = append(rankresps, *temp)
-	}
 
 	//若不足10条，传回默认
-	for i := len(rankresps); i < 10; i++ {
+	for i := len(raws); i < 10; i++ {
 		temp := new(resp.RankingResp)
 		temp.Userid = -1
 		if (i+1)%2 == 0 {
@@ -62,7 +53,7 @@ func GetRanking(ctx *gin.Context) {
 			temp.Avatar = url2
 		}
 		temp.Nickname = empty
-		rankresps = append(rankresps, *temp)
+		raws = append(raws, *temp)
 	}
 
 	//缓存json化的数据,json化的报错无视

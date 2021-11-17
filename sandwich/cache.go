@@ -33,17 +33,17 @@ func UpdateTask(userid int, tid int, value int64) (int, error) {
 	return int(val), nil
 }
 
-//取用用户积分缓存
-func GetCachePoints(userid int) int {
+//取用用户单项任务积分缓存
+func GetCacheTaskPoints(userid int, tid int) int {
 	redisDb := setting.RedisConn()
-	key := prefix + strconv.Itoa(userid) + "/points"
-	temp := redisDb.HMGet(key, "points").Val()
+	key := prefix + strconv.Itoa(userid) + "/task"
+	temp := redisDb.HMGet(key, strconv.Itoa(tid)).Val()
 	if len(temp) < 1 {
-		return -1
+		return 0
 	}
 	data, ok := temp[0].(string)
 	if !ok {
-		return -1
+		return 0
 	}
 	temp1, check := strconv.Atoi(data)
 	if check != nil {
@@ -52,24 +52,24 @@ func GetCachePoints(userid int) int {
 	return temp1
 }
 
-//基于mysql更新用户积分缓存
-func UpdateCachePoints(userid int, points int) error {
-	redisDb := setting.RedisConn()
-	key := prefix + strconv.Itoa(userid) + "/task"
-	temp := make(map[string]interface{})
-	temp["points"] = points
-	err := redisDb.HMSet(key, temp).Err()
-	return err
-}
+// //基于mysql更新用户积分缓存
+// func UpdateCachePoints(userid int, points int) error {
+// 	redisDb := setting.RedisConn()
+// 	key := prefix + strconv.Itoa(userid) + "/task"
+// 	temp := make(map[string]interface{})
+// 	temp["points"] = points
+// 	err := redisDb.HMSet(key, temp).Err()
+// 	return err
+// }
 
 //以下同质化函数太多，可以考虑综合一下，暂时先不做了
 //可惜go不支持重载
 
-//缓存当前用户排名,设置了10min的expile时间
+//缓存当前用户排名,设置了1h的expile时间
 func CacheCURanking(userid int, rank string) error {
 	db := setting.RedisConn()
 	key := prefix + strconv.Itoa(userid) + "rank"
-	err := db.Set(key, rank, time.Minute*10).Err()
+	err := db.Set(key, rank, time.Hour).Err()
 	return err
 }
 
@@ -122,9 +122,3 @@ func GetDailyRankByDate(date string) string {
 	data := db.HGet(key, date).Val()
 	return data
 }
-
-//使用redis作为换入区，保留20项记录
-func CacheSearch() {}
-
-//取用缓存数据
-func GetSearch() {}

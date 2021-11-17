@@ -3,14 +3,15 @@ package dao
 import (
 	"encoding/json"
 	"errors"
-	"git.100steps.top/100steps/healing2021_be/models/statements"
-	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"log"
 	"math/rand"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"git.100steps.top/100steps/healing2021_be/models/statements"
+	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 )
 
 type UsrMsg struct {
@@ -378,17 +379,18 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 		db.Model(&statements.Classic{}).Where("id=?", selectionId).Scan(&classic)
 		cover.SongName = classic.SongName
 	}
-	//补一个拿人头的
-	avatar, err1 := GetUserAvatar(uid)
+	//补一个拿人头和名字的
+	data, err1 := GetUserInfo(uid)
 	if err1 != nil {
 		log.Printf(err1.Error())
 	}
 	//
-	cover.Avatar = avatar
+	cover.Avatar = data[0]
 	cover.UserId = userId
 	cover.File = file
 	cover.Module = module
 	cover.IsAnon = isAnon
+	cover.Nickname = data[1]
 	coverDetails := CoverDetails{}
 	err := db.Model(&statements.Cover{}).Create(&cover).Error
 	switch module {

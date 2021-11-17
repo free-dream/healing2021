@@ -77,25 +77,16 @@ func Like(ctx *gin.Context) {
 
 	//扔给后台发送消息
 	if LikeParam.Todo == 1 {
-		//干脆缓存用户nickname?
+		//干脆缓存用户nickname,这个地方未来可能会成为性能瓶颈
 		nickname, err := dao.GetUserNickname(UserId)
+		//
 		if err != nil {
 			ctx.JSON(500, e.ErrMsgResponse{Message: "系统消息发送失败"})
 			return
 		}
-		//生成消息随机发送到3个通道的一个，防止爆炸
 		likemsg := make([]interface{}, 0)
 		likemsg = append(likemsg, nickname, LikeParam.Id, Type)
 		likemsgchan1 <- likemsg
-		// choose := tools.GetRandomNumbers(3)
-		// switch choose {
-		// case 0:
-		// 	likemsgchan1 <- likemsg
-		// case 1:
-		// 	likemsgchan2 <- likemsg
-		// case 2:
-		// 	likemsgchan3 <- likemsg
-		// }
 	}
 	// go func() {
 	// 	defer wg.Done()
