@@ -223,6 +223,6 @@ func Recorder(ctx *gin.Context) {
 
 //献唱接口
 func DevotionPlayer(ctx *gin.Context) {
-	resp := dao.PlayDevotion(sessions.Default(ctx).Get("user_id").(int))
+	resp := dao.PlayDevotion()
 	ctx.JSON(200, resp)
 }

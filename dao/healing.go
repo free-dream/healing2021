@@ -427,35 +427,20 @@ type DevMsg struct {
 	SongName string `json:"song_name"`
 	Singer   string `json:"singer"`
 	File     string `json:"file"`
-	Likes    int    `json:"likes"`
-	Check    int    `json:"check"`
 }
 
-func PlayDevotion(userid int) interface{} {
+func PlayDevotion() interface{} {
 	db := setting.MysqlConn()
 	devotion := []DevMsg{}
 	devotion2 := []DevMsg{}
 	resp := map[string][]DevMsg{}
-	db.Table("devotion").Select("devotion.id,devotion.song_name,devotion.file,sum(praise.is_liked) as likes").
+	db.Table("devotion").Select("id,song_name,file").
 		Where("singer='阿细'").
-		Joins("inner join praise on praise.devotion_id=devotion.id").
 		Scan(&devotion)
-	ch := make(chan int, 15)
-	for i, _ := range devotion {
-		//确认是否点赞
-		go ViolenceGetLikeheckD(userid, devotion[i], ch)
-		devotion[i].Check = <-ch
-	}
 	resp["阿细"] = devotion
-	db.Table("devotion").Select("devotion.id,devotion.song_name,devotion.file,sum(praise.is_liked) as likes").
+	db.Table("devotion").Select("id,song_name,file").
 		Where("singer='梁山山'").
-		Joins("inner join praise on praise.devotion_id=devotion.id").
 		Scan(&devotion2)
-	for i, _ := range devotion {
-		//确认是否点赞
-		go ViolenceGetLikeheckD(userid, devotion[i], ch)
-		devotion[i].Check = <-ch
-	}
 
 	resp["梁山山"] = devotion2
 	return resp

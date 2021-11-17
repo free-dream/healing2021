@@ -173,17 +173,6 @@ func ViolenceGetLikeheckC(id int, resp CoverDetails, ch chan int) {
 	}
 
 }
-func ViolenceGetLikeheckD(id int, resp DevMsg, ch chan int) {
-	boolean, err := PackageCheck(id, "devotion", resp.ID)
-	if err != nil {
-		log.Printf(err.Error())
-		ch <- 0
-	} else if boolean {
-		ch <- 1
-	} else {
-		ch <- 0
-	}
-}
 
 func ViolenceGetLikeheckM(id int, resp MomentMsgV2, ch chan int) {
 	boolean, err := PackageCheck(id, "cover", resp.ID)
