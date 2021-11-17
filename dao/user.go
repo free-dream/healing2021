@@ -335,7 +335,8 @@ func getMoments(user_id int) interface{} {
 	moment2 := []MomentMsgV2{}
 	moment := []MomentMsg{}
 	db := setting.MysqlConn()
-	db.Raw("select  sum(praise.is_liked) as likes,moment.content,moment.state,moment.song_name,moment.id,moment.created_at from moment  left join praise on moment.id=praise.moment_id where moment_id=" + strconv.Itoa(user_id) + " group by moment_id;").Scan(&moment2)
+	db.Raw("select  sum(praise.is_liked) as likes,moment.content,moment.state,moment.song_name,moment.id,moment.created_at from moment  left join praise on moment.id=praise.moment_id where user_id=" + strconv.Itoa(user_id) + " group by moment_id;").Scan(&moment2)
+	moment = make([]MomentMsg, len(moment2))
 	ch := make(chan int, 15)
 	for i, _ := range moment {
 		//确认是否点赞
