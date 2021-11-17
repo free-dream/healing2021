@@ -11,7 +11,7 @@ import (
 var momentPageCache []int
 
 // 定时更新推荐动态
-func UpdateMomentPage()  {
+func UpdateMomentPage() {
 	db := setting.MysqlConn()
 	for {
 		//执行代码
@@ -44,6 +44,7 @@ func UpdateMomentPage()  {
 type ForPraiseMRecord struct {
 	MomentId int `gorm:"moment_id"`
 }
+
 func GetMomentPageNew(page int) ([]statements.Moment, error) {
 	db := setting.MysqlConn()
 	var momentPage []statements.Moment
@@ -54,12 +55,12 @@ func GetMomentPageRecommend(page int) ([]statements.Moment, error) {
 	db := setting.MysqlConn()
 	var momentPage []statements.Moment
 
-	left := page*10
-	right := left+10
+	left := page * 10
+	right := left + 10
 
-	if left>len(momentPageCache) {
+	if left > len(momentPageCache) {
 		return momentPage, nil
-	} else if right>len(momentPageCache) {
+	} else if right > len(momentPageCache) {
 		right = len(momentPageCache)
 	}
 
@@ -86,7 +87,7 @@ func GetMomentPageSearch(page int, keyWords string) ([]statements.Moment, error)
 func CreateMoment(Moment statements.Moment) error {
 	MysqlDB := setting.MysqlConn()
 	err := MysqlDB.Create(&Moment).Error
-	if  err != nil {
+	if err != nil {
 		return err
 	}
 	err = markMomentInPraise(int(Moment.ID))

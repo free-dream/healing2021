@@ -238,16 +238,17 @@ func CreateFakeCovers(uid int, name string, sid int, classicId int, module int) 
 		SelectionId: strconv.Itoa(sid),
 		Module:      module,
 		ClassicId:   classicId,
-		Nickname: "测试小子",
-		Language: "中文",
-		File: "address",
-		Style: "cool",
-		Avatar: "头像",
+		Nickname:    "测试小子",
+		Language:    "中文",
+		File:        "address",
+		Style:       "cool",
+		Avatar:      "头像",
 	}
 
 	db := setting.MysqlConn()
 	db.Create(&cover)
 }
+
 //func AddFakeCovers() {
 //	// 经典翻唱 5
 //	for index := 1; index < 19; index++ {

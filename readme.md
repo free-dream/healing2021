@@ -90,8 +90,8 @@ POST /user  HTTP/1.1
 ```json
 {
 	"nickname": "string",
-	"openid": string,
-  	"avatar": string
+	"openid": "string",
+  	"avatar": "string"
 }
 ```
 
@@ -1182,6 +1182,7 @@ Content-Type: application/json
 ```json
 [// 当这首歌曲暂未有人翻唱时，返回值会是 null
     {
+        "user_id": int          // 翻唱者的 userId
         "cover_id":int,			// 用于进入歌曲页
         "nickname": string,		// 翻唱者
         "avatar": text(url),   	// 用户头像

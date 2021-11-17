@@ -96,4 +96,3 @@ func GetHotSong() []string {
 
 	return Values
 }
-

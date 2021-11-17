@@ -1,8 +1,8 @@
 package dao
 
 import (
-    "errors"
 	"encoding/json"
+	"errors"
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/respModel"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
@@ -18,17 +18,17 @@ func SysBackUp(msg respModel.SysMsg, isSend int) error {
 }
 
 func UsrBackUp(msg respModel.UsrMsg, isSend int) error {
-    var sqlErr bool
-    fromUserName, sqlErr := GetUserById(int(msg.FromUser))
-    if sqlErr == false {
-        return errors.New("fromUser is not exist")
-    }
-    toUserName, sqlErr := GetUserById(int(msg.ToUser))
-    if sqlErr == false {
-        return errors.New("toUser is not exist")
-    }
-    msg.FromUserName = fromUserName.Nickname
-    msg.ToUserName = toUserName.Nickname
+	var sqlErr bool
+	fromUserName, sqlErr := GetUserById(int(msg.FromUser))
+	if sqlErr == false {
+		return errors.New("fromUser is not exist")
+	}
+	toUserName, sqlErr := GetUserById(int(msg.ToUser))
+	if sqlErr == false {
+		return errors.New("toUser is not exist")
+	}
+	msg.FromUserName = fromUserName.Nickname
+	msg.ToUserName = toUserName.Nickname
 	msgClone := statements.Usrmsg{}
 	msgStr, _ := json.Marshal(msg)
 	json.Unmarshal(msgStr, &msgClone)

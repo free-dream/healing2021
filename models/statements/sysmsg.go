@@ -15,7 +15,7 @@ type Sysmsg struct {
 	Song      string `gorm:"not null"`
 	Time      time.Time
 	IsSend    int
-    FromUser  string    `gorm:"not null"`
+	FromUser  string `gorm:"not null"`
 	gorm.Model
 }
 

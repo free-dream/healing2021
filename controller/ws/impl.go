@@ -24,7 +24,7 @@ type Connection struct {
 
 	mutex    sync.Mutex
 	isClosed bool
-    uid      string
+	uid      string
 }
 
 var (
@@ -132,8 +132,8 @@ func initConnection(wsConn *websocket.Conn) (conn *Connection, err error) {
 func (conn *Connection) storageAndRecovery() {
 	ConnMap.Store(conn.uid, conn)
 	uBufferInit(conn.uid)
-    dao.SysUpdate(str2uint(conn.uid))
-    dao.UsrUpdate(str2uint(conn.uid))
+	dao.SysUpdate(str2uint(conn.uid))
+	dao.UsrUpdate(str2uint(conn.uid))
 }
 
 func getNewConn(uid string) (*Connection, bool) {
@@ -172,7 +172,7 @@ func (conn *Connection) Close() {
 		conn.isClosed = true
 	}
 	conn.mutex.Unlock()
-    ConnMap.Delete(conn.uid)
+	ConnMap.Delete(conn.uid)
 }
 
 func (conn *Connection) readLoop() {
@@ -242,16 +242,16 @@ func (conn *Connection) chatWatcher(data []byte) {
 			return
 		}
 
-        toUserName, sqlErr := dao.GetUserById(int(newUsrMsg.ToUser))
-        fromUserName, _ := dao.GetUserById(int(newUsrMsg.FromUser))
-        if sqlErr == false {
+		toUserName, sqlErr := dao.GetUserById(int(newUsrMsg.ToUser))
+		fromUserName, _ := dao.GetUserById(int(newUsrMsg.FromUser))
+		if sqlErr == false {
 			conn.writeMessage([]byte("receiver is not exist"))
-            return
-        }
+			return
+		}
 		newConn, isConn := getNewConn(uint2str(newUsrMsg.ToUser))
-        newUsrMsg.CreatedAt = time.Now()
-        newUsrMsg.ToUserName = toUserName.Nickname
-        newUsrMsg.FromUserName = fromUserName.Nickname
+		newUsrMsg.CreatedAt = time.Now()
+		newUsrMsg.ToUserName = toUserName.Nickname
+		newUsrMsg.FromUserName = fromUserName.Nickname
 		if !isConn {
 			if bErr := dao.UsrBackUp(newUsrMsg, 2); bErr != nil {
 				//conn.writeMessage([]byte(bErr.Error()))
@@ -266,7 +266,7 @@ func (conn *Connection) chatWatcher(data []byte) {
 			conn.writeMessage([]byte("Fail to storage data"))
 			return
 		}
-        newData, _ := json.Marshal(newUsrMsg)
+		newData, _ := json.Marshal(newUsrMsg)
 		newConn.writeMessage(newData)
 		conn.writeMessage([]byte("ok"))
 	}
@@ -279,20 +279,20 @@ type SysMsg struct {
 	Song      string    `json:"song"`
 	Time      time.Time `json:"time"`
 	IsSend    int       `json:"isSend"`
-    FromUser  string    `json:"fromUser"`
+	FromUser  string    `json:"fromUser"`
 }
 
 type UsrMsg struct {
-	FromUser  uint      `json:"fromUser"`
-	ToUser    uint      `json:"toUser"`
-    FromUserName string `json:"fromUserName"`
-    ToUserName string   `json:"toUserName"`
-	Url       string    `json:"user"` //录音url
-	Song      string    `json:"song"` //歌名
-	SongId    uint      `json:"songId"`
-	Message   string    `json:"message"`
-	IsSend    int       `json:"isSend"`
-	CreatedAt time.Time `json:"time"`
+	FromUser     uint      `json:"fromUser"`
+	ToUser       uint      `json:"toUser"`
+	FromUserName string    `json:"fromUserName"`
+	ToUserName   string    `json:"toUserName"`
+	Url          string    `json:"user"` //录音url
+	Song         string    `json:"song"` //歌名
+	SongId       uint      `json:"songId"`
+	Message      string    `json:"message"`
+	IsSend       int       `json:"isSend"`
+	CreatedAt    time.Time `json:"time"`
 }
 
 func (conn *Connection) SendSystemMsg(sysMsg respModel.SysMsg) error {

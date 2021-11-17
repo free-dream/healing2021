@@ -38,7 +38,7 @@ func wsInit(w http.ResponseWriter, r *http.Request, wsConn *websocket.Conn, id s
 		return false
 	}
 
-    Conn.uid = id
+	Conn.uid = id
 	Conn.storageAndRecovery()
 	return true
 }
@@ -71,7 +71,7 @@ func WsHandler(ctx *gin.Context) {
 	for {
 		if data, err = conn.readMessage(); err != nil {
 			conn.Close()
-            return
+			return
 		}
 		conn.heartBeatCheck(data)
 		conn.chatWatcher(data)
