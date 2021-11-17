@@ -19,11 +19,16 @@ import (
 // 最新动态
 func GetMomentNew(ctx *gin.Context) {
 	page := ctx.Query("page")
+	var momentsResp []respModel.MomentResp
 
 	pages, err := strconv.Atoi(page)
 	if err != nil {
 		ctx.JSON(403, e.ErrMsgResponse{Message: "page参数非法"})
 		return
+	}
+
+	if pages<0 {
+		ctx.JSON(200, momentsResp)
 	}
 
 	momentPage, err := dao.GetMomentPageNew(pages)
@@ -33,7 +38,6 @@ func GetMomentNew(ctx *gin.Context) {
 	}
 
 	// 信息整理
-	var momentsResp []respModel.MomentResp
 	userId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
 	for _, OneMoment := range momentPage {
 		User := statements.User{}
@@ -78,11 +82,16 @@ func GetMomentNew(ctx *gin.Context) {
 // 动态推荐
 func GetMomentRecommend(ctx *gin.Context) {
 	page := ctx.Query("page")
+	var momentsResp []respModel.MomentResp
 
 	pages, err := strconv.Atoi(page)
 	if err != nil {
 		ctx.JSON(403, e.ErrMsgResponse{Message: "page参数非法"})
 		return
+	}
+
+	if pages<0 {
+		ctx.JSON(200, momentsResp)
 	}
 
 	momentPage, err := dao.GetMomentPageRecommend(pages)
@@ -92,7 +101,6 @@ func GetMomentRecommend(ctx *gin.Context) {
 	}
 
 	// 信息整理
-	var momentsResp []respModel.MomentResp
 	userId := sessions.Default(ctx).Get("user_id").(int) // 获取当前用户 id
 	for _, OneMoment := range momentPage {
 		User := statements.User{}
