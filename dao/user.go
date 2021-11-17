@@ -184,6 +184,7 @@ func UpdateUser(user *statements.User, id int, avatar string) (string, error) {
 	message["phone_search"] = user.PhoneSearch
 	message["real_name_search"] = user.RealNameSearch
 	message["signature"] = user.Signature
+	message["phone_number"] = user.PhoneNumber
 	err := db.Table("user").Select("nickname,signature,avatar_visible,phone_search,real_name_search ").Where("id=?", id).Update(message).Error
 	if err != nil {
 		return "", err

@@ -11,7 +11,7 @@ func CronInit() *cron.Cron {
 	// c.AddFunc("0 0 0 * *", func() {
 	// 	models.UpdateTask()
 	// })
-	c.AddFunc("0 0 0 * *", func() {
+	c.AddFunc("0 0 * * *", func() {
 		db := setting.MysqlConn()
 		db.Table("user").Select("selection_num").Update(2)
 	})
