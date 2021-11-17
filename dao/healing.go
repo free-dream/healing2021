@@ -360,22 +360,6 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 
 }
 
-//自定义错误
-type HealingMyself struct{}
-
-func (h *HealingMyself) Error() string {
-	return "不要自娱自乐哦~"
-}
-
-//错误判断
-func IsHealingMyselfError(err error) bool {
-	if err.Error() == "不要自娱自乐哦~" {
-		return true
-	} else {
-		return false
-	}
-}
-
 //治愈系对应的录音
 func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool) (*statements.Selection, *CoverDetails, error) {
 	db := setting.MysqlConn()
@@ -395,10 +379,7 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 		db.Model(&statements.Classic{}).Where("id=?", selectionId).Scan(&classic)
 		cover.SongName = classic.SongName
 	}
-	//治愈自己判断
-	if selection.UserId == uid {
-		return nil, nil, &HealingMyself{}
-	}
+
 	//
 
 	//补一个拿人头和名字的
@@ -456,7 +437,7 @@ func PlayDevotion(userid int) interface{} {
 	devotion2 := []DevMsg{}
 	resp := map[string][]DevMsg{}
 	db.Table("devotion").Select("devotion.id,devotion.song_name,devotion.file,sum(praise.is_liked) as likes").
-		Where("singer=阿细").
+		Where("singer='阿细'").
 		Joins("inner join praise on praise.devotion_id=devotion.id").
 		Scan(&devotion)
 	ch := make(chan int, 15)
@@ -467,7 +448,7 @@ func PlayDevotion(userid int) interface{} {
 	}
 	resp["阿细"] = devotion
 	db.Table("devotion").Select("devotion.id,devotion.song_name,devotion.file,sum(praise.is_liked) as likes").
-		Where("singer=梁山山").
+		Where("singer='梁山山'").
 		Joins("inner join praise on praise.devotion_id=devotion.id").
 		Scan(&devotion2)
 	for i, _ := range devotion {

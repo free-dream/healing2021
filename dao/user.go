@@ -253,7 +253,7 @@ func GetUser(id int, module int) interface{} {
 	case 1:
 		resp["mySelections"] = getSelections(id)
 	case 2:
-		resp["mySongs"] = getCovers(id, 1)
+		resp["mySongs"] = getCovers(id)
 	case 3:
 		resp["myLikes"] = getPraises(id)
 	case 4:
@@ -272,7 +272,7 @@ func GetCallee(id int, module int) interface{} {
 		resp["message"] = user
 		resp["mySelections"] = getSelections(id)
 	case 2:
-		resp["mySongs"] = getCovers(id, 2)
+		resp["mySongs"] = getCovers(id)
 	case 3:
 		resp["myLikes"] = getPraises(id)
 	case 4:
@@ -302,17 +302,12 @@ func getPraises(user_id int) interface{} {
 
 	return cover
 }
-func getCovers(user_id int, anon int) interface{} {
+func getCovers(user_id int) interface{} {
 	cover := []CoverDetails{}
 	db := setting.MysqlConn()
-	switch anon {
-	case 1:
-		db.Raw("select likes,avatar,nickname,selection_id,song_name,file,user_id,id,created_at from (select user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at from cover inner join user on user.id=cover.user_id where cover.user_id=" + strconv.Itoa(user_id) + ")" + " as A left join (select cover_id,sum(is_liked) as likes from praise group by cover_id) as B on A.id=B.cover_id order by created_at desc").
-			Scan(&cover)
-	case 2:
-		db.Raw("select likes,avatar,nickname,selection_id,song_name,file,user_id,id,created_at from (select user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at from cover inner join user on user.id=cover.user_id where cover.user_id=" + strconv.Itoa(user_id) + " and cover.is_anon=0)" + " as A left join (select cover_id,sum(is_liked) as likes from praise group by cover_id) as B on A.id=B.cover_id order by created_at desc").
-			Scan(&cover)
-	}
+	db.Raw("select likes,avatar,nickname,selection_id,song_name,file,user_id,id,created_at from (select user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at from cover inner join user on user.id=cover.user_id where cover.user_id=" + strconv.Itoa(user_id) + ")" + " as A left join (select cover_id,sum(is_liked) as likes from praise group by cover_id) as B on A.id=B.cover_id order by created_at desc").
+		Scan(&cover)
+
 	ch := make(chan int, 15)
 	for i, _ := range cover {
 		//确认是否点赞

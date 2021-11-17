@@ -189,40 +189,31 @@ func Recorder(ctx *gin.Context) {
 		ctx.JSON(400, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
+	//给自己点歌判断
 	url, err := convertMediaIdArrToQiniuUrl(params.Record)
 	if err != nil {
 		ctx.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
 	selection, resp, err := dao.CreateRecord(params.Module, params.SelectionId, url, userID, params.IsAnon)
-
-	//给自己点歌判断
-	if dao.IsHealingMyselfError(err) {
-		ctx.JSON(405, e.ErrMsgResponse{Message: err.Error()})
+	//推送到点歌用户
+	conn := ws.GetConn()
+	usrMsg := respModel.UsrMsg{}
+	usrMsg.Url = url
+	usrMsg.Song = resp.SongName
+	usrMsg.SongId = uint(params.SelectionId)
+	usrMsg.Message = ""
+	usrMsg.FromUser = uint(userID)
+	usrMsg.ToUser = uint(selection.UserId)
+	usrMsg.ToUserName = selection.Nickname
+	usrMsg.FromUserName = resp.Nickname
+	usrMsg.CreatedAt = time.Now()
+	err = conn.SendUsrMsg(usrMsg)
+	if err != nil {
+		ctx.JSON(403, e.ErrMsgResponse{Message: err.Error()})
 		return
 	}
-	//
 
-	if params.Module == 1 {
-		//推送到点歌用户
-		conn := ws.GetConn()
-		usrMsg := respModel.UsrMsg{}
-		usrMsg.Url = url
-		usrMsg.Song = resp.SongName
-		usrMsg.SongId = uint(params.SelectionId)
-		usrMsg.Message = ""
-		usrMsg.FromUser = uint(userID)
-		usrMsg.ToUser = uint(selection.UserId)
-		usrMsg.ToUserName = selection.Nickname
-		usrMsg.FromUserName = resp.Nickname
-		usrMsg.CreatedAt = time.Now()
-		err = conn.SendUsrMsg(usrMsg)
-		if err != nil {
-			ctx.JSON(403, e.ErrMsgResponse{Message: err.Error()})
-			return
-		}
-
-	}
 	//任务模块植入 2021.11.1
 	thistask := task.HT
 	err = thistask.AddRecord(userID)
