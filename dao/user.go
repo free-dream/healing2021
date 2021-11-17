@@ -138,12 +138,13 @@ type BasicMsg struct {
 	Nickname       string   `json:"nickname"`
 	Sex            int      `json:"sex"`
 	SelectionNum   int      `json:"selection_num"`
+	PhoneNumber    string   `json:"phone_number"`
 }
 
 func GetBasicMessage(id int) (BasicMsg, error) {
 	resp := BasicMsg{}
 	db := setting.MysqlConn()
-	db.Table("user").Select("selection_num,avatar,nickname,avatar_visible,phone_search,real_name_search,signature").Where("id=?", id).Scan(&resp)
+	db.Table("user").Select("phone_number,selection_num,avatar,nickname,avatar_visible,phone_search,real_name_search,signature").Where("id=?", id).Scan(&resp)
 	redisCli := setting.RedisConn()
 	value, _ := redisCli.HGet("healing2021:hobby", strconv.Itoa(id)).Bytes()
 	if len(value) != 0 {
