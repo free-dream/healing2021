@@ -304,17 +304,19 @@ func getPraises(user_id int) interface{} {
 }
 func getCovers(user_id int) interface{} {
 	cover := []CoverDetails{}
+	cover1 := []CoverDetails{}
 	db := setting.MysqlConn()
-	db.Raw("select likes,avatar,nickname,selection_id,song_name,file,user_id,id,created_at from (select user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at from cover inner join user on user.id=cover.user_id where cover.user_id=" + strconv.Itoa(user_id) + ")" + " as A left join (select cover_id,sum(is_liked) as likes from praise group by cover_id) as B on A.id=B.cover_id order by created_at desc").
+	db.Raw("select module,likes,avatar,nickname,selection_id,song_name,file,user_id,id,created_at from (select user.avatar,user.nickname,cover.module,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at from cover inner join user on user.id=cover.user_id where cover.selection_id <> 0 and cover.user_id=" + strconv.Itoa(user_id) + ")" + " as A left join (select cover_id,sum(is_liked) as likes from praise group by cover_id) as B on A.id=B.cover_id order by created_at desc").
 		Scan(&cover)
-
+	db.Raw("select module,likes,avatar,nickname,classic_id,song_name,file,user_id,id,created_at from (select user.avatar,user.nickname,cover.module,cover.classic_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at from cover inner join user on user.id=cover.user_id where cover.classic_id <> 0 and cover.user_id=" + strconv.Itoa(user_id) + ")" + " as A left join (select cover_id,sum(is_liked) as likes from praise group by cover_id) as B on A.id=B.cover_id order by created_at desc").
+		Scan(&cover1)
 	ch := make(chan int, 15)
 	for i, _ := range cover {
 		//确认是否点赞
 		go ViolenceGetLikeheckC(user_id, cover[i], ch)
 		cover[i].Check = <-ch
 	}
-
+	cover = append(cover, cover1...)
 	return cover
 }
 func getSelections(user_id int) interface{} {

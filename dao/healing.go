@@ -253,6 +253,8 @@ type CoverDetails struct {
 	Likes       int    `json:"likes"`
 	Check       int    `json:"check"`
 	SelectionId int    `json:"selection_id"`
+	ClassicId   int    `json:"classic_id"`
+	Module      int    `json:"module"`
 }
 
 //简单的翻唱对象
