@@ -13,6 +13,45 @@ const ourStates = "healing2021:ourStates"
 const hotSearch = "healing2021:hotSearch"
 const hotSong = "healing2021:hotSong"
 
+func init()  {
+	for i := 0; i < 2; i++ {
+		PutInStates("上早课")
+		PutInStates("奔赴饭堂")
+		PutInStates("乐跑")
+		PutInStates("游泳")
+		PutInStates("等待外卖")
+		PutInStates("取快递")
+		PutInStates("学习中")
+		PutInStates("工作中")
+		PutInStates("充能中")
+		PutInStates("奋斗中")
+		PutInStates("求锦鲤")
+		PutInStates("芜湖起飞")
+		PutInStates("喝奶茶")
+		PutInStates("自拍")
+		PutInStates("美滋滋")
+		PutInStates("滋润")
+		PutInStates("期待满满")
+		PutInStates("元气满满")
+		PutInStates("摸鱼中")
+		PutInStates("纠结中")
+		PutInStates("叹气")
+		PutInStates("网抑云")
+		PutInStates("头大中")
+		PutInStates("熬夜中")
+		PutInStates("Emo中")
+		PutInStates("自闭中")
+		PutInStates("社死")
+		PutInStates("想静静")
+		PutInStates("裂开")
+		PutInStates("赶DDL")
+		PutInStates("生病中")
+		PutInStates("不想学习")
+		PutInStates("睡不醒")
+		PutInStates("拒绝早八")
+	}
+}
+
 // 放入状态
 func PutInStates(States string) {
 	redisDb := setting.RedisConn()
