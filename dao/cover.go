@@ -23,16 +23,16 @@ func GetCoverList(UserId int, ClassicId int) ([]respModel.CoverResp, error) {
 	// 参数转换
 	for _, cover := range covers {
 		workName, err := GetClassicSongFromCover(cover.SongName)
-		if err != nil && err != gorm.ErrRecordNotFound{
+		if err != nil && err != gorm.ErrRecordNotFound {
 			return coversResp, err
 		}
 		nickname, err := GetUserNickname(cover.UserId)
-		if err != nil && err != gorm.ErrRecordNotFound{
+		if err != nil && err != gorm.ErrRecordNotFound {
 			return coversResp, err
 		}
 		cResp := respModel.CoverResp{
+			UserId:   cover.UserId,
 			CoverId:  int(cover.ID),
-			//Nickname: cover.Nickname, // 翻唱者
 			Nickname: nickname, // 翻唱者
 			Avatar:   cover.Avatar,
 			PostTime: tools.DecodeTime(cover.CreatedAt),
@@ -58,7 +58,7 @@ func GetCoverInfo(CoverId int) (int, string, error) {
 	//coverInfo := CoverInfo{}
 	//err := MysqlDB.Table("cover").Select("user_id,song_name").Where("id=?", CoverId).Scan(&coverInfo).Error
 	coverInfo := statements.Cover{}
-	err:=MysqlDB.Where("id=?", CoverId).First(&coverInfo).Error
+	err := MysqlDB.Where("id=?", CoverId).First(&coverInfo).Error
 	if err != nil {
 		return 0, "", err
 	}
@@ -83,12 +83,12 @@ type ClassicWorkName struct {
 	WorkName string `gorm:"work_name"`
 }
 
-func GetClassicSongFromCover(songName string) (string,error) {
+func GetClassicSongFromCover(songName string) (string, error) {
 	db := setting.MysqlConn()
 	workName := ClassicWorkName{}
-	err := db.Model(&statements.Classic{}).Select("work_name").Where("song_name=?",songName).Scan(&workName).Error
+	err := db.Model(&statements.Classic{}).Select("work_name").Where("song_name=?", songName).Scan(&workName).Error
 	if err != nil {
-		return "",err
+		return "", err
 	}
 	return workName.WorkName, nil
 }

@@ -1,6 +1,7 @@
 package respModel
 
 type CoverResp struct {
+	UserId   int    `json:"user_id"`
 	CoverId  int    `json:"cover_id"`
 	Nickname string `json:"nickname"`
 	Avatar   string `json:"avatar"`
