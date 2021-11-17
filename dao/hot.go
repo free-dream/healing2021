@@ -19,7 +19,7 @@ func GetCoversByDate(date string) ([]resp.HotResp, error) {
 	//主查询
 	err := mysqlDb.Order("likes desc").
 		Table("praise").
-		Select("cover_id, count(cover_id) as likes, cover.Avatar as avatar, cover.Nickname as nickname, cover.song_name as songname,cover.module as module,cover.selection_id as selection_id,cover.created_at as created_at,cover.classic_id as classic_id").
+		Select("cover_id, count(cover_id) as likes, cover.user_id as user_id, cover.Avatar as avatar, cover.Nickname as nickname, cover.song_name as songname,cover.module as module,cover.selection_id as selection_id,cover.created_at as created_at,cover.classic_id as classic_id").
 		Where("cover_id <> ? AND is_liked = ? AND cover.MODULE <> ?", 0, 1, 2).
 		Joins("left join cover on cover.id = cover_id").
 		Group("cover_id").
@@ -41,7 +41,7 @@ func GetCoversByLikes() ([]resp.HotResp, error) {
 
 	err := mysqlDb.Order("likes desc").
 		Table("praise").
-		Select("cover_id, count(cover_id) as likes, cover.Avatar as avatar, cover.Nickname as nickname, cover.song_name as songname,cover.module as module,cover.selection_id as selection_id,cover.created_at as created_at,cover.classic_id as classic_id").
+		Select("cover_id, count(cover_id) as likes, cover.user_id as user_id, cover.Avatar as avatar, cover.Nickname as nickname, cover.song_name as songname,cover.module as module,cover.selection_id as selection_id,cover.created_at as created_at,cover.classic_id as classic_id").
 		Where("cover_id <> ? AND is_liked = ? AND cover.module <> ?", 0, 1, 2).
 		Joins("left join cover on cover.id = cover_id").
 		Group("cover_id").
