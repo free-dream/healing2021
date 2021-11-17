@@ -69,7 +69,7 @@ func GetCacheTaskPoints(userid int, tid int) int {
 func CacheCURanking(userid int, rank string) error {
 	db := setting.RedisConn()
 	key := prefix + strconv.Itoa(userid) + "rank"
-	err := db.Set(key, rank, time.Hour).Err()
+	err := db.Set(key, rank, time.Minute*5).Err()
 	return err
 }
 
@@ -90,7 +90,7 @@ func CachePointsRanking(school string, data string) error {
 		return err
 	}
 	//设置过期时间
-	db.Expire(key, time.Hour)
+	db.Expire(key, time.Minute*5)
 	return nil
 }
 
