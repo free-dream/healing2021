@@ -58,14 +58,14 @@ func GetRanking(ctx *gin.Context) {
 
 	//缓存json化的数据,json化的报错无视
 	//缓存出错不影响可用性，所以仅log
-	jsondata, _ := json.Marshal(rankresps)
+	jsondata, _ := json.Marshal(raws)
 	cache := string(jsondata)
 	err = sandwich.CachePointsRanking(school, cache)
 	if err != nil {
 		log.Fatal("redis缓存出错")
 	}
 
-	ctx.JSON(200, rankresps)
+	ctx.JSON(200, raws)
 }
 
 //GET /healing/rank/user

@@ -21,18 +21,25 @@ func GetRankingBySchool(school string) ([]respModel.RankingResp, error) {
 	var users []respModel.RankingResp
 	var err error = nil
 	if school != "All" {
-		err = mysqlDb.Select("id as userid,avatar,nickname").
-			Where("School = ?", school).Order("Points desc").
+		err = mysqlDb.
 			Limit(10).
+			Table("user").
+			Select("id as userid,avatar,nickname").
+			Where("School = ?", school).
+			Order("points desc").
 			Find(&users).
 			Error
 	} else if school == "All" {
-		err = mysqlDb.Select("id as userid,avatar,nickname").
-			Order("Points desc").
-			Limit(10).Find(&users).
+		err = mysqlDb.
+			Limit(10).
+			Table("user").
+			Select("id as userid,avatar,nickname").
+			Order("points desc").
+			Find(&users).
 			Error
 	}
 	if err != nil {
+		panic(err)
 		return nil, err
 	}
 	return users, nil

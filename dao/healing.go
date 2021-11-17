@@ -360,8 +360,24 @@ func GetCovers(id int, tag Tags) (interface{}, error) {
 
 }
 
+//自定义错误
+type HealingMyself struct{}
+
+func (h *HealingMyself) Error() string {
+	return "不要自娱自乐哦~"
+}
+
+//错误判断
+func IsHealingMyselfError(err error) bool {
+	if err.Error() == "不要自娱自乐哦~" {
+		return true
+	} else {
+		return false
+	}
+}
+
 //治愈系对应的录音
-func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool) (statements.Selection, CoverDetails, error) {
+func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool) (*statements.Selection, *CoverDetails, error) {
 	db := setting.MysqlConn()
 	userId := uid
 	var cover statements.Cover
@@ -379,6 +395,12 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 		db.Model(&statements.Classic{}).Where("id=?", selectionId).Scan(&classic)
 		cover.SongName = classic.SongName
 	}
+	//治愈自己判断
+	if selection.UserId == uid {
+		return nil, nil, &HealingMyself{}
+	}
+	//
+
 	//补一个拿人头和名字的
 	data, err1 := GetUserInfo(uid)
 	if err1 != nil {
@@ -399,7 +421,7 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 	case 2:
 		db.Table("user").Select("cover.classic_id,cover.file,cover.user_id,cover.id,user.nickname,user.avatar,cover.song_name,cover.created_at").Where("cover.id=?", cover.ID).Joins("left join cover on user.id=cover.user_id").Scan(&coverDetails)
 	}
-	return selection, coverDetails, err
+	return &selection, &coverDetails, err
 }
 
 func Select(selection statements.Selection, avatar string, nickname string) (int, int, error) {
