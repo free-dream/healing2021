@@ -144,6 +144,17 @@ func Updater(ctx *gin.Context) {
 		})
 		return
 	}
+	if user.PhoneNumber != "" {
+		body, err1 := strconv.Atoi(user.PhoneNumber)
+
+		if err1 != nil || body <= 13000000000 || body >= 20000000000 {
+
+			ctx.JSON(403, gin.H{
+				"message": "手机号格式错误",
+			})
+			return
+		}
+	}
 	user.Openid = openid
 	avatar, err = dao.UpdateUser(&user, id, avatar)
 	if err != nil {
