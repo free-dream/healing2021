@@ -14,7 +14,7 @@ const hotSearch = "healing2021:hotSearch"
 const hotSong = "healing2021:hotSong"
 
 func init()  {
-	for i := 0; i < 2; i++ {
+	for i := 0; i < 20; i++ {
 		PutInStates("上早课")
 		PutInStates("奔赴饭堂")
 		PutInStates("乐跑")
@@ -61,16 +61,16 @@ func PutInStates(States string) {
 	}
 }
 
-// 返回前 18 条状态
+// 返回前 36 条状态
 func GetStates() []string {
 	redisDb := setting.RedisConn()
 
-	// 设置查找要求并找到前18个状态
+	// 设置查找要求并找到前36个状态
 	op := redis.ZRangeBy{
 		Min:    "-inf", //最小分数
 		Max:    "+inf", //最大分数
 		Offset: 0,      // 类似sql的limit, 表示开始偏移量
-		Count:  18,     // 一次返回多少数据
+		Count:  36,     // 一次返回多少数据
 	}
 	Values, err := redisDb.ZRevRangeByScore(ourStates, op).Result()
 	if err != nil && err != redis.Nil {
