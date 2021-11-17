@@ -371,7 +371,7 @@ func CreateRecord(module int, selectionId int, file string, uid int, isAnon bool
 	var classic statements.Classic
 	switch module {
 	case 1:
-		cover.SelectionId = strconv.Itoa(selectionId)
+		cover.SelectionId = selectionId
 		db.Model(&statements.Selection{}).Where("id=?", selectionId).Scan(&selection)
 		cover.Style = selection.Style
 		cover.Language = selection.Language

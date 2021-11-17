@@ -235,7 +235,7 @@ func CreateFakeCovers(uid int, name string, sid int, classicId int, module int) 
 	cover := statements.Cover{
 		UserId:      uid,
 		SongName:    name,
-		SelectionId: strconv.Itoa(sid),
+		SelectionId: sid,
 		Module:      module,
 		ClassicId:   classicId,
 		Nickname:    "测试小子",

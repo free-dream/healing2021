@@ -1,13 +1,11 @@
 package models
 
 import (
-	"math/rand"
-	"strconv"
-
 	"git.100steps.top/100steps/healing2021_be/models/statements"
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/pkg/tools"
+	"math/rand"
 )
 
 //测试学校名
@@ -197,7 +195,7 @@ func dummyCovers(userid int, selectionid int, classicid int) (*statements.Cover,
 		UserId:      userid,
 		Nickname:    nickname,
 		Avatar:      avatar,
-		SelectionId: strconv.Itoa(selectionid),
+		SelectionId: selectionid,
 		ClassicId:   classicid,
 		File:        string(tools.GetRandomString(30)),
 		SongName:    song,
