@@ -287,7 +287,7 @@ func GetCallee(id int, module int) interface{} {
 func getPraises(user_id int) interface{} {
 	cover := []CoverDetails{}
 	db := setting.MysqlConn()
-	db.Table("cover").Select("sum(praise.is_liked) as likes,user.avatar,user.nickname,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at ").
+	db.Table("cover").Select("sum(praise.is_liked) as likes,user.avatar,user.nickname,cover.classic_id,cover.module,cover.selection_id,cover.song_name,cover.file,cover.user_id,cover.id,cover.created_at ").
 		Joins("inner join user on user.id=cover.user_id").
 		Joins("inner join praise on cover.id=praise.cover_id").
 		Group("cover_id").Order("created_at desc").
