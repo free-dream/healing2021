@@ -9,7 +9,7 @@ func Authentication(openid string) bool {
 
 func DeleteContent(id int) error {
 	db := setting.MysqlConn()
-	err := db.Table("moment_comment").Select("is_deleted").Where("id", id).Update(1).Error
+	err := db.Table("moment_comment").Select("is_deleted").Where("id=?", id).Update("is_deleted", 1).Error
 	return err
 }
 
