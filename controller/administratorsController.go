@@ -36,7 +36,7 @@ func DeleteMoment(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(400, e.ErrMsgResponse{Message: "error param"})
 	}
-	err = dao.DeleteContent(id)
+	err = dao.DeleteMoment(id)
 	if err != nil {
 		panic(err)
 	}

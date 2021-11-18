@@ -1795,7 +1795,7 @@ Content-Type: application/json
 
 ## 7.1 评论删除
 
-POST /administrators/content/?id= HTTP1.1
+POST /administrators/comment/?id= HTTP1.1
 
 query
 
@@ -1819,7 +1819,7 @@ Content-Type: application/json
 
 ## 7.2 动态删除
 
-POST /administrators/content2/?id= HTTP1.1
+POST /administrators/moment/?id= HTTP1.1
 
 query
 
