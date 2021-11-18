@@ -1793,13 +1793,37 @@ Content-Type: application/json
 
 # 管理员相关
 
-## 7.1 动态、评论删除
+## 7.1 评论删除
 
 POST /administrators/content/?id= HTTP1.1
 
 query
 
-id
+id【评论ID】
+
+成功时：
+
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+失败时(例子)：
+
+HTTP/1.1 403 Forbidden
+
+Content-Type: application/json
+
+```
+{"message" : "无权限"}
+```
+
+## 7.2 动态删除
+
+POST /administrators/content2/?id= HTTP1.1
+
+query
+
+id【动态ID】
 
 成功时：
 

@@ -153,6 +153,7 @@ func SetupRouter() *gin.Engine {
 	// 管理员操作 模块
 	api.Use(middleware.Authentication())
 	api.POST("/administrators", controller.DeleteContent)
+	api.POST("/administrators", controller.DeleteMoment)
 
 	return r
 }

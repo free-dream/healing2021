@@ -12,3 +12,9 @@ func DeleteContent(id int) error {
 	err := db.Table("moment_comment").Select("is_deleted").Where("id", id).Update(1).Error
 	return err
 }
+
+func DeleteMoment(id int) error {
+	db := setting.MysqlConn()
+	err := db.Table("moment").Select("is_deleted").Where("id", id).Update(1).Error
+	return err
+}
