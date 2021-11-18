@@ -27,10 +27,10 @@ func GetMomentNew(ctx *gin.Context) {
 		return
 	}
 
-	//if pages<0 {
-	//	ctx.JSON(200, momentsResp)
-	//	return
-	//}
+	if pages<0 {
+		ctx.JSON(200, momentsResp)
+		return
+	}
 
 	momentPage, err := dao.GetMomentPageNew(pages)
 	if err != nil {
