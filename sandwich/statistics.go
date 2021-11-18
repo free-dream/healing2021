@@ -13,7 +13,7 @@ const ourStates = "healing2021:ourStates"
 const hotSearch = "healing2021:hotSearch"
 const hotSong = "healing2021:hotSong"
 
-func init()  {
+func init() {
 	for i := 0; i < 20; i++ {
 		PutInStates("上早课")
 		PutInStates("奔赴饭堂")

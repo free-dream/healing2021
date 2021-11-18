@@ -1,6 +1,9 @@
 package dao
 
-import "git.100steps.top/100steps/healing2021_be/pkg/setting"
+import (
+	"git.100steps.top/100steps/healing2021_be/models/statements"
+	"git.100steps.top/100steps/healing2021_be/pkg/setting"
+)
 
 func Authentication(openid string) bool {
 	redisCli := setting.RedisConn()
@@ -10,5 +13,11 @@ func Authentication(openid string) bool {
 func DeleteContent(id int) error {
 	db := setting.MysqlConn()
 	err := db.Table("moment_comment").Select("is_deleted").Where("id=?", id).Update("is_deleted", 1).Error
+	return err
+}
+
+func DeleteMoment(id int) error {
+	db := setting.MysqlConn()
+	err := db.Table("moment").Delete(&statements.Moment{}, id).Error
 	return err
 }

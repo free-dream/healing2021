@@ -24,3 +24,21 @@ func DeleteContent(ctx *gin.Context) {
 	}
 	ctx.JSON(200, e.ErrMsgResponse{Message: "删除操作成功"})
 }
+
+func DeleteMoment(ctx *gin.Context) {
+	// 参数获取
+	param, bl := ctx.GetQuery("id")
+	if !bl {
+		ctx.JSON(400, e.ErrMsgResponse{Message: "参数非法"})
+		return
+	}
+	id, err := strconv.Atoi(param)
+	if err != nil {
+		ctx.JSON(400, e.ErrMsgResponse{Message: "error param"})
+	}
+	err = dao.DeleteMoment(id)
+	if err != nil {
+		panic(err)
+	}
+	ctx.JSON(200, e.ErrMsgResponse{Message: "删除操作成功"})
+}

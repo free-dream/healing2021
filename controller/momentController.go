@@ -27,7 +27,7 @@ func GetMomentNew(ctx *gin.Context) {
 		return
 	}
 
-	if pages<0 {
+	if pages < 0 {
 		ctx.JSON(200, momentsResp)
 		return
 	}
@@ -92,7 +92,7 @@ func GetMomentRecommend(ctx *gin.Context) {
 		return
 	}
 
-	if pages<0 {
+	if pages < 0 {
 		ctx.JSON(200, momentsResp)
 		return
 	}
@@ -329,7 +329,6 @@ func GetMomentDetail(ctx *gin.Context) {
 		DynamicsId: int(Moment.ID),
 		Content:    Moment.Content,
 		CreatedAt:  tools.DecodeTime(Moment.CreatedAt),
-		Song:       Moment.SongName,
 		Module:     Moment.Module,
 		Lauds:      dao.CountMLaudsById(int(Moment.ID)),
 		Lauded:     dao.HaveMLauded(UserId, int(Moment.ID)),
@@ -342,8 +341,10 @@ func GetMomentDetail(ctx *gin.Context) {
 	switch Moment.Module {
 	case 1:
 		MomentDetail.SongId = Moment.SelectionId
+		MomentDetail.Song = Moment.SongName
 	case 2:
 		MomentDetail.SongId = Moment.ClassicId
+		MomentDetail.Song, _ = dao.GetClassicSongNameById(Moment.ClassicId)
 	case 0:
 		// 啥事不用干
 	default:
