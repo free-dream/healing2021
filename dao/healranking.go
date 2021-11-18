@@ -39,7 +39,6 @@ func GetRankingBySchool(school string) ([]respModel.RankingResp, error) {
 			Error
 	}
 	if err != nil {
-		panic(err)
 		return nil, err
 	}
 	return users, nil
@@ -51,7 +50,7 @@ func GetRankByCUserId(userid int) (string, error) {
 	var users []tables.User
 	//同分以字母序为准
 	err := mysqlDb.Limit(1000).
-		Order("Points desc,Nickname").
+		Order("points desc").
 		Find(&users).Error
 	if err != nil {
 		return "", err
