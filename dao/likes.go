@@ -3,12 +3,24 @@ package dao
 import (
 	"log"
 
+	"git.100steps.top/100steps/healing2021_be/models/statements"
 	tables "git.100steps.top/100steps/healing2021_be/models/statements"
 	"git.100steps.top/100steps/healing2021_be/pkg/setting"
 	db "git.100steps.top/100steps/healing2021_be/pkg/setting"
 	"git.100steps.top/100steps/healing2021_be/sandwich"
 	"github.com/jinzhu/gorm"
 )
+
+//基于根据comment_id跳转momentid
+func GetMomentIdByCommentId(id int) int {
+	db := setting.MysqlConn()
+	var data statements.MomentComment
+	err := db.Where("id = ?", id).First(&data).Error
+	if err != nil {
+		return 1
+	}
+	return data.MomentId
+}
 
 //包装一下给controller用
 func PackageCheck(user int, kind string, target int) (bool, error) {

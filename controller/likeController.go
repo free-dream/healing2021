@@ -85,6 +85,9 @@ func Like(ctx *gin.Context) {
 			return
 		}
 		likemsg := make([]interface{}, 0)
+		if Type == "momentcomment" {
+			LikeParam.Id = dao.GetMomentIdByCommentId(LikeParam.Id)
+		}
 		likemsg = append(likemsg, nickname, LikeParam.Id, Type)
 		likemsgchan1 <- likemsg
 	}
