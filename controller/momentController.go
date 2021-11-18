@@ -29,6 +29,7 @@ func GetMomentNew(ctx *gin.Context) {
 
 	if pages<0 {
 		ctx.JSON(200, momentsResp)
+		return
 	}
 
 	momentPage, err := dao.GetMomentPageNew(pages)
@@ -92,6 +93,7 @@ func GetMomentRecommend(ctx *gin.Context) {
 
 	if pages<0 {
 		ctx.JSON(200, momentsResp)
+		return
 	}
 
 	momentPage, err := dao.GetMomentPageRecommend(pages)
