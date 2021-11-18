@@ -102,3 +102,15 @@ func GetClassicUrlById(ClassicId int) (string, error) {
 	err := db.Select("file").Model(&statements.Classic{}).Where("id=?", ClassicId).Scan(&tmpClassicUrl).Error
 	return tmpClassicUrl.File, err
 }
+
+// 通过 classic_id 找 song_name
+type ClassicName struct {
+	SongName string `gorm:"song_name"`
+}
+
+func GetClassicSongNameById(ClassicId int) (string, error) {
+	db := setting.MysqlConn()
+	tmpClassicSongName := ClassicName{}
+	err := db.Select("song_name").Model(&statements.Classic{}).Where("id=?", ClassicId).Scan(&tmpClassicSongName).Error
+	return tmpClassicSongName.SongName, err
+}

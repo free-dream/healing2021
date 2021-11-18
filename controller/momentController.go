@@ -52,7 +52,6 @@ func GetMomentNew(ctx *gin.Context) {
 			Content:    OneMoment.Content,
 			DynamicsId: int(OneMoment.ID),
 			CreatedAt:  tools.DecodeTime(OneMoment.CreatedAt),
-			Song:       OneMoment.SongName,
 			Module:     OneMoment.Module,
 			Lauds:      dao.CountMLaudsById(int(OneMoment.ID)),
 			Lauded:     dao.HaveMLauded(userId, int(OneMoment.ID)),
@@ -64,9 +63,11 @@ func GetMomentNew(ctx *gin.Context) {
 		switch OneMoment.Module {
 		case 1:
 			TmpMoment.SongId = OneMoment.SelectionId
+			TmpMoment.Song = OneMoment.SongName
 			TmpMoment.Creator = dao.TransformUserInfo(User, OneMoment.SelectionId)
 		case 2:
 			TmpMoment.SongId = OneMoment.ClassicId
+			TmpMoment.Song, _ = dao.GetClassicSongNameById(OneMoment.ClassicId)
 			TmpMoment.Creator = dao.TransformUserInfo(User, -1)
 		case 0:
 			TmpMoment.Creator = dao.TransformUserInfo(User, -1)
@@ -116,7 +117,6 @@ func GetMomentRecommend(ctx *gin.Context) {
 			Content:    OneMoment.Content,
 			DynamicsId: int(OneMoment.ID),
 			CreatedAt:  tools.DecodeTime(OneMoment.CreatedAt),
-			Song:       OneMoment.SongName,
 			Module:     OneMoment.Module,
 			Lauds:      dao.CountMLaudsById(int(OneMoment.ID)),
 			Lauded:     dao.HaveMLauded(userId, int(OneMoment.ID)),
@@ -128,9 +128,11 @@ func GetMomentRecommend(ctx *gin.Context) {
 		switch OneMoment.Module {
 		case 1:
 			TmpMoment.SongId = OneMoment.SelectionId
+			TmpMoment.Song = OneMoment.SongName
 			TmpMoment.Creator = dao.TransformUserInfo(User, OneMoment.SelectionId)
 		case 2:
 			TmpMoment.SongId = OneMoment.ClassicId
+			TmpMoment.Song, _ = dao.GetClassicSongNameById(OneMoment.ClassicId)
 			TmpMoment.Creator = dao.TransformUserInfo(User, -1)
 		case 0:
 			TmpMoment.Creator = dao.TransformUserInfo(User, -1)
@@ -180,7 +182,6 @@ func GetMomentSearch(ctx *gin.Context) {
 			Content:    OneMoment.Content,
 			DynamicsId: int(OneMoment.ID),
 			CreatedAt:  tools.DecodeTime(OneMoment.CreatedAt),
-			Song:       OneMoment.SongName,
 			Module:     OneMoment.Module,
 			Lauds:      dao.CountMLaudsById(int(OneMoment.ID)),
 			Lauded:     dao.HaveMLauded(userId, int(OneMoment.ID)),
@@ -192,9 +193,11 @@ func GetMomentSearch(ctx *gin.Context) {
 		switch OneMoment.Module {
 		case 1:
 			TmpMoment.SongId = OneMoment.SelectionId
+			TmpMoment.Song = OneMoment.SongName
 			TmpMoment.Creator = dao.TransformUserInfo(User, OneMoment.SelectionId)
 		case 2:
 			TmpMoment.SongId = OneMoment.ClassicId
+			TmpMoment.Song, _ = dao.GetClassicSongNameById(OneMoment.ClassicId)
 			TmpMoment.Creator = dao.TransformUserInfo(User, -1)
 		case 0:
 			TmpMoment.Creator = dao.TransformUserInfo(User, -1)
