@@ -13,7 +13,7 @@ func CronInit() *cron.Cron {
 	// })
 	c.AddFunc("0 0 1 * *", func() {
 		db := setting.MysqlConn()
-		db.Table("user").Select("selection_num").Update(5)
+		db.Table("user").Select("selection_num").Update("selection_num", 5)
 	})
 
 	return c
